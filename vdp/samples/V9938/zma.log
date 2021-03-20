@@ -1,0 +1,164 @@
+Z80 Macro Assembler ZMA v1.0.9
+=====================================================
+Programmed by t.hara
+
+<< code >>
+[	DB 0XFE]
+000000: fe
+
+[	DW START_ADDRESS]
+000001: 00 c0
+
+[	DW END_ADDRESS]
+000003: 3a c0
+
+[	DW START_ADDRESS]
+000005: 00 c0
+
+[	ORG 0XC000]
+	code address: 0x00c000
+
+[START_ADDRESS ::]
+	global label address: 0x00c000
+
+[	CALL EXEC_HMMV] Z80:18cyc, R800:5cyc
+00c000: cd 04 c0
+
+[	RET] Z80:11cyc, R800:5cyc
+00c003: c9
+
+[EXEC_HMMV ::]
+	global label address: 0x00c004
+
+[	LD C , VDP_IO_PORT1] Z80:8cyc, R800:2cyc
+00c004: 0e 99
+
+[	LD A , 36] Z80:8cyc, R800:2cyc
+00c006: 3e 24
+
+[	DI] Z80:5cyc, R800:2cyc
+00c008: f3
+
+[	OUT [ C ] , A] Z80:14cyc, R800:10 or 9cyc
+00c009: ed 79
+
+[	LD A , 17 | 0X80] Z80:8cyc, R800:2cyc
+00c00b: 3e 91
+
+[	OUT [ C ] , A] Z80:14cyc, R800:10 or 9cyc
+00c00d: ed 79
+
+[	EI] Z80:5cyc, R800:1cyc
+00c00f: fb
+
+[	LD BC , ( 11 << 8 ) | VDP_IO_PORT3] Z80:11cyc, R800:3cyc
+00c010: 01 9b 0b
+
+[	LD HL , DX] Z80:11cyc, R800:3cyc
+00c013: 21 2f c0
+
+[	OTIR] Z80:23 or 18cyc, R800:? or 12 or 11cyc
+00c016: ed b3
+
+[	LD C , VDP_IO_PORT1] Z80:8cyc, R800:2cyc
+00c018: 0e 99
+
+[	LD DE , 15 | 0X80] Z80:11cyc, R800:3cyc
+00c01a: 11 8f 00
+
+[WAIT_CE_FLAG :]
+	label address: 0x00c01d
+
+[	DI] Z80:5cyc, R800:2cyc
+00c01d: f3
+
+[	LD A , 2] Z80:8cyc, R800:2cyc
+00c01e: 3e 02
+
+[	OUT [ C ] , A] Z80:14cyc, R800:10 or 9cyc
+00c020: ed 79
+
+[	OUT [ C ] , E] Z80:14cyc, R800:10 or 9cyc
+00c022: ed 59
+
+[	IN A , [ C ]] Z80:14cyc, R800:10 or 9cyc
+00c024: ed 78
+
+[	OUT [ C ] , D] Z80:14cyc, R800:10 or 9cyc
+00c026: ed 51
+
+[	OUT [ C ] , E] Z80:14cyc, R800:10 or 9cyc
+00c028: ed 59
+
+[	EI] Z80:5cyc, R800:1cyc
+00c02a: fb
+
+[	RRCA] Z80:5cyc, R800:1cyc
+00c02b: 0f
+
+[	JR C , WAIT_CE_FLAG] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00c02c: 38 ef
+
+[	RET] Z80:11cyc, R800:5cyc
+00c02e: c9
+
+[DX :]
+	label address: 0x00c02f
+
+[	DW 10]
+00c02f: 0a 00
+
+[DY :]
+	label address: 0x00c031
+
+[	DW 10]
+00c031: 0a 00
+
+[NX :]
+	label address: 0x00c033
+
+[	DW 236]
+00c033: ec 00
+
+[NY :]
+	label address: 0x00c035
+
+[	DW 190]
+00c035: be 00
+
+[CLR :]
+	label address: 0x00c037
+
+[	DB 0X2B]
+00c037: 2b
+
+[ARG :]
+	label address: 0x00c038
+
+[	DB 0B0000_0000]
+00c038: 00
+
+[CMR :]
+	label address: 0x00c039
+
+[	DB 0B1100_0000]
+00c039: c0
+
+[END_ADDRESS ::]
+	global label address: 0x00c03a
+
+<< label >>
+ARG 49208 ( 0xc038 )
+CLR 49207 ( 0xc037 )
+CMR 49209 ( 0xc039 )
+DX 49199 ( 0xc02f )
+DY 49201 ( 0xc031 )
+END_ADDRESS 49210 ( 0xc03a )
+EXEC_HMMV 49156 ( 0xc004 )
+NX 49203 ( 0xc033 )
+NY 49205 ( 0xc035 )
+START_ADDRESS 49152 ( 0xc000 )
+VDP_IO_PORT1 153 ( 0x99 )
+VDP_IO_PORT2 154 ( 0x9a )
+VDP_IO_PORT3 155 ( 0x9b )
+WAIT_CE_FLAG 49181 ( 0xc01d )
