@@ -1,0 +1,2 @@
+zma MAPCHK.ASM MAPCHK.COM
+pause
