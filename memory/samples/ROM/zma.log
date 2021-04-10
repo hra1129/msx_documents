@@ -1,0 +1,1072 @@
+Z80 Macro Assembler ZMA v1.0.15
+=====================================================
+Programmed by t.hara
+
+<< code >>
+[	ORG 0X4000]
+	code address: 0x004000
+
+[ROM_HEADER_ID :]
+	label address: 0x004000
+
+[	DS "AB"]
+004000: 41 42
+
+[ROM_HEADER_INIT :]
+	label address: 0x004002
+
+[	DW ENTRY_POINT]
+004002: 10 40
+
+[ROM_HEADER_STATEMENT :]
+	label address: 0x004004
+
+[	DW 0]
+004004: 00 00
+
+[ROM_HEADER_DEVICE :]
+	label address: 0x004006
+
+[	DW 0]
+004006: 00 00
+
+[ROM_HEADER_TEXT :]
+	label address: 0x004008
+
+[	DW 0]
+004008: 00 00
+
+[ROM_HEADER_RESERVED :]
+	label address: 0x00400a
+
+[SPACE 0X0010 - 0X000A , 0]
+	Allocate space: 6byte(s)
+		Fill value: 0
+
+[ENTRY_POINT :]
+	label address: 0x004010
+
+[	LD HL , 0XC000] Z80:11cyc, R800:3cyc
+004010: 21 00 c0
+
+[	LD SP , HL] Z80:7cyc, R800:1cyc
+004013: f9
+
+[	CALL GET_PAGE3_SLOT] Z80:18cyc, R800:5cyc
+004014: cd fb 40
+
+[	LD [ P3_RAM_SLOT ] , A] Z80:14cyc, R800:6cyc
+004017: 32 00 80
+
+[	LD HL , EXPTBL] Z80:11cyc, R800:3cyc
+00401a: 21 c1 fc
+
+[	LD DE , EXPTBL_COPY] Z80:11cyc, R800:3cyc
+00401d: 11 01 80
+
+[	LD BC , 4] Z80:11cyc, R800:3cyc
+004020: 01 04 00
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+004023: ed b0
+
+[MAIN_LOOP :]
+	label address: 0x004025
+
+[	CALL CHECK_PAGE0] Z80:18cyc, R800:5cyc
+004025: cd 58 40
+
+[	LD HL , MESSAGE_PAGE0] Z80:11cyc, R800:3cyc
+004028: 21 d3 41
+
+[	CALL DISPLAY_SLOT_INFO] Z80:18cyc, R800:5cyc
+00402b: cd 87 41
+
+[	CALL PRESS_ENTER_KEY] Z80:18cyc, R800:5cyc
+00402e: cd 40 40
+
+[	CALL CHECK_PAGE3] Z80:18cyc, R800:5cyc
+004031: cd a7 40
+
+[	LD HL , MESSAGE_PAGE3] Z80:11cyc, R800:3cyc
+004034: 21 dc 41
+
+[	CALL DISPLAY_SLOT_INFO] Z80:18cyc, R800:5cyc
+004037: cd 87 41
+
+[	CALL PRESS_ENTER_KEY] Z80:18cyc, R800:5cyc
+00403a: cd 40 40
+
+[	JP MAIN_LOOP] Z80:11cyc, R800:5cyc
+00403d: c3 25 40
+
+[PRESS_ENTER_KEY :]
+	label address: 0x004040
+
+[	LD HL , MESSAGE_PRESS_ENTER_KEY] Z80:11cyc, R800:3cyc
+004040: 21 04 42
+
+[	CALL PUTS] Z80:18cyc, R800:5cyc
+004043: cd 59 41
+
+[	CALL CHGET] Z80:18cyc, R800:5cyc
+004046: cd 9f 00
+
+[	RET] Z80:11cyc, R800:5cyc
+004049: c9
+
+[	SCOPE CLEAR_SLOT_INFO]
+	Scope path: CLEAR_SLOT_INFO:
+
+[CLEAR_SLOT_INFO ::]
+	global label address: 0x00404a
+
+[	LD HL , SLOT_INFO] Z80:11cyc, R800:3cyc
+00404a: 21 05 80
+
+[	LD DE , SLOT_INFO + 1] Z80:11cyc, R800:3cyc
+00404d: 11 06 80
+
+[	LD BC , 16 - 1] Z80:11cyc, R800:3cyc
+004050: 01 0f 00
+
+[	XOR A , A] Z80:5cyc, R800:1cyc
+004053: af
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+004054: 77
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+004055: ed b0
+
+[	RET] Z80:11cyc, R800:5cyc
+004057: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE CHECK_PAGE0]
+	Scope path: CHECK_PAGE0:
+
+[CHECK_PAGE0 ::]
+	global label address: 0x004058
+
+[	CALL CLEAR_SLOT_INFO] Z80:18cyc, R800:5cyc
+004058: cd 4a 40
+
+[	LD HL , EXPTBL] Z80:11cyc, R800:3cyc
+00405b: 21 c1 fc
+
+[	LD DE , SLOT_INFO] Z80:11cyc, R800:3cyc
+00405e: 11 05 80
+
+[SLOT_LOOP :]
+	label address: 0x004061
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+004061: 7e
+
+[	AND A , 0X80] Z80:8cyc, R800:2cyc
+004062: e6 80
+
+[	OR A , B] Z80:5cyc, R800:1cyc
+004064: b0
+
+[EXP_SLOT_LOOP :]
+	label address: 0x004065
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+004065: 4f
+
+[	PUSH BC] Z80:12cyc, R800:6cyc
+004066: c5
+
+[	PUSH HL] Z80:12cyc, R800:6cyc
+004067: e5
+
+[	PUSH DE] Z80:12cyc, R800:6cyc
+004068: d5
+
+[	CALL LOCAL_ENASLT0] Z80:18cyc, R800:5cyc
+004069: cd 1d 41
+
+[	POP DE] Z80:11cyc, R800:5cyc
+00406c: d1
+
+[	LD HL , 0X0000] Z80:11cyc, R800:3cyc
+00406d: 21 00 00
+
+[CHECK_RAM_LOOP :]
+	label address: 0x004070
+
+[	LD A , 1] Z80:8cyc, R800:2cyc
+004070: 3e 01
+
+[	BIT 6 , H] Z80:10cyc, R800:2cyc
+004072: cb 74
+
+[	JP NZ , CHECK_RAM_EXIT] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+004074: c2 83 40
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+004077: 7e
+
+[	CPL] Z80:5cyc, R800:1cyc
+004078: 2f
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+004079: 77
+
+[	CP A , [ HL ]] Z80:8cyc, R800:4cyc
+00407a: be
+
+[	CPL] Z80:5cyc, R800:1cyc
+00407b: 2f
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00407c: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00407d: 23
+
+[	JP Z , CHECK_RAM_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00407e: ca 70 40
+
+[	LD A , 2] Z80:8cyc, R800:2cyc
+004081: 3e 02
+
+[CHECK_RAM_EXIT :]
+	label address: 0x004083
+
+[	POP HL] Z80:11cyc, R800:5cyc
+004083: e1
+
+[	POP BC] Z80:11cyc, R800:5cyc
+004084: c1
+
+[	LD [ DE ] , A] Z80:8cyc, R800:4cyc
+004085: 12
+
+[	INC DE] Z80:7cyc, R800:1cyc
+004086: 13
+
+[	LD A , C] Z80:5cyc, R800:2cyc
+004087: 79
+
+[	ADD A , 0X04] Z80:8cyc, R800:2cyc
+004088: c6 04
+
+[	JP P , NOT_EXPANDED] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00408a: f2 95 40
+
+[	BIT 4 , A] Z80:10cyc, R800:2cyc
+00408d: cb 67
+
+[	JP Z , EXP_SLOT_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00408f: ca 65 40
+
+[	JP NEXT_SLOT] Z80:11cyc, R800:5cyc
+004092: c3 98 40
+
+[NOT_EXPANDED :]
+	label address: 0x004095
+
+[	INC DE] Z80:7cyc, R800:1cyc
+004095: 13
+
+[	INC DE] Z80:7cyc, R800:1cyc
+004096: 13
+
+[	INC DE] Z80:7cyc, R800:1cyc
+004097: 13
+
+[NEXT_SLOT :]
+	label address: 0x004098
+
+[	INC HL] Z80:7cyc, R800:1cyc
+004098: 23
+
+[	INC B] Z80:5cyc, R800:1cyc
+004099: 04
+
+[	BIT 2 , B] Z80:10cyc, R800:2cyc
+00409a: cb 50
+
+[	JP Z , SLOT_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00409c: ca 61 40
+
+[	LD A , [ EXPTBL ]] Z80:14cyc, R800:6cyc
+00409f: 3a c1 fc
+
+[	CALL LOCAL_ENASLT0] Z80:18cyc, R800:5cyc
+0040a2: cd 1d 41
+
+[	EI] Z80:5cyc, R800:1cyc
+0040a5: fb
+
+[	RET] Z80:11cyc, R800:5cyc
+0040a6: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE CHECK_PAGE3]
+	Scope path: CHECK_PAGE3:
+
+[CHECK_PAGE3 ::]
+	global label address: 0x0040a7
+
+[	CALL CLEAR_SLOT_INFO] Z80:18cyc, R800:5cyc
+0040a7: cd 4a 40
+
+[	LD HL , EXPTBL_COPY] Z80:11cyc, R800:3cyc
+0040aa: 21 01 80
+
+[	LD DE , SLOT_INFO] Z80:11cyc, R800:3cyc
+0040ad: 11 05 80
+
+[SLOT_LOOP :]
+	label address: 0x0040b0
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+0040b0: 7e
+
+[	AND A , 0X80] Z80:8cyc, R800:2cyc
+0040b1: e6 80
+
+[	OR A , B] Z80:5cyc, R800:1cyc
+0040b3: b0
+
+[EXP_SLOT_LOOP :]
+	label address: 0x0040b4
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+0040b4: 4f
+
+[	PUSH BC] Z80:12cyc, R800:6cyc
+0040b5: c5
+
+[	PUSH HL] Z80:12cyc, R800:6cyc
+0040b6: e5
+
+[	PUSH DE] Z80:12cyc, R800:6cyc
+0040b7: d5
+
+[	LD H , 0XC0] Z80:8cyc, R800:2cyc
+0040b8: 26 c0
+
+[	CALL ENASLT] Z80:18cyc, R800:5cyc
+0040ba: cd 24 00
+
+[	POP DE] Z80:11cyc, R800:5cyc
+0040bd: d1
+
+[	LD HL , 0XC000] Z80:11cyc, R800:3cyc
+0040be: 21 00 c0
+
+[CHECK_RAM_LOOP :]
+	label address: 0x0040c1
+
+[	LD A , H] Z80:5cyc, R800:2cyc
+0040c1: 7c
+
+[	CP A , 0XFF] Z80:8cyc, R800:2cyc
+0040c2: fe ff
+
+[	LD A , 1] Z80:8cyc, R800:2cyc
+0040c4: 3e 01
+
+[	JP Z , CHECK_RAM_EXIT] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+0040c6: ca d5 40
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+0040c9: 7e
+
+[	CPL] Z80:5cyc, R800:1cyc
+0040ca: 2f
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+0040cb: 77
+
+[	CP A , [ HL ]] Z80:8cyc, R800:4cyc
+0040cc: be
+
+[	CPL] Z80:5cyc, R800:1cyc
+0040cd: 2f
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+0040ce: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+0040cf: 23
+
+[	JP Z , CHECK_RAM_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+0040d0: ca c1 40
+
+[	LD A , 2] Z80:8cyc, R800:2cyc
+0040d3: 3e 02
+
+[CHECK_RAM_EXIT :]
+	label address: 0x0040d5
+
+[	POP HL] Z80:11cyc, R800:5cyc
+0040d5: e1
+
+[	POP BC] Z80:11cyc, R800:5cyc
+0040d6: c1
+
+[	LD [ DE ] , A] Z80:8cyc, R800:4cyc
+0040d7: 12
+
+[	INC DE] Z80:7cyc, R800:1cyc
+0040d8: 13
+
+[	LD A , C] Z80:5cyc, R800:2cyc
+0040d9: 79
+
+[	ADD A , 0X04] Z80:8cyc, R800:2cyc
+0040da: c6 04
+
+[	JP P , NOT_EXPANDED] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+0040dc: f2 e7 40
+
+[	BIT 4 , A] Z80:10cyc, R800:2cyc
+0040df: cb 67
+
+[	JP Z , EXP_SLOT_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+0040e1: ca b4 40
+
+[	JP NEXT_SLOT] Z80:11cyc, R800:5cyc
+0040e4: c3 ea 40
+
+[NOT_EXPANDED :]
+	label address: 0x0040e7
+
+[	INC DE] Z80:7cyc, R800:1cyc
+0040e7: 13
+
+[	INC DE] Z80:7cyc, R800:1cyc
+0040e8: 13
+
+[	INC DE] Z80:7cyc, R800:1cyc
+0040e9: 13
+
+[NEXT_SLOT :]
+	label address: 0x0040ea
+
+[	INC HL] Z80:7cyc, R800:1cyc
+0040ea: 23
+
+[	INC B] Z80:5cyc, R800:1cyc
+0040eb: 04
+
+[	BIT 2 , B] Z80:10cyc, R800:2cyc
+0040ec: cb 50
+
+[	JP Z , SLOT_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+0040ee: ca b0 40
+
+[	LD A , [ P3_RAM_SLOT ]] Z80:14cyc, R800:6cyc
+0040f1: 3a 00 80
+
+[	LD H , 0XC0] Z80:8cyc, R800:2cyc
+0040f4: 26 c0
+
+[	CALL ENASLT] Z80:18cyc, R800:5cyc
+0040f6: cd 24 00
+
+[	EI] Z80:5cyc, R800:1cyc
+0040f9: fb
+
+[	RET] Z80:11cyc, R800:5cyc
+0040fa: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE GET_PAGE3_SLOT]
+	Scope path: GET_PAGE3_SLOT:
+
+[GET_PAGE3_SLOT ::]
+	global label address: 0x0040fb
+
+[	IN A , [ 0XA8 ]] Z80:12cyc, R800:10 or 9cyc
+0040fb: db a8
+
+[	AND A , 0XC0] Z80:8cyc, R800:2cyc
+0040fd: e6 c0
+
+[	RLCA] Z80:5cyc, R800:1cyc
+0040ff: 07
+
+[	RLCA] Z80:5cyc, R800:1cyc
+004100: 07
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+004101: f5
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+004102: 47
+
+[	ADD A , 0XC1] Z80:8cyc, R800:2cyc
+004103: c6 c1
+
+[	LD L , A] Z80:5cyc, R800:2cyc
+004105: 6f
+
+[	LD H , 0XFC] Z80:8cyc, R800:2cyc
+004106: 26 fc
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+004108: 7e
+
+[	AND A , 0X80] Z80:8cyc, R800:2cyc
+004109: e6 80
+
+[	JP Z , SKIP1] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00410b: ca 1a 41
+
+[	LD A , [ 0XFFFF ]] Z80:14cyc, R800:6cyc
+00410e: 3a ff ff
+
+[	CPL] Z80:5cyc, R800:1cyc
+004111: 2f
+
+[	AND A , 0XC0] Z80:8cyc, R800:2cyc
+004112: e6 c0
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004114: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004115: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004116: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004117: 0f
+
+[	OR A , 0X80] Z80:8cyc, R800:2cyc
+004118: f6 80
+
+[SKIP1 :]
+	label address: 0x00411a
+
+[	POP BC] Z80:11cyc, R800:5cyc
+00411a: c1
+
+[	OR A , B] Z80:5cyc, R800:1cyc
+00411b: b0
+
+[	RET] Z80:11cyc, R800:5cyc
+00411c: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE LOCAL_ENASLT0]
+	Scope path: LOCAL_ENASLT0:
+
+[LOCAL_ENASLT0 ::]
+	global label address: 0x00411d
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+00411d: 47
+
+[	AND A , 0X83] Z80:8cyc, R800:2cyc
+00411e: e6 83
+
+[	JP P , NOT_EXPANDED] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+004120: f2 4f 41
+
+[	XOR A , 0X80] Z80:8cyc, R800:2cyc
+004123: ee 80
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+004125: 4f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004126: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004127: 0f
+
+[	OR A , C] Z80:5cyc, R800:1cyc
+004128: b1
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+004129: 4f
+
+[	IN A , [ 0XA8 ]] Z80:12cyc, R800:10 or 9cyc
+00412a: db a8
+
+[	LD E , A] Z80:5cyc, R800:2cyc
+00412c: 5f
+
+[	AND A , 0B00111100] Z80:8cyc, R800:2cyc
+00412d: e6 3c
+
+[	OR A , C] Z80:5cyc, R800:1cyc
+00412f: b1
+
+[	DI] Z80:5cyc, R800:2cyc
+004130: f3
+
+[	OUT [ 0XA8 ] , A] Z80:12cyc, R800:10 or 9cyc
+004131: d3 a8
+
+[	AND A , 0B00111111] Z80:8cyc, R800:2cyc
+004133: e6 3f
+
+[	LD D , A] Z80:5cyc, R800:2cyc
+004135: 57
+
+[	LD A , E] Z80:5cyc, R800:2cyc
+004136: 7b
+
+[	AND A , 0B11000000] Z80:8cyc, R800:2cyc
+004137: e6 c0
+
+[	OR A , D] Z80:5cyc, R800:1cyc
+004139: b2
+
+[	LD D , A] Z80:5cyc, R800:2cyc
+00413a: 57
+
+[	LD A , [ 0XFFFF ]] Z80:14cyc, R800:6cyc
+00413b: 3a ff ff
+
+[	CPL] Z80:5cyc, R800:1cyc
+00413e: 2f
+
+[	AND A , 0XFC] Z80:8cyc, R800:2cyc
+00413f: e6 fc
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+004141: 4f
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+004142: 78
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004143: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004144: 0f
+
+[	AND A , 0B00000011] Z80:8cyc, R800:2cyc
+004145: e6 03
+
+[	OR A , C] Z80:5cyc, R800:1cyc
+004147: b1
+
+[	LD [ 0XFFFF ] , A] Z80:14cyc, R800:6cyc
+004148: 32 ff ff
+
+[	LD A , D] Z80:5cyc, R800:2cyc
+00414b: 7a
+
+[	OUT [ 0XA8 ] , A] Z80:12cyc, R800:10 or 9cyc
+00414c: d3 a8
+
+[	RET] Z80:11cyc, R800:5cyc
+00414e: c9
+
+[NOT_EXPANDED :]
+	label address: 0x00414f
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+00414f: 4f
+
+[	IN A , [ 0XA8 ]] Z80:12cyc, R800:10 or 9cyc
+004150: db a8
+
+[	AND A , 0B11111100] Z80:8cyc, R800:2cyc
+004152: e6 fc
+
+[	OR A , C] Z80:5cyc, R800:1cyc
+004154: b1
+
+[	DI] Z80:5cyc, R800:2cyc
+004155: f3
+
+[	OUT [ 0XA8 ] , A] Z80:12cyc, R800:10 or 9cyc
+004156: d3 a8
+
+[	RET] Z80:11cyc, R800:5cyc
+004158: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE PUTS]
+	Scope path: PUTS:
+
+[PUTS ::]
+	global label address: 0x004159
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+004159: 7e
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00415a: 23
+
+[	OR A , A] Z80:5cyc, R800:1cyc
+00415b: b7
+
+[	RET Z] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
+00415c: c8
+
+[	CALL CHPUT] Z80:18cyc, R800:5cyc
+00415d: cd a2 00
+
+[	JP PUTS] Z80:11cyc, R800:5cyc
+004160: c3 59 41
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE PUT_SLOT_NO]
+	Scope path: PUT_SLOT_NO:
+
+[PUT_SLOT_NO ::]
+	global label address: 0x004163
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+004163: 47
+
+[	AND A , 3] Z80:8cyc, R800:2cyc
+004164: e6 03
+
+[	ADD A , 48] Z80:8cyc, R800:2cyc
+004166: c6 30
+
+[	CALL CHPUT] Z80:18cyc, R800:5cyc
+004168: cd a2 00
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+00416b: 78
+
+[	OR A , A] Z80:5cyc, R800:1cyc
+00416c: b7
+
+[	JP P , NOT_EXPANDED] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00416d: f2 80 41
+
+[	LD A , 45] Z80:8cyc, R800:2cyc
+004170: 3e 2d
+
+[	CALL CHPUT] Z80:18cyc, R800:5cyc
+004172: cd a2 00
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+004175: 78
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004176: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004177: 0f
+
+[	AND A , 3] Z80:8cyc, R800:2cyc
+004178: e6 03
+
+[	ADD A , 48] Z80:8cyc, R800:2cyc
+00417a: c6 30
+
+[	CALL CHPUT] Z80:18cyc, R800:5cyc
+00417c: cd a2 00
+
+[	RET] Z80:11cyc, R800:5cyc
+00417f: c9
+
+[NOT_EXPANDED :]
+	label address: 0x004180
+
+[	LD HL , MESSAGE_PADDING] Z80:11cyc, R800:3cyc
+004180: 21 ed 41
+
+[	CALL PUTS] Z80:18cyc, R800:5cyc
+004183: cd 59 41
+
+[	RET] Z80:11cyc, R800:5cyc
+004186: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE DISPLAY_SLOT_INFO]
+	Scope path: DISPLAY_SLOT_INFO:
+
+[DISPLAY_SLOT_INFO ::]
+	global label address: 0x004187
+
+[	CALL PUTS] Z80:18cyc, R800:5cyc
+004187: cd 59 41
+
+[	LD HL , EXPTBL] Z80:11cyc, R800:3cyc
+00418a: 21 c1 fc
+
+[	LD DE , SLOT_INFO] Z80:11cyc, R800:3cyc
+00418d: 11 05 80
+
+[	LD B , 0] Z80:8cyc, R800:2cyc
+004190: 06 00
+
+[SLOT_LOOP :]
+	label address: 0x004192
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+004192: 7e
+
+[	INC HL] Z80:7cyc, R800:1cyc
+004193: 23
+
+[	PUSH HL] Z80:12cyc, R800:6cyc
+004194: e5
+
+[	AND A , 0X80] Z80:8cyc, R800:2cyc
+004195: e6 80
+
+[	OR A , B] Z80:5cyc, R800:1cyc
+004197: b0
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+004198: 47
+
+[EXP_SLOT_LOOP :]
+	label address: 0x004199
+
+[	LD A , [ DE ]] Z80:8cyc, R800:4cyc
+004199: 1a
+
+[	INC DE] Z80:7cyc, R800:1cyc
+00419a: 13
+
+[	OR A , A] Z80:5cyc, R800:1cyc
+00419b: b7
+
+[	JP Z , SKIP1] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00419c: ca bf 41
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+00419f: 4f
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+0041a0: 78
+
+[	PUSH DE] Z80:12cyc, R800:6cyc
+0041a1: d5
+
+[	PUSH BC] Z80:12cyc, R800:6cyc
+0041a2: c5
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+0041a3: f5
+
+[	LD HL , MESSAGE_SLOT] Z80:11cyc, R800:3cyc
+0041a4: 21 e5 41
+
+[	CALL PUTS] Z80:18cyc, R800:5cyc
+0041a7: cd 59 41
+
+[	POP AF] Z80:11cyc, R800:5cyc
+0041aa: f1
+
+[	CALL PUT_SLOT_NO] Z80:18cyc, R800:5cyc
+0041ab: cd 63 41
+
+[	POP BC] Z80:11cyc, R800:5cyc
+0041ae: c1
+
+[	PUSH BC] Z80:12cyc, R800:6cyc
+0041af: c5
+
+[	LD HL , MESSAGE_RAM] Z80:11cyc, R800:3cyc
+0041b0: 21 f0 41
+
+[	DEC C] Z80:5cyc, R800:1cyc
+0041b3: 0d
+
+[	JP Z , SKIP2] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+0041b4: ca ba 41
+
+[	LD HL , MESSAGE_NON_RAM] Z80:11cyc, R800:3cyc
+0041b7: 21 f8 41
+
+[SKIP2 :]
+	label address: 0x0041ba
+
+[	CALL PUTS] Z80:18cyc, R800:5cyc
+0041ba: cd 59 41
+
+[	POP BC] Z80:11cyc, R800:5cyc
+0041bd: c1
+
+[	POP DE] Z80:11cyc, R800:5cyc
+0041be: d1
+
+[SKIP1 :]
+	label address: 0x0041bf
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+0041bf: 78
+
+[	ADD A , 0X04] Z80:8cyc, R800:2cyc
+0041c0: c6 04
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+0041c2: 47
+
+[	BIT 4 , A] Z80:10cyc, R800:2cyc
+0041c3: cb 67
+
+[	JP Z , EXP_SLOT_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+0041c5: ca 99 41
+
+[	POP HL] Z80:11cyc, R800:5cyc
+0041c8: e1
+
+[	AND A , 3] Z80:8cyc, R800:2cyc
+0041c9: e6 03
+
+[	INC A] Z80:5cyc, R800:1cyc
+0041cb: 3c
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+0041cc: 47
+
+[	BIT 2 , A] Z80:10cyc, R800:2cyc
+0041cd: cb 57
+
+[	JP Z , SLOT_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+0041cf: ca 92 41
+
+[	RET] Z80:11cyc, R800:5cyc
+0041d2: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[MESSAGE_PAGE0 :]
+	label address: 0x0041d3
+
+[	DS "PAGE0:"]
+0041d3: 50 41 47 45 30 3a
+
+[	DB 0X0D , 0X0A , 0]
+0041d9: 0d 0a 00
+
+[MESSAGE_PAGE3 :]
+	label address: 0x0041dc
+
+[	DS "PAGE3:"]
+0041dc: 50 41 47 45 33 3a
+
+[	DB 0X0D , 0X0A , 0]
+0041e2: 0d 0a 00
+
+[MESSAGE_SLOT :]
+	label address: 0x0041e5
+
+[	DS "  SLOT#"]
+0041e5: 20 20 53 4c 4f 54 23
+
+[	DB 0]
+0041ec: 00
+
+[MESSAGE_PADDING :]
+	label address: 0x0041ed
+
+[	DS "  "]
+0041ed: 20 20
+
+[	DB 0]
+0041ef: 00
+
+[MESSAGE_RAM :]
+	label address: 0x0041f0
+
+[	DS ": RAM"]
+0041f0: 3a 20 52 41 4d
+
+[	DB 0X0D , 0X0A , 0]
+0041f5: 0d 0a 00
+
+[MESSAGE_NON_RAM :]
+	label address: 0x0041f8
+
+[	DS ": Non-RAM"]
+0041f8: 3a 20 4e 6f 6e 2d 52 41
+004200: 4d
+
+[	DB 0X0D , 0X0A , 0]
+004201: 0d 0a 00
+
+[MESSAGE_PRESS_ENTER_KEY :]
+	label address: 0x004204
+
+[	DS "Press enter key!!"]
+004204: 50 72 65 73 73 20 65 6e
+00420c: 74 65 72 20 6b 65 79 21
+004214: 21
+
+[	DB 0X0D , 0X0A , 0]
+004215: 0d 0a 00
+
+[ALIGN 8192]
+	Padding: 7656byte(s)
+
+<< label >>
+CHECK_PAGE0 16472 ( 0x4058 )
+CHECK_PAGE0:CHECK_RAM_EXIT 16515 ( 0x4083 )
+CHECK_PAGE0:CHECK_RAM_LOOP 16496 ( 0x4070 )
+CHECK_PAGE0:EXP_SLOT_LOOP 16485 ( 0x4065 )
+CHECK_PAGE0:NEXT_SLOT 16536 ( 0x4098 )
+CHECK_PAGE0:NOT_EXPANDED 16533 ( 0x4095 )
+CHECK_PAGE0:SLOT_LOOP 16481 ( 0x4061 )
+CHECK_PAGE3 16551 ( 0x40a7 )
+CHECK_PAGE3:CHECK_RAM_EXIT 16597 ( 0x40d5 )
+CHECK_PAGE3:CHECK_RAM_LOOP 16577 ( 0x40c1 )
+CHECK_PAGE3:EXP_SLOT_LOOP 16564 ( 0x40b4 )
+CHECK_PAGE3:NEXT_SLOT 16618 ( 0x40ea )
+CHECK_PAGE3:NOT_EXPANDED 16615 ( 0x40e7 )
+CHECK_PAGE3:SLOT_LOOP 16560 ( 0x40b0 )
+CHGET 159 ( 0x9f )
+CHPUT 162 ( 0xa2 )
+CLEAR_SLOT_INFO 16458 ( 0x404a )
+DISPLAY_SLOT_INFO 16775 ( 0x4187 )
+DISPLAY_SLOT_INFO:EXP_SLOT_LOOP 16793 ( 0x4199 )
+DISPLAY_SLOT_INFO:SKIP1 16831 ( 0x41bf )
+DISPLAY_SLOT_INFO:SKIP2 16826 ( 0x41ba )
+DISPLAY_SLOT_INFO:SLOT_LOOP 16786 ( 0x4192 )
+ENASLT 36 ( 0x24 )
+ENTRY_POINT 16400 ( 0x4010 )
+EXPTBL 64705 ( 0xfcc1 )
+EXPTBL_COPY 32769 ( 0x8001 )
+GET_PAGE3_SLOT 16635 ( 0x40fb )
+GET_PAGE3_SLOT:SKIP1 16666 ( 0x411a )
+HIMEM 64586 ( 0xfc4a )
+LOCAL_ENASLT0 16669 ( 0x411d )
+LOCAL_ENASLT0:NOT_EXPANDED 16719 ( 0x414f )
+MAIN_LOOP 16421 ( 0x4025 )
+MESSAGE_NON_RAM 16888 ( 0x41f8 )
+MESSAGE_PADDING 16877 ( 0x41ed )
+MESSAGE_PAGE0 16851 ( 0x41d3 )
+MESSAGE_PAGE3 16860 ( 0x41dc )
+MESSAGE_PRESS_ENTER_KEY 16900 ( 0x4204 )
+MESSAGE_RAM 16880 ( 0x41f0 )
+MESSAGE_SLOT 16869 ( 0x41e5 )
+P3_RAM_SLOT 32768 ( 0x8000 )
+PRESS_ENTER_KEY 16448 ( 0x4040 )
+PUTS 16729 ( 0x4159 )
+PUT_SLOT_NO 16739 ( 0x4163 )
+PUT_SLOT_NO:NOT_EXPANDED 16768 ( 0x4180 )
+ROM_HEADER_DEVICE 16390 ( 0x4006 )
+ROM_HEADER_ID 16384 ( 0x4000 )
+ROM_HEADER_INIT 16386 ( 0x4002 )
+ROM_HEADER_RESERVED 16394 ( 0x400a )
+ROM_HEADER_STATEMENT 16388 ( 0x4004 )
+ROM_HEADER_TEXT 16392 ( 0x4008 )
+SLOT_INFO 32773 ( 0x8005 )
