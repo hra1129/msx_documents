@@ -1,0 +1,14 @@
+ARG equ 0c038h
+CLR equ 0c037h
+CMR equ 0c039h
+DX equ 0c02fh
+DY equ 0c031h
+END_ADDRESS equ 0c03ah
+EXEC_HMMV equ 0c004h
+NX equ 0c033h
+NY equ 0c035h
+START_ADDRESS equ 0c000h
+VDP_IO_PORT1 equ 099h
+VDP_IO_PORT2 equ 09ah
+VDP_IO_PORT3 equ 09bh
+WAIT_CE_FLAG equ 0c01dh

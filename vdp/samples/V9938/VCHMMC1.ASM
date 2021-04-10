@@ -56,6 +56,7 @@ wait_tr_flag:
 
 exit_hmmc_loop:
 		; R#15 = 0 (S#0 Çì«ÇﬁÇΩÇﬂÇÃê›íËÇ…ñﬂÇ∑)
+		ld		c, VDP_IO_PORT1
 		xor		a, a
 		out		[c], a
 		ld		a, 15 | 0x80
