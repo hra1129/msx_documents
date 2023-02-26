@@ -85,22 +85,24 @@ MSX-BASIC の処理速度検証
 	行170 809Dh
 	行180 80AFh
 
+	変数 I の保持領域は、80BCh～80BFh。
+
 	差が出る IF文は、行130 と 行170 に存在する。
 	BASIC中間コードの "IF" に対応するコードは、8Bh である。
 
 	行130 の内容
 		[次行のアドレス 805Dh][行番号130 = 0082h][IF(8Bh)][' '(20h)]['I'(49h)]['='(EFh)][1234(1Ch, 04D2h)][' '(20h)][THEN(DAh)] ...
-		                                                            ↑
-		                                                            8051h
+		                                                            ↑                  ↑
+		                                                            8051h               8053h
 	行170 の内容
 		[次行のアドレス 80AFh][行番号170 = 00AAh][IF(8Bh)][' '(20h)][1234(1Ch, 04D2h)]['='(EFh)]['I'(49h)][' '(20h)][THEN(DAh)] ...
-		                                                            ↑
-		                                                            80A3h
+		                                                            ↑                          ↑
+		                                                            80A3h                       80A7h
 
 	IF文の中の条件式の先頭アドレスは、行130は 8051h、行170は 80A3h だとわかる。
 	OpenMSX のデバッガで、これらのアドレスがリードされたときにブレイクする仕掛けをセットして動きを見てみる。
 
-4. 行130の挙動
+4. 行130の I を読むときの挙動
 	8051h の Memory read にブレイクポイントをセットすると、466Bh で停止する。
 
 		466Ah: LD   A, (HL)		; A ← 'I'(49h)
@@ -124,7 +126,7 @@ MSX-BASIC の処理速度検証
 		6262h: LD   B, 0
 		6264h: ADD  HL, BC
 		6265h: ADD  HL, BC			; HL = 80C2h
-		6266h: LD   A, 0E5h			; 一見無意味だが、別の場所から 6267h へ飛んでくる。E5 = PUSH HL。
+		6266h: LD   A, 0E5h			; 一見無意味だが、別の場所から 6267h へ飛んでくるケースがある。E5 = PUSH HL。
 		6268h: LD   A, 088h
 		626Ah: SUB  L
 		626Bh: LD   L, A			; HL = 80C6h
@@ -141,7 +143,74 @@ MSX-BASIC の処理速度検証
 
 		4DC7h: RST  10h				; CHRGTR → A = 'I'(49h), HL = 8051h
 
-4. 行170の挙動
+5. 行130の 1234 を読むときの挙動
+	8053h の Memory read にブレイクポイントをセットすると、466Bh で停止する。
+
+		466Ah: LD   A, (HL)		; A ← 1Ch
+		466Bh: CP   3Ah			; Cy = 1
+		466Dh: RET  NC			; return しない
+		466Eh: CP   20h			; Cy = 1, Z = 0
+		4670h: JR   Z, 4666h	; スルー
+		4672h: JR   NC, 46E0h	; スルー
+		4674h: OR   A
+		4675h: RET  Z			; スルー
+		4676h: CP   0Bh
+		4678h: JR   C, 46DBh	; スルー
+		467Ah: CP   1Eh
+		467Ch: JR   NZ,4683h	; ジャンプ
+
+		4683h: CP   10h
+		4685h: JR   Z, 46BBh	; スルー
+		4687h: PUSH AF			; 1Ch をスタックへ
+		4688h: INC  HL			; HL = 8054h
+		4689h: LD   (F668h), A	; [CONSAV] = 1234
+		468Ch: SUB  1Ch
+		468Eh: JR   NC, 46C0h	; ジャンプ
+
+		46C0h: INC  A			; A = 1
+		46C1h: RLCA				; A = 2
+		46C2h: LD   (F669h),A	; CONTYP = 2 : 2byte整数
+		46C5h: PUSH DE			; DE = 02C0h
+		46C6h: PUSH BC			; BC = 0043h
+		46C7h: LD   DE, 0F66Ah	; CONLO 保存した定数の値 : 10 27 00 00 00 00 00 00
+		46CAh: EX   DE, HL
+		46CBh: LD   B, A		; B = 2
+		46CCh: CALL 2EF7h		; CONLO へ数値をコピーするルーチン
+
+		2EF7h: LD   A, (DE)		; DE = 8054h: A = D2h (中間コード 2byte整数)
+		2EF8h: LD   (HL), A		; (CONLO + 0) = D2h
+		2EF9h: INC  DE
+		2EFAh: INC  HL
+		2EFBh: DJNZ 2EF7h		; B = 1 になってジャンプ
+
+		2EF7h: LD   A, (DE)		; DE = 8055h: A = 04h (中間コード 2byte整数)
+		2EF8h: LD   (HL), A		; (CONLO + 1) = 04h
+		2EF9h: INC  DE
+		2EFAh: INC  HL
+		2EFBh: DJNZ 2EF7h		; B = 0 になってスルー
+		2EFDh: RET
+
+		46CFh: EX   DE, HL
+		46D0h: POP  BC			; BC = 0043h
+		46D1h: POP  DE			; DE = 02C0h
+		46D2h: LD   (0F666h), HL; (CONTXT) = 8056h
+		46D5h: POP  AF			; A = 1Ch
+		46D6h: LD   HL, 46E6h
+		46D9h: OR   A
+		46DAh: RET
+
+		4CFBh: JR   4CE6h
+
+		4CE6h: SUB  0EEh		; Cy = 1
+		4CE8h: JR   C, 4D08h	; ジャンプ
+
+		4D08h: LD   A, B		; A = 0
+		4D09h: CP   64h			; Cy = 1
+		4D0Bh: RET  NC			; スルー
+		4D0Ch: PUSH BC
+		4D0Dh: PUSH DE
+
+6. 行170の 1234 を読むときの挙動
 	80A3h の Memory read にブレイクポイントをセットすると、466Bh で停止する。
 
 		466Ah: LD   A, (HL)		; A ← 1Ch
