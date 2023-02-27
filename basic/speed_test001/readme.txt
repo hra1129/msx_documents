@@ -143,17 +143,68 @@ MSX-BASIC の処理速度検証
 		4DC7h: RST  10h				; CHRGTR → A = 'I'(49h), HL = 8054h
 		4DC8h: JP   Z, 406Ah		; スルー
 		4DCBh: JP   C, 3299h		; スルー
-		4DCEh: CALL 64A8h
+		4DCEh: CALL 64A8h			; isalpha( A ) : アルファベットなら Cy = 0
 
-		64A7h: LD   A, (HL)			; HL = 8055h, A = 'I'
-		64A8h: CP   'A'
+		64A8h: CP   'A'				; HL = 8055h, A = 'I'
 		64AAh: RET  C
 		64ABh: CP   'Z'+1
 		64ADh: CCF
 		64AEh: RET					; Cy = 0
 
-		4DD1h: 
+		4DD1h: JP   NC, 4E9Bh		; アルファベットなので Cy = 0, ジャンプ
 
+		4E9Bh: CALL 5EA4h
+
+		5EA4h: XOR  A
+		5EA5h: LD   (0F662h), A		; DIMFLG
+		5EA8h: LD   C, (HL)			; HL = 8055h, C = 'I' (49h)
+		5EA9h: CALL 0FFA2h			; H.PTRG : ただし ret なので何もしないで戻ってくる
+		5EACh: CALL 064A7h			; isalpha( peek(HL) ) : アルファベットなら Cy = 0
+
+		64A7h: LD   A, (HL)			; HL = 8055h: A = 'I' (49h)
+		64A8h: CP   'A'				; HL = 8055h, A = 'I'
+		64AAh: RET  C
+		64ABh: CP   'Z'+1
+		64ADh: CCF
+		64AEh: RET					; Cy = 0
+
+		5EAFh: JP   C, 4055h		; Cy = 0 なので、スルー
+		5EB2h: XOR  A
+		5EB3h: LD   B, A
+		5EB4h: RST  10h				; CHRGTR
+
+		0010h: JP   2686h
+		2686h: JP   4666h
+		4666h: CALL 0FF48h			; H.CHRG : ただし ret なので何もしないで戻ってくる
+		4669h: INC  HL				; HL = 8056h
+		466Ah: LD   A, (HL)			; 変数名の 2文字目評価？ A = 0EFh ('='の中間コード)
+		466Bh: CP   3Ah				; 数字かな？
+		466Dh: RET  NC				; 数字じゃ無いから戻る
+
+		5EB5h: JR   C, 5EBCh		; Cy = 0 なのでスルー
+		5EB7h: CALL 64A8h			; isalpha( A )
+
+		64A8h: CP   'A'				; A = 0EFh ('='の中間コード)
+		64AAh: RET  C
+		64ABh: CP   'Z'+1
+		64ADh: CCF
+		64AEh: RET					; Cy = 1
+
+		5EBAh: JR   C, 5EC5h		; Cy = 1 なのでジャンプ
+
+		5EC5h: CP   '&'				; CP 26h → Cy = 0
+		5EC7h: JR   NC, 5EE0h		; Cy = 0 なのでジャンプ
+
+		5EE0h: LD   A, C			; A = 'I'
+		5EE1h: AND  7Fh
+		5EE3h: LD   E, A
+		5EE4h: LD   D, 0
+		5EE6h: PUSH HL
+		5EE7h: LD   HL, 0F689h		; TEMPST(F67AH, 3 * NUMTMP)
+		5EEAh: ADD  HL, DE
+
+
+===================== ここから↓、I=0 を追加前のアドレスで、アドレス値が少しズレてる ===
 5. 行130の 1234 を読むときの挙動
 	8057h の Memory read にブレイクポイントをセットすると、466Bh で停止する。
 
