@@ -18,7 +18,7 @@ MSX-BASIC の処理速度検証
 	念のために確認しておく。FS-A1GTのBIOSを使って検証する。
 
 	【検証コード】TEST1.BAS (ASCIIセーブ)
-		100 DEFINTA-Z:COLOR15,4,7:SCREEN1
+		100 DEFINTA-Z:COLOR15,4,7:SCREEN1:I=0
 		110 REM ------------------------------
 		120 TIME=0:FORI=0TO10000
 		130 IF I=1234 THEN J=0
