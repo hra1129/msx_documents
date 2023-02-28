@@ -60,18 +60,19 @@ MSX-BASIC の処理速度検証
 
 		    | +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F
 		----+------------------------------------------------
-		0000| 00 19 80 64 00 AC 41 F2 5A 3A BD 0F 0F 2C 15 2C
-		0010| 18 3A C5 12 3A 49 EF 11 00 3E 80 6E 00 8F 20 2D
-		0020| 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D
-		0030| 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 00 4F 80
-		0040| 78 00 CB EF 11 3A 82 49 EF 11 D9 1C 10 27 00 61
-		0050| 80 82 00 8B 20 49 EF 1C D2 04 20 DA 20 4A EF 11
-		0060| 00 6B 80 8C 00 83 3A 91 20 CB 00 90 80 96 00 8F
-		0070| 20 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D
-		0080| 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 00
-		0090| A1 80 A0 00 CB EF 11 3A 82 49 EF 11 D9 1C 10 27
-		00A0| 00 B3 80 AA 00 8B 20 1C D2 04 EF 49 20 DA 20 4A
-		00B0| EF 11 00 BD 80 B4 00 83 3A 91 20 CB 00 00 00
+		8000| 00 19 80 64 00 AC 41 F2 5A 3A BD 0F 0F 2C 15 2C
+		8010| 18 3A C5 12 3A 49 EF 11 00 3E 80 6E 00 8F 20 2D
+		8020| 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D
+		8030| 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 00 4F 80
+		8040| 78 00 CB EF 11 3A 82 49 EF 11 D9 1C 10 27 00 61
+		8050| 80 82 00 8B 20 49 EF 1C D2 04 20 DA 20 4A EF 11
+		8060| 00 6B 80 8C 00 83 3A 91 20 CB 00 90 80 96 00 8F
+		8070| 20 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D
+		8080| 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 00
+		8090| A1 80 A0 00 CB EF 11 3A 82 49 EF 11 D9 1C 10 27
+		80A0| 00 B3 80 AA 00 8B 20 1C D2 04 EF 49 20 DA 20 4A
+		80B0| EF 11 00 BD 80 B4 00 83 3A 91 20 CB 00 00 00 02
+		80C0| 49 00 00 00
 
 	各行に対応する先頭アドレスは、下記のようになる。
 	行100 8001h
@@ -84,7 +85,10 @@ MSX-BASIC の処理速度検証
 	行170 80A1h
 	行180 80B3h
 
-	変数 I の保持領域は、80C0h～80C3h。
+	変数 I の保持領域は、80BFh～80C3h。02 49 00 00 00
+	[02h] 2byte変数を示す値
+	[49h][00h] 変数名 'I' ' '
+	[0000h] その変数が保持する値
 
 	差が出る IF文は、行130 と 行170 に存在する。
 	BASIC中間コードの "IF" に対応するコードは、8Bh である。
@@ -200,9 +204,67 @@ MSX-BASIC の処理速度検証
 		5EE3h: LD   E, A
 		5EE4h: LD   D, 0
 		5EE6h: PUSH HL
-		5EE7h: LD   HL, 0F689h		; TEMPST(F67AH, 3 * NUMTMP)
-		5EEAh: ADD  HL, DE
+		5EE7h: LD   HL, 0F689h		; TEMPST(F67AH, 3 * NUMTMP) 00 00 00 ... が詰まってる
+		5EEAh: ADD  HL, DE			; HL = F6D2h : 02 02 02 ... が詰まってる
+		5EEBh: LD   D, (HL)			; D = 2
+		5EECh: POP  HL				; HL = 8056h (BASICコードのアドレス) '='(0EFh) の位置
+		5EEDh: DEC  HL				; HL = 8055h 'I'
+		5EEEh: LD   A,D             ; A = 2
+		5EEFh: LD   (0F663h), A		; VALTYP
+		5EF2h: RST  10h				; CHRGTR
 
+		0010h: JP   2686h
+		2686h: JP   4666h
+		4666h: CALL 0FF48h			; H.CHRG : ただし ret なので何もしないで戻ってくる
+		4669h: INC  HL				; HL = 8056h
+		466Ah: LD   A, (HL)			; 変数名の 2文字目評価？ A = 0EFh ('='の中間コード)
+		466Bh: CP   3Ah				; 数字かな？
+		466Dh: RET  NC				; 数字じゃ無いから戻る
+
+		5EF3h: LD   A, (0F6A5h)		; A = (SUBFLG) : 0
+		5EF6h: DEC  A				; A = 255
+		5EF7h: JP   Z, 5FE8h		; スルー
+		5EFAh: JP   P, 5F08h		; スルー
+		5EFDh: LD   A, (HL)			; A = '=' (0EFh)
+		5EFEh: SUB  28h				; A = 0C7h
+		5F00h: JP   Z, 5FBAh		; スルー
+		5F03h: SUB  33h				; A = 094h
+		5F05h: JP   Z, 5FBAh		; スルー
+		5F08h: XOR  A				; A = 0
+		5F09h: LD   (0F6A5), A		; (SUBFLG) = A : 0
+		5F0Ch: PUSH HL				; HL = 8056h
+		5F0Dh: LD   A, (0F7B7h)		; A = (NOFUNS)
+		5F10h: OR   A
+		5F11h: LD   (0F7B4), A		; (PRMFLG) = A
+		5F14h: JR   Z, 5F52h		; ジャンプ
+
+		5F52h: LD   HL, (0F6C4h)	; HL = (ARYTAB) : 80C4h : 配列テーブルの開始番地
+		5F55h: LD   (0F7B5h), HL	; (ARYTA2) = HL : 80C4h : サーチの終点
+		5F58h: LD   HL, (0F6C2h)	; HL = (VARTAB) : 80BFh : 単純変数の開始番地
+		5F5Bh: JR   5F3Ah
+
+		; 単純変数の存在確認？
+		5F3Ah: EX   DE, HL
+		5F3Bh: LD   A, (0F7B5h)		; A = (ARYTA2下位)
+		5F3Eh: CP   E
+		5F3Fh: JP   NZ, 5F23h		; ジャンプ
+
+		; 変数サーチ？ BC に 2byte の変数名、VALTYP に変数の型番号(2は2byte整数変数)
+		5F23h: LD   A, (DE)			; DE = 80BFh: A = 2
+		5F24h: LD   L, A
+		5F25h: INC  DE
+		5F26h: LD   A, (DE)			; DE = 80C0h: A = 'I' (49h) 変数名1文字目
+		5F27h: INC  DE
+		5F28h: CP   C				; C = 'I' (49h) : 一致
+		5F29h: JR   NZ, 5F36h		; スルー
+		5F2Bh: LD   A, (0F663h)		; VALTYP
+		5F2Eh: CP   L				; 変数の型
+		5F2Fh: JR   NZ, 5F36h		; スルー
+		5F31h: LD   A, (DE)			; DE = 80C1h: A = 00h 変数名2文字目
+		5F32h: CP   B				; B = 00h : 一致。1文字変数なので 2文字目は 00h
+		5F33h: JP   Z, 5FA4h		; ジャンプ
+
+		5FA4h: INC  DE				; DE = 80C2h: 変数の値が格納されてるアドレス
 
 ===================== ここから↓、I=0 を追加前のアドレスで、アドレス値が少しズレてる ===
 5. 行130の 1234 を読むときの挙動
