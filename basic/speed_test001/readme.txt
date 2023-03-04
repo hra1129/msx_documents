@@ -265,6 +265,26 @@ MSX-BASIC の処理速度検証
 		5F33h: JP   Z, 5FA4h		; ジャンプ
 
 		5FA4h: INC  DE				; DE = 80C2h: 変数の値が格納されてるアドレス
+		5FA5h: POP  HL				; HL = 8056h: '=' (0EFh) のアドレス
+		5FA6h: RET
+
+		4E9Eh: PUSH HL				; 8056h ('=')
+		4E9Fh: EX   DE, HL			; DE = 8056h
+		4EA0h: LD   (0F7F8h), HL	; 0F7F8h: DAC 3byte目
+		4EA3h: RST  28H				; GETYPR: DACに格納されている値の型をフラグに反映
+									; Zf = 0, Cf = 1, Pf = 1, Sf = 1 : Sf = 1 から整数型
+		4EA4h: CALL NZ, 2F08h		; スルー: 文字列型の場合だけ特別処理が必要
+		4EA7h: POP  HL				; 8056h
+		4EA8h: RET
+
+		4C73h: LD   (0F6BCh), HL	; TEMP2 = 8056h : (145行目の場所へ戻ってきた)
+		4C76h: LD   HL, (0F6BCh)	; HL = 8056h
+		4C79h: POP  BC				; 0049h (変数名 I)
+		4C7Ah: LD   A, (HL)			; A = '=' (0EFh)
+		4C7Bh: LD   (0F69Dh), HL	; TEMP3 = 8056h
+		4C7Eh: CP   0EEh
+		4C80h: RET  C				; スルー
+		4C81h: CP   0F1h
 
 ===================== ここから↓、I=0 を追加前のアドレスで、アドレス値が少しズレてる ===
 5. 行130の 1234 を読むときの挙動
