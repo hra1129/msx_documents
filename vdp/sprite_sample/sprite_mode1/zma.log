@@ -1,0 +1,1243 @@
+Z80 Macro Assembler ZMA v1.0.15
+=====================================================
+Programmed by t.hara
+
+<< code >>
+[	INCLUDE ".//msx_constant.asm"] begin
+[	INCLUDE ".//msx_constant.asm"] end
+
+[	DB 0XFE]
+000000: fe
+
+[	DW START_ADDRESS]
+000001: 00 a0
+
+[	DW END_ADDRESS]
+000003: bb a2
+
+[	DW START_ADDRESS]
+000005: 00 a0
+
+[	ORG 0XA000]
+	code address: 0x00a000
+
+[START_ADDRESS ::]
+	global label address: 0x00a000
+
+[	LD A , 1] Z80:8cyc, R800:2cyc
+00a000: 3e 01
+
+[	CALL CHGMOD] Z80:18cyc, R800:5cyc
+00a002: cd 5f 00
+
+[	LD A , [ RG1SAV ]] Z80:14cyc, R800:6cyc
+00a005: 3a e0 f3
+
+[	AND A , 0XFC] Z80:8cyc, R800:2cyc
+00a008: e6 fc
+
+[	OR A , 0X02] Z80:8cyc, R800:2cyc
+00a00a: f6 02
+
+[	LD C , 1] Z80:8cyc, R800:2cyc
+00a00c: 0e 01
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+00a00e: 47
+
+[	CALL WRTVDP] Z80:18cyc, R800:5cyc
+00a00f: cd 47 00
+
+[	CALL SPDRV_INITIALIZE] Z80:18cyc, R800:5cyc
+00a012: cd f2 a0
+
+[	LD HL , SPRITE_PATTERN] Z80:11cyc, R800:3cyc
+00a015: 21 98 a1
+
+[	LD DE , 0X3800] Z80:11cyc, R800:3cyc
+00a018: 11 00 38
+
+[	LD BC , 32] Z80:11cyc, R800:3cyc
+00a01b: 01 20 00
+
+[	CALL LDIRVM] Z80:18cyc, R800:5cyc
+00a01e: cd 5c 00
+
+[	LD A , [ JIFFY ]] Z80:14cyc, R800:6cyc
+00a021: 3a 9e fc
+
+[	LD HL , RANDOM_SEED] Z80:11cyc, R800:3cyc
+00a024: 21 94 a1
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a027: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a028: 23
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a029: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a02a: 23
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a02b: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a02c: 23
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a02d: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a02e: 23
+
+[	LD B , 32] Z80:8cyc, R800:2cyc
+00a02f: 06 20
+
+[	LD HL , SPRITE_POS] Z80:11cyc, R800:3cyc
+00a031: 21 b9 a1
+
+[	LD DE , SPRITE_ATTRIBUTE] Z80:11cyc, R800:3cyc
+00a034: 11 3b a2
+
+[	LD A , 15] Z80:8cyc, R800:2cyc
+00a037: 3e 0f
+
+[	EX AF , AF'] Z80:5cyc, R800:1cyc
+00a039: 08
+
+[BALL_SETUP :]
+	label address: 0x00a03a
+
+[	PUSH BC] Z80:12cyc, R800:6cyc
+00a03a: c5
+
+[	CALL BALL_INITIALIZE] Z80:18cyc, R800:5cyc
+00a03b: cd 5c a0
+
+[	POP BC] Z80:11cyc, R800:5cyc
+00a03e: c1
+
+[	DJNZ BALL_SETUP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a03f: 10 f9
+
+[LOOP :]
+	label address: 0x00a041
+
+[	LD A , [ JIFFY ]] Z80:14cyc, R800:6cyc
+00a041: 3a 9e fc
+
+[	LD [ JIFFY_BACK ] , A] Z80:14cyc, R800:6cyc
+00a044: 32 b8 a1
+
+[	CALL SPDRV_FLIP] Z80:18cyc, R800:5cyc
+00a047: cd 13 a1
+
+[	CALL BALL_MOVE] Z80:18cyc, R800:5cyc
+00a04a: cd af a0
+
+[	CALL SPDRV_UPDATE] Z80:18cyc, R800:5cyc
+00a04d: cd 26 a1
+
+[	LD HL , JIFFY] Z80:11cyc, R800:3cyc
+00a050: 21 9e fc
+
+[	LD A , [ JIFFY_BACK ]] Z80:14cyc, R800:6cyc
+00a053: 3a b8 a1
+
+[VSYNC_WAIT :]
+	label address: 0x00a056
+
+[	CP A , [ HL ]] Z80:8cyc, R800:4cyc
+00a056: be
+
+[	JR Z , VSYNC_WAIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a057: 28 fd
+
+[	JP LOOP] Z80:11cyc, R800:5cyc
+00a059: c3 41 a0
+
+[	SCOPE BALL_INITIALIZE]
+	Scope path: BALL_INITIALIZE:
+
+[BALL_INITIALIZE ::]
+	global label address: 0x00a05c
+
+[	PUSH DE] Z80:12cyc, R800:6cyc
+00a05c: d5
+
+[	PUSH HL] Z80:12cyc, R800:6cyc
+00a05d: e5
+
+[	CALL RANDOM] Z80:18cyc, R800:5cyc
+00a05e: cd 71 a1
+
+[	POP HL] Z80:11cyc, R800:5cyc
+00a061: e1
+
+[	CP A , 256 - 16] Z80:8cyc, R800:2cyc
+00a062: fe f0
+
+[	JR C , SKIP_ADJUST_X] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a064: 38 02
+
+[	SUB A , 256 - 16] Z80:8cyc, R800:2cyc
+00a066: d6 f0
+
+[SKIP_ADJUST_X :]
+	label address: 0x00a068
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a068: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a069: 23
+
+[	PUSH HL] Z80:12cyc, R800:6cyc
+00a06a: e5
+
+[	CALL RANDOM] Z80:18cyc, R800:5cyc
+00a06b: cd 71 a1
+
+[	POP HL] Z80:11cyc, R800:5cyc
+00a06e: e1
+
+[	CP A , 192 - 16] Z80:8cyc, R800:2cyc
+00a06f: fe b0
+
+[	JR C , SKIP_ADJUST_Y] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a071: 38 02
+
+[	SUB A , 192 - 16] Z80:8cyc, R800:2cyc
+00a073: d6 b0
+
+[SKIP_ADJUST_Y :]
+	label address: 0x00a075
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a075: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a076: 23
+
+[	PUSH HL] Z80:12cyc, R800:6cyc
+00a077: e5
+
+[	CALL RANDOM] Z80:18cyc, R800:5cyc
+00a078: cd 71 a1
+
+[	POP HL] Z80:11cyc, R800:5cyc
+00a07b: e1
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+00a07c: 47
+
+[	AND A , 1] Z80:8cyc, R800:2cyc
+00a07d: e6 01
+
+[	ADD A , A] Z80:5cyc, R800:1cyc
+00a07f: 87
+
+[	DEC A] Z80:5cyc, R800:1cyc
+00a080: 3d
+
+[	BIT 4 , B] Z80:10cyc, R800:2cyc
+00a081: cb 60
+
+[	JR Z , SKIP_DOUBLE_VX] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a083: 28 01
+
+[	ADD A , A] Z80:5cyc, R800:1cyc
+00a085: 87
+
+[SKIP_DOUBLE_VX :]
+	label address: 0x00a086
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a086: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a087: 23
+
+[	PUSH HL] Z80:12cyc, R800:6cyc
+00a088: e5
+
+[	CALL RANDOM] Z80:18cyc, R800:5cyc
+00a089: cd 71 a1
+
+[	POP HL] Z80:11cyc, R800:5cyc
+00a08c: e1
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+00a08d: 47
+
+[	AND A , 1] Z80:8cyc, R800:2cyc
+00a08e: e6 01
+
+[	ADD A , A] Z80:5cyc, R800:1cyc
+00a090: 87
+
+[	DEC A] Z80:5cyc, R800:1cyc
+00a091: 3d
+
+[	BIT 4 , B] Z80:10cyc, R800:2cyc
+00a092: cb 60
+
+[	JR Z , SKIP_DOUBLE_VY] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a094: 28 01
+
+[	ADD A , A] Z80:5cyc, R800:1cyc
+00a096: 87
+
+[SKIP_DOUBLE_VY :]
+	label address: 0x00a097
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a097: 77
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a098: 23
+
+[	POP DE] Z80:11cyc, R800:5cyc
+00a099: d1
+
+[	INC DE] Z80:7cyc, R800:1cyc
+00a09a: 13
+
+[	INC DE] Z80:7cyc, R800:1cyc
+00a09b: 13
+
+[	XOR A , A] Z80:5cyc, R800:1cyc
+00a09c: af
+
+[	LD [ DE ] , A] Z80:8cyc, R800:4cyc
+00a09d: 12
+
+[	INC DE] Z80:7cyc, R800:1cyc
+00a09e: 13
+
+[	EX AF , AF'] Z80:5cyc, R800:1cyc
+00a09f: 08
+
+[	LD [ DE ] , A] Z80:8cyc, R800:4cyc
+00a0a0: 12
+
+[	INC DE] Z80:7cyc, R800:1cyc
+00a0a1: 13
+
+[	DEC A] Z80:5cyc, R800:1cyc
+00a0a2: 3d
+
+[	JR NZ , SKIP_ROUND] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a0a3: 20 02
+
+[	LD A , 15] Z80:8cyc, R800:2cyc
+00a0a5: 3e 0f
+
+[SKIP_ROUND :]
+	label address: 0x00a0a7
+
+[	CP A , 4] Z80:8cyc, R800:2cyc
+00a0a7: fe 04
+
+[	JP NZ , SKIP_ADJUST4] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00a0a9: c2 ad a0
+
+[	DEC A] Z80:5cyc, R800:1cyc
+00a0ac: 3d
+
+[SKIP_ADJUST4 :]
+	label address: 0x00a0ad
+
+[	EX AF , AF'] Z80:5cyc, R800:1cyc
+00a0ad: 08
+
+[	RET] Z80:11cyc, R800:5cyc
+00a0ae: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE BALL_MOVE]
+	Scope path: BALL_MOVE:
+
+[BALL_MOVE ::]
+	global label address: 0x00a0af
+
+[	LD B , 32] Z80:8cyc, R800:2cyc
+00a0af: 06 20
+
+[	LD HL , SPRITE_POS] Z80:11cyc, R800:3cyc
+00a0b1: 21 b9 a1
+
+[	LD DE , SPRITE_ATTRIBUTE] Z80:11cyc, R800:3cyc
+00a0b4: 11 3b a2
+
+[LOOP :]
+	label address: 0x00a0b7
+
+[	PUSH BC] Z80:12cyc, R800:6cyc
+00a0b7: c5
+
+[	PUSH DE] Z80:12cyc, R800:6cyc
+00a0b8: d5
+
+[	LD E , [ HL ]] Z80:8cyc, R800:4cyc
+00a0b9: 5e
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0ba: 23
+
+[	LD D , [ HL ]] Z80:8cyc, R800:4cyc
+00a0bb: 56
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0bc: 23
+
+[	LD C , [ HL ]] Z80:8cyc, R800:4cyc
+00a0bd: 4e
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0be: 23
+
+[	LD B , [ HL ]] Z80:8cyc, R800:4cyc
+00a0bf: 46
+
+[	DEC HL] Z80:7cyc, R800:1cyc
+00a0c0: 2b
+
+[	DEC HL] Z80:7cyc, R800:1cyc
+00a0c1: 2b
+
+[	DEC HL] Z80:7cyc, R800:1cyc
+00a0c2: 2b
+
+[	LD A , E] Z80:5cyc, R800:2cyc
+00a0c3: 7b
+
+[	ADD A , C] Z80:5cyc, R800:1cyc
+00a0c4: 81
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a0c5: 77
+
+[	LD E , A] Z80:5cyc, R800:2cyc
+00a0c6: 5f
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0c7: 23
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0c8: 23
+
+[	CP A , 256 - 16] Z80:8cyc, R800:2cyc
+00a0c9: fe f0
+
+[	JR C , NO_INVERSION_X] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a0cb: 38 04
+
+[INVERSION_X :]
+	label address: 0x00a0cd
+
+[	LD A , C] Z80:5cyc, R800:2cyc
+00a0cd: 79
+
+[	NEG] Z80:10cyc, R800:2cyc
+00a0ce: ed 44
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a0d0: 77
+
+[NO_INVERSION_X :]
+	label address: 0x00a0d1
+
+[	DEC HL] Z80:7cyc, R800:1cyc
+00a0d1: 2b
+
+[	LD A , D] Z80:5cyc, R800:2cyc
+00a0d2: 7a
+
+[	ADD A , B] Z80:5cyc, R800:1cyc
+00a0d3: 80
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a0d4: 77
+
+[	LD D , A] Z80:5cyc, R800:2cyc
+00a0d5: 57
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0d6: 23
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0d7: 23
+
+[	CP A , 192 - 16] Z80:8cyc, R800:2cyc
+00a0d8: fe b0
+
+[	JR C , NO_INVERSION_Y] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a0da: 38 04
+
+[INVERSION_Y :]
+	label address: 0x00a0dc
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+00a0dc: 78
+
+[	NEG] Z80:10cyc, R800:2cyc
+00a0dd: ed 44
+
+[	LD [ HL ] , A] Z80:8cyc, R800:4cyc
+00a0df: 77
+
+[NO_INVERSION_Y :]
+	label address: 0x00a0e0
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0e0: 23
+
+[	LD C , L] Z80:5cyc, R800:2cyc
+00a0e1: 4d
+
+[	LD B , H] Z80:5cyc, R800:2cyc
+00a0e2: 44
+
+[	POP HL] Z80:11cyc, R800:5cyc
+00a0e3: e1
+
+[	LD [ HL ] , D] Z80:8cyc, R800:4cyc
+00a0e4: 72
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0e5: 23
+
+[	LD [ HL ] , E] Z80:8cyc, R800:4cyc
+00a0e6: 73
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0e7: 23
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0e8: 23
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a0e9: 23
+
+[	LD E , L] Z80:5cyc, R800:2cyc
+00a0ea: 5d
+
+[	LD D , H] Z80:5cyc, R800:2cyc
+00a0eb: 54
+
+[	LD L , C] Z80:5cyc, R800:2cyc
+00a0ec: 69
+
+[	LD H , B] Z80:5cyc, R800:2cyc
+00a0ed: 60
+
+[	POP BC] Z80:11cyc, R800:5cyc
+00a0ee: c1
+
+[	DJNZ LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a0ef: 10 c6
+
+[	RET] Z80:11cyc, R800:5cyc
+00a0f1: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	INCLUDE ".//sprite_driver.asm"] begin
+[	SCOPE SPDRV_INITIALIZE]
+	Scope path: SPDRV_INITIALIZE:
+
+[SPDRV_INITIALIZE ::]
+	global label address: 0x00a0f2
+
+[	LD HL , SPRITE_ATTRIBUTE] Z80:11cyc, R800:3cyc
+00a0f2: 21 3b a2
+
+[	LD DE , SPRITE_ATTRIBUTE + 1] Z80:11cyc, R800:3cyc
+00a0f5: 11 3c a2
+
+[	LD BC , ( 4 * 32 ) - 1] Z80:11cyc, R800:3cyc
+00a0f8: 01 7f 00
+
+[	LD [ HL ] , 208] Z80:11cyc, R800:5cyc
+00a0fb: 36 d0
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+00a0fd: ed b0
+
+[	LD A , 208] Z80:8cyc, R800:2cyc
+00a0ff: 3e d0
+
+[	LD HL , VRAM_SPRITE_ATTRIBUTE1] Z80:11cyc, R800:3cyc
+00a101: 21 00 1b
+
+[	LD BC , ( 4 * 32 ) * 2] Z80:11cyc, R800:3cyc
+00a104: 01 00 01
+
+[	CALL FILVRM] Z80:18cyc, R800:5cyc
+00a107: cd 56 00
+
+[	XOR A , A] Z80:5cyc, R800:1cyc
+00a10a: af
+
+[	LD [ SPRITE_INDEX ] , A] Z80:14cyc, R800:6cyc
+00a10b: 32 3a a2
+
+[	LD A , VRAM_SPRITE_ATTRIBUTE1 >> 7] Z80:8cyc, R800:2cyc
+00a10e: 3e 36
+
+[	LD [ SPRITE_PAGE ] , A] Z80:14cyc, R800:6cyc
+00a110: 32 39 a2
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE SPDRV_FLIP]
+	Scope path: SPDRV_FLIP:
+
+[SPDRV_FLIP ::]
+	global label address: 0x00a113
+
+[	LD A , [ SPRITE_PAGE ]] Z80:14cyc, R800:6cyc
+00a113: 3a 39 a2
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+00a116: 47
+
+[	DI] Z80:5cyc, R800:2cyc
+00a117: f3
+
+[	OUT [ VDP_PORT1 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a118: d3 99
+
+[	LD A , 0X80 | 5] Z80:8cyc, R800:2cyc
+00a11a: 3e 85
+
+[	OUT [ VDP_PORT1 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a11c: d3 99
+
+[	EI] Z80:5cyc, R800:1cyc
+00a11e: fb
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+00a11f: 78
+
+[	XOR A , 1] Z80:8cyc, R800:2cyc
+00a120: ee 01
+
+[	LD [ SPRITE_PAGE ] , A] Z80:14cyc, R800:6cyc
+00a122: 32 39 a2
+
+[	RET] Z80:11cyc, R800:5cyc
+00a125: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE SPDRV_UPDATE]
+	Scope path: SPDRV_UPDATE:
+
+[SPDRV_UPDATE ::]
+	global label address: 0x00a126
+
+[	LD A , [ SPRITE_PAGE ]] Z80:14cyc, R800:6cyc
+00a126: 3a 39 a2
+
+[	AND A , 1] Z80:8cyc, R800:2cyc
+00a129: e6 01
+
+[	RRCA] Z80:5cyc, R800:1cyc
+00a12b: 0f
+
+[	DI] Z80:5cyc, R800:2cyc
+00a12c: f3
+
+[	OUT [ VDP_PORT1 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a12d: d3 99
+
+[	LD A , 0X40 | ( VRAM_SPRITE_ATTRIBUTE1 >> 8 )] Z80:8cyc, R800:2cyc
+00a12f: 3e 5b
+
+[	OUT [ VDP_PORT1 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a131: d3 99
+
+[	EI] Z80:5cyc, R800:1cyc
+00a133: fb
+
+[	LD A , [ SPRITE_INDEX ]] Z80:14cyc, R800:6cyc
+00a134: 3a 3a a2
+
+[	LD E , A] Z80:5cyc, R800:2cyc
+00a137: 5f
+
+[	LD D , 0] Z80:8cyc, R800:2cyc
+00a138: 16 00
+
+[	LD BC , ( 32 << 8 ) | 0] Z80:11cyc, R800:3cyc
+00a13a: 01 00 20
+
+[LOOP :]
+	label address: 0x00a13d
+
+[	LD HL , SPRITE_ATTRIBUTE] Z80:11cyc, R800:3cyc
+00a13d: 21 3b a2
+
+[	ADD HL , DE] Z80:12cyc, R800:1cyc
+00a140: 19
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00a141: 7e
+
+[	CP A , 208] Z80:8cyc, R800:2cyc
+00a142: fe d0
+
+[	JR Z , SKIP] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a144: 28 0f
+
+[	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a146: d3 98
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a148: 23
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00a149: 7e
+
+[	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a14a: d3 98
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a14c: 23
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00a14d: 7e
+
+[	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a14e: d3 98
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00a150: 23
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00a151: 7e
+
+[	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a152: d3 98
+
+[	INC C] Z80:5cyc, R800:1cyc
+00a154: 0c
+
+[SKIP :]
+	label address: 0x00a155
+
+[	LD A , E] Z80:5cyc, R800:2cyc
+00a155: 7b
+
+[	ADD A , 7 * 4] Z80:8cyc, R800:2cyc
+00a156: c6 1c
+
+[	AND A , 127] Z80:8cyc, R800:2cyc
+00a158: e6 7f
+
+[	LD E , A] Z80:5cyc, R800:2cyc
+00a15a: 5f
+
+[	DJNZ LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a15b: 10 e0
+
+[	LD A , C] Z80:5cyc, R800:2cyc
+00a15d: 79
+
+[	CP A , 32] Z80:8cyc, R800:2cyc
+00a15e: fe 20
+
+[	JR Z , EXIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a160: 28 04
+
+[	LD A , 208] Z80:8cyc, R800:2cyc
+00a162: 3e d0
+
+[	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+00a164: d3 98
+
+[EXIT :]
+	label address: 0x00a166
+
+[	LD A , [ SPRITE_INDEX ]] Z80:14cyc, R800:6cyc
+00a166: 3a 3a a2
+
+[	ADD A , 19 * 4] Z80:8cyc, R800:2cyc
+00a169: c6 4c
+
+[	AND A , 127] Z80:8cyc, R800:2cyc
+00a16b: e6 7f
+
+[	LD [ SPRITE_INDEX ] , A] Z80:14cyc, R800:6cyc
+00a16d: 32 3a a2
+
+[	RET] Z80:11cyc, R800:5cyc
+00a170: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	INCLUDE ".//sprite_driver.asm"] end
+
+[	INCLUDE ".//random.asm"] begin
+[	SCOPE RANDOM]
+	Scope path: RANDOM:
+
+[RANDOM ::]
+	global label address: 0x00a171
+
+[	LD HL , [ RANDOM_SEED + 0 ]] Z80:17cyc, R800:7cyc
+00a171: 2a 94 a1
+
+[	LD DE , [ RANDOM_SEED + 2 ]] Z80:22cyc, R800:8cyc
+00a174: ed 5b 96 a1
+
+[	LD BC , 0XB213] Z80:11cyc, R800:3cyc
+00a178: 01 13 b2
+
+[	ADD HL , BC] Z80:12cyc, R800:1cyc
+00a17b: 09
+
+[	LD A , H] Z80:5cyc, R800:2cyc
+00a17c: 7c
+
+[	XOR A , 0X3] Z80:8cyc, R800:2cyc
+00a17d: ee 03
+
+[	XOR A , E] Z80:5cyc, R800:1cyc
+00a17f: ab
+
+[	LD H , A] Z80:5cyc, R800:2cyc
+00a180: 67
+
+[	LD A , L] Z80:5cyc, R800:2cyc
+00a181: 7d
+
+[	XOR A , 0X4] Z80:8cyc, R800:2cyc
+00a182: ee 04
+
+[	XOR A , D] Z80:5cyc, R800:1cyc
+00a184: aa
+
+[	RLA] Z80:5cyc, R800:1cyc
+00a185: 17
+
+[	RL H] Z80:10cyc, R800:2cyc
+00a186: cb 14
+
+[	ADC A , 0] Z80:8cyc, R800:2cyc
+00a188: ce 00
+
+[	LD L , A] Z80:5cyc, R800:2cyc
+00a18a: 6f
+
+[	LD [ RANDOM_SEED + 0 ] , DE] Z80:22cyc, R800:8cyc
+00a18b: ed 53 94 a1
+
+[	LD [ RANDOM_SEED + 2 ] , HL] Z80:17cyc, R800:7cyc
+00a18f: 22 96 a1
+
+[	LD A , L] Z80:5cyc, R800:2cyc
+00a192: 7d
+
+[	RET] Z80:11cyc, R800:5cyc
+00a193: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[RANDOM_SEED ::]
+	global label address: 0x00a194
+
+[	DW 0]
+00a194: 00 00
+
+[	DW 0]
+00a196: 00 00
+
+[	INCLUDE ".//random.asm"] end
+
+[SPRITE_PATTERN ::]
+	global label address: 0x00a198
+
+[	DB 0B00000011]
+00a198: 03
+
+[	DB 0B00001111]
+00a199: 0f
+
+[	DB 0B00011111]
+00a19a: 1f
+
+[	DB 0B00111111]
+00a19b: 3f
+
+[	DB 0B01111111]
+00a19c: 7f
+
+[	DB 0B01111111]
+00a19d: 7f
+
+[	DB 0B11111111]
+00a19e: ff
+
+[	DB 0B11111111]
+00a19f: ff
+
+[	DB 0B11111111]
+00a1a0: ff
+
+[	DB 0B11111111]
+00a1a1: ff
+
+[	DB 0B01111111]
+00a1a2: 7f
+
+[	DB 0B01111111]
+00a1a3: 7f
+
+[	DB 0B00111111]
+00a1a4: 3f
+
+[	DB 0B00011111]
+00a1a5: 1f
+
+[	DB 0B00001111]
+00a1a6: 0f
+
+[	DB 0B00000011]
+00a1a7: 03
+
+[	DB 0B11000000]
+00a1a8: c0
+
+[	DB 0B11110000]
+00a1a9: f0
+
+[	DB 0B11111000]
+00a1aa: f8
+
+[	DB 0B11111100]
+00a1ab: fc
+
+[	DB 0B11111110]
+00a1ac: fe
+
+[	DB 0B11111110]
+00a1ad: fe
+
+[	DB 0B11111111]
+00a1ae: ff
+
+[	DB 0B11111111]
+00a1af: ff
+
+[	DB 0B11111111]
+00a1b0: ff
+
+[	DB 0B11111111]
+00a1b1: ff
+
+[	DB 0B11111110]
+00a1b2: fe
+
+[	DB 0B11111110]
+00a1b3: fe
+
+[	DB 0B11111100]
+00a1b4: fc
+
+[	DB 0B11111000]
+00a1b5: f8
+
+[	DB 0B11110000]
+00a1b6: f0
+
+[	DB 0B11000000]
+00a1b7: c0
+
+[JIFFY_BACK ::]
+	global label address: 0x00a1b8
+
+[	DB 0]
+00a1b8: 00
+
+[SPRITE_POS ::]
+	global label address: 0x00a1b9
+
+[	DB 0 , 0 , 0 , 0]
+00a1b9: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1bd: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1c1: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1c5: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1c9: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1cd: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1d1: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1d5: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1d9: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1dd: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1e1: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1e5: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1e9: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1ed: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1f1: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1f5: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1f9: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a1fd: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a201: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a205: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a209: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a20d: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a211: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a215: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a219: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a21d: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a221: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a225: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a229: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a22d: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a231: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a235: 00 00 00 00
+
+[	INCLUDE ".//sprite_driver_work.asm"] begin
+[SPRITE_PAGE ::]
+	global label address: 0x00a239
+
+[	DB 0]
+00a239: 00
+
+[SPRITE_INDEX ::]
+	global label address: 0x00a23a
+
+[	DB 0]
+00a23a: 00
+
+[SPRITE_ATTRIBUTE ::]
+	global label address: 0x00a23b
+
+[	DB 0 , 0 , 0 , 0]
+00a23b: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a23f: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a243: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a247: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a24b: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a24f: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a253: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a257: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a25b: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a25f: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a263: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a267: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a26b: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a26f: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a273: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a277: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a27b: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a27f: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a283: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a287: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a28b: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a28f: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a293: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a297: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a29b: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a29f: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2a3: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2a7: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2ab: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2af: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2b3: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2b7: 00 00 00 00
+
+[	INCLUDE ".//sprite_driver_work.asm"] end
+
+[END_ADDRESS ::]
+	global label address: 0x00a2bb
+
+<< label >>
+BALL_INITIALIZE 41052 ( 0xa05c )
+BALL_INITIALIZE:SKIP_ADJUST4 41133 ( 0xa0ad )
+BALL_INITIALIZE:SKIP_ADJUST_X 41064 ( 0xa068 )
+BALL_INITIALIZE:SKIP_ADJUST_Y 41077 ( 0xa075 )
+BALL_INITIALIZE:SKIP_DOUBLE_VX 41094 ( 0xa086 )
+BALL_INITIALIZE:SKIP_DOUBLE_VY 41111 ( 0xa097 )
+BALL_INITIALIZE:SKIP_ROUND 41127 ( 0xa0a7 )
+BALL_MOVE 41135 ( 0xa0af )
+BALL_MOVE:INVERSION_X 41165 ( 0xa0cd )
+BALL_MOVE:INVERSION_Y 41180 ( 0xa0dc )
+BALL_MOVE:LOOP 41143 ( 0xa0b7 )
+BALL_MOVE:NO_INVERSION_X 41169 ( 0xa0d1 )
+BALL_MOVE:NO_INVERSION_Y 41184 ( 0xa0e0 )
+BALL_SETUP 41018 ( 0xa03a )
+CHGMOD 95 ( 0x5f )
+END_ADDRESS 41659 ( 0xa2bb )
+FILVRM 86 ( 0x56 )
+JIFFY 64670 ( 0xfc9e )
+JIFFY_BACK 41400 ( 0xa1b8 )
+LDIRMV 89 ( 0x59 )
+LDIRVM 92 ( 0x5c )
+LOOP 41025 ( 0xa041 )
+RANDOM 41329 ( 0xa171 )
+RANDOM_SEED 41364 ( 0xa194 )
+RG0SAV 62431 ( 0xf3df )
+RG1SAV 62432 ( 0xf3e0 )
+RG2SAV 62433 ( 0xf3e1 )
+RG3SAV 62434 ( 0xf3e2 )
+RG4SAV 62435 ( 0xf3e3 )
+RG5SAV 62436 ( 0xf3e4 )
+RG6SAV 62437 ( 0xf3e5 )
+RG7SAV 62438 ( 0xf3e6 )
+SPDRV_FLIP 41235 ( 0xa113 )
+SPDRV_INITIALIZE 41202 ( 0xa0f2 )
+SPDRV_UPDATE 41254 ( 0xa126 )
+SPDRV_UPDATE:EXIT 41318 ( 0xa166 )
+SPDRV_UPDATE:LOOP 41277 ( 0xa13d )
+SPDRV_UPDATE:SKIP 41301 ( 0xa155 )
+SPRITE_ATTRIBUTE 41531 ( 0xa23b )
+SPRITE_INDEX 41530 ( 0xa23a )
+SPRITE_PAGE 41529 ( 0xa239 )
+SPRITE_PATTERN 41368 ( 0xa198 )
+SPRITE_POS 41401 ( 0xa1b9 )
+START_ADDRESS 40960 ( 0xa000 )
+VDP_PORT0 152 ( 0x98 )
+VDP_PORT1 153 ( 0x99 )
+VDP_PORT2 154 ( 0x9a )
+VDP_PORT3 155 ( 0x9b )
+VRAM_SPRITE_ATTRIBUTE1 6912 ( 0x1b00 )
+VRAM_SPRITE_ATTRIBUTE2 7040 ( 0x1b80 )
+VSYNC_WAIT 41046 ( 0xa056 )
+WRTVDP 71 ( 0x47 )
