@@ -66,6 +66,28 @@ RAM上のスプライトアトリビュートテーブルを2つ用意して、ダブルバンキングによる安定
   sprite_index ....... 1byte
   sprite_attribute ... 128bytes
 
+  The internal structure of sprite_attribute is the same as the sprite attribute 
+table on VRAM. However, the meaning of Y=208 is slightly different.
+  When Y=208 is set in VRAM, all sprites with lower priority after that sprite 
+are hidden, but this driver only hides the sprite with Y=208.
+  This driver hides the sprite with Y=208, not the sprite that is displayed 
+off-screen, and allocates the free space to other sprites, thus increasing the 
+display efficiency.
+
+  Only the virtual sprite attribute table can be extended to 64 or 128.
+In this case, the entire display will blink when more than 32 are displayed.
+
+  sprite_attribute の内部構造は、VRAM上のスプライトアトリビュートテーブルと同じ
+です。しかし、Y=208 の時の意味が若干異なります。
+  VRAM上で Y=208 にすると、そのスプライト以降、優先度が低いスプライトは全て非表
+示になりますが、このドライバーでは、その Y=208 になっているスプライト単独の非表
+示です。
+  画面外へ表示しているわけではなく、非表示になり、その空いた分を他のスプライト
+に割り当てるので、表示の効率が上がります。
+
+  仮想スプライトアトリビュートテーブルだけを 64 や 128 に拡張することも出来ま
+す。その場合、32個を超える表示の際には、全体が点滅する表示になります。
+
 6. Files ----------------------------------------------------------------------
   sprite_driver.asm ............. Sprite driver program code.
   sprite_driver_work.asm ........ Sprite driver work area definitions.
