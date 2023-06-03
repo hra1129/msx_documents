@@ -65,7 +65,7 @@ spdrv_initialize::
 				; clear sprite attribute on CPU RAM
 				ld			hl, sprite_attribute
 				ld			de, sprite_attribute + 1
-				ld			bc, (4 * 32) - 1
+				ld			bc, (4 * 64) - 1
 				ld			[hl], 208
 				ldir
 				; clear sprite attribute 1 and 2 on VRAM
@@ -144,8 +144,8 @@ spdrv_update::
 				ld			e, a
 				ld			d, 0
 
-				; B=32, C=32
-				ld			bc, (32 << 8) | 32
+				; B=64, C=32
+				ld			bc, (64 << 8) | 32
 		loop:
 				; Get address of current sprite_attribute
 				ld			hl, sprite_attribute
@@ -168,18 +168,18 @@ spdrv_update::
 				ld			a, [hl]
 				out			[vdp_port0], a
 				dec			c						; count visible sprite
+				jr			z, exit
 		skip:
 				; Go to next.
 				ld			a, e
 				add			a, 7 * 4				; 7 is prime number.
-				and			a, 127
 				ld			e, a
 				djnz		loop
 
 				; Is visible sprite count over 32?
 				ld			a, c
 				or			a, a
-				jr			z, exit
+				jr			c, exit
 
 				; Hide remain sprites
 				ld			a, 208
@@ -188,7 +188,6 @@ spdrv_update::
 				; Calculate next index.
 				ld			a, [sprite_index]
 				add			a, 19 * 4				; 19 is prime number.
-				and			a, 127
 				ld			[sprite_index], a
 				ret
 				endscope

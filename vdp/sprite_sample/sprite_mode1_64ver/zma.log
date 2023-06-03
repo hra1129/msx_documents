@@ -13,7 +13,7 @@ Programmed by t.hara
 000001: 00 a0
 
 [	DW END_ADDRESS]
-000003: ba a2
+000003: b8 a3
 
 [	DW START_ADDRESS]
 000005: 00 a0
@@ -52,7 +52,7 @@ Programmed by t.hara
 00a012: cd f2 a0
 
 [	LD HL , SPRITE_PATTERN] Z80:11cyc, R800:3cyc
-00a015: 21 97 a1
+00a015: 21 95 a1
 
 [	LD DE , 0X3800] Z80:11cyc, R800:3cyc
 00a018: 11 00 38
@@ -67,7 +67,7 @@ Programmed by t.hara
 00a021: 3a 9e fc
 
 [	LD HL , RANDOM_SEED] Z80:11cyc, R800:3cyc
-00a024: 21 93 a1
+00a024: 21 91 a1
 
 [	LD [ HL ] , A] Z80:8cyc, R800:4cyc
 00a027: 77
@@ -93,14 +93,14 @@ Programmed by t.hara
 [	INC HL] Z80:7cyc, R800:1cyc
 00a02e: 23
 
-[	LD B , 32] Z80:8cyc, R800:2cyc
-00a02f: 06 20
+[	LD B , 64] Z80:8cyc, R800:2cyc
+00a02f: 06 40
 
 [	LD HL , SPRITE_POS] Z80:11cyc, R800:3cyc
-00a031: 21 b8 a1
+00a031: 21 b6 a1
 
 [	LD DE , SPRITE_ATTRIBUTE] Z80:11cyc, R800:3cyc
-00a034: 11 3a a2
+00a034: 11 b8 a2
 
 [	LD A , 15] Z80:8cyc, R800:2cyc
 00a037: 3e 0f
@@ -130,7 +130,7 @@ Programmed by t.hara
 00a041: 3a 9e fc
 
 [	LD [ JIFFY_BACK ] , A] Z80:14cyc, R800:6cyc
-00a044: 32 b7 a1
+00a044: 32 b5 a1
 
 [	CALL SPDRV_FLIP] Z80:18cyc, R800:5cyc
 00a047: cd 13 a1
@@ -145,7 +145,7 @@ Programmed by t.hara
 00a050: 21 9e fc
 
 [	LD A , [ JIFFY_BACK ]] Z80:14cyc, R800:6cyc
-00a053: 3a b7 a1
+00a053: 3a b5 a1
 
 [VSYNC_WAIT :]
 	label address: 0x00a056
@@ -172,7 +172,7 @@ Programmed by t.hara
 00a05d: e5
 
 [	CALL RANDOM] Z80:18cyc, R800:5cyc
-00a05e: cd 70 a1
+00a05e: cd 6e a1
 
 [	POP HL] Z80:11cyc, R800:5cyc
 00a061: e1
@@ -199,7 +199,7 @@ Programmed by t.hara
 00a06a: e5
 
 [	CALL RANDOM] Z80:18cyc, R800:5cyc
-00a06b: cd 70 a1
+00a06b: cd 6e a1
 
 [	POP HL] Z80:11cyc, R800:5cyc
 00a06e: e1
@@ -226,7 +226,7 @@ Programmed by t.hara
 00a077: e5
 
 [	CALL RANDOM] Z80:18cyc, R800:5cyc
-00a078: cd 70 a1
+00a078: cd 6e a1
 
 [	POP HL] Z80:11cyc, R800:5cyc
 00a07b: e1
@@ -265,7 +265,7 @@ Programmed by t.hara
 00a088: e5
 
 [	CALL RANDOM] Z80:18cyc, R800:5cyc
-00a089: cd 70 a1
+00a089: cd 6e a1
 
 [	POP HL] Z80:11cyc, R800:5cyc
 00a08c: e1
@@ -366,14 +366,14 @@ Programmed by t.hara
 [BALL_MOVE ::]
 	global label address: 0x00a0af
 
-[	LD B , 32] Z80:8cyc, R800:2cyc
-00a0af: 06 20
+[	LD B , 64] Z80:8cyc, R800:2cyc
+00a0af: 06 40
 
 [	LD HL , SPRITE_POS] Z80:11cyc, R800:3cyc
-00a0b1: 21 b8 a1
+00a0b1: 21 b6 a1
 
 [	LD DE , SPRITE_ATTRIBUTE] Z80:11cyc, R800:3cyc
-00a0b4: 11 3a a2
+00a0b4: 11 b8 a2
 
 [LOOP :]
 	label address: 0x00a0b7
@@ -557,13 +557,13 @@ Programmed by t.hara
 	global label address: 0x00a0f2
 
 [	LD HL , SPRITE_ATTRIBUTE] Z80:11cyc, R800:3cyc
-00a0f2: 21 3a a2
+00a0f2: 21 b8 a2
 
 [	LD DE , SPRITE_ATTRIBUTE + 1] Z80:11cyc, R800:3cyc
-00a0f5: 11 3b a2
+00a0f5: 11 b9 a2
 
-[	LD BC , ( 4 * 32 ) - 1] Z80:11cyc, R800:3cyc
-00a0f8: 01 7f 00
+[	LD BC , ( 4 * 64 ) - 1] Z80:11cyc, R800:3cyc
+00a0f8: 01 ff 00
 
 [	LD [ HL ] , 208] Z80:11cyc, R800:5cyc
 00a0fb: 36 d0
@@ -587,13 +587,13 @@ Programmed by t.hara
 00a10a: af
 
 [	LD [ SPRITE_INDEX ] , A] Z80:14cyc, R800:6cyc
-00a10b: 32 39 a2
+00a10b: 32 b7 a2
 
 [	LD A , VRAM_SPRITE_ATTRIBUTE1 >> 7] Z80:8cyc, R800:2cyc
 00a10e: 3e 36
 
 [	LD [ SPRITE_PAGE ] , A] Z80:14cyc, R800:6cyc
-00a110: 32 38 a2
+00a110: 32 b6 a2
 
 [	ENDSCOPE]
 	Scope path: 
@@ -605,7 +605,7 @@ Programmed by t.hara
 	global label address: 0x00a113
 
 [	LD A , [ SPRITE_PAGE ]] Z80:14cyc, R800:6cyc
-00a113: 3a 38 a2
+00a113: 3a b6 a2
 
 [	LD B , A] Z80:5cyc, R800:2cyc
 00a116: 47
@@ -632,7 +632,7 @@ Programmed by t.hara
 00a120: ee 01
 
 [	LD [ SPRITE_PAGE ] , A] Z80:14cyc, R800:6cyc
-00a122: 32 38 a2
+00a122: 32 b6 a2
 
 [	RET] Z80:11cyc, R800:5cyc
 00a125: c9
@@ -647,7 +647,7 @@ Programmed by t.hara
 	global label address: 0x00a126
 
 [	LD A , [ SPRITE_PAGE ]] Z80:14cyc, R800:6cyc
-00a126: 3a 38 a2
+00a126: 3a b6 a2
 
 [	AND A , 1] Z80:8cyc, R800:2cyc
 00a129: e6 01
@@ -671,7 +671,7 @@ Programmed by t.hara
 00a133: fb
 
 [	LD A , [ SPRITE_INDEX ]] Z80:14cyc, R800:6cyc
-00a134: 3a 39 a2
+00a134: 3a b7 a2
 
 [	LD E , A] Z80:5cyc, R800:2cyc
 00a137: 5f
@@ -679,14 +679,14 @@ Programmed by t.hara
 [	LD D , 0] Z80:8cyc, R800:2cyc
 00a138: 16 00
 
-[	LD BC , ( 32 << 8 ) | 32] Z80:11cyc, R800:3cyc
-00a13a: 01 20 20
+[	LD BC , ( 64 << 8 ) | 32] Z80:11cyc, R800:3cyc
+00a13a: 01 20 40
 
 [LOOP :]
 	label address: 0x00a13d
 
 [	LD HL , SPRITE_ATTRIBUTE] Z80:11cyc, R800:3cyc
-00a13d: 21 3a a2
+00a13d: 21 b8 a2
 
 [	ADD HL , DE] Z80:12cyc, R800:1cyc
 00a140: 19
@@ -698,7 +698,7 @@ Programmed by t.hara
 00a142: fe d0
 
 [	JR Z , SKIP] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00a144: 28 0f
+00a144: 28 11
 
 [	OUT [ VDP_PORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
 00a146: d3 98
@@ -733,17 +733,17 @@ Programmed by t.hara
 [	DEC C] Z80:5cyc, R800:1cyc
 00a154: 0d
 
+[	JR Z , EXIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a155: 28 0e
+
 [SKIP :]
-	label address: 0x00a155
+	label address: 0x00a157
 
 [	LD A , E] Z80:5cyc, R800:2cyc
-00a155: 7b
+00a157: 7b
 
 [	ADD A , 7 * 4] Z80:8cyc, R800:2cyc
-00a156: c6 1c
-
-[	AND A , 127] Z80:8cyc, R800:2cyc
-00a158: e6 7f
+00a158: c6 1c
 
 [	LD E , A] Z80:5cyc, R800:2cyc
 00a15a: 5f
@@ -757,8 +757,8 @@ Programmed by t.hara
 [	OR A , A] Z80:5cyc, R800:1cyc
 00a15e: b7
 
-[	JR Z , EXIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00a15f: 28 04
+[	JR C , EXIT] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00a15f: 38 04
 
 [	LD A , 208] Z80:8cyc, R800:2cyc
 00a161: 3e d0
@@ -770,19 +770,16 @@ Programmed by t.hara
 	label address: 0x00a165
 
 [	LD A , [ SPRITE_INDEX ]] Z80:14cyc, R800:6cyc
-00a165: 3a 39 a2
+00a165: 3a b7 a2
 
 [	ADD A , 19 * 4] Z80:8cyc, R800:2cyc
 00a168: c6 4c
 
-[	AND A , 127] Z80:8cyc, R800:2cyc
-00a16a: e6 7f
-
 [	LD [ SPRITE_INDEX ] , A] Z80:14cyc, R800:6cyc
-00a16c: 32 39 a2
+00a16a: 32 b7 a2
 
 [	RET] Z80:11cyc, R800:5cyc
-00a16f: c9
+00a16d: c9
 
 [	ENDSCOPE]
 	Scope path: 
@@ -794,99 +791,105 @@ Programmed by t.hara
 	Scope path: RANDOM:
 
 [RANDOM ::]
-	global label address: 0x00a170
+	global label address: 0x00a16e
 
 [	LD HL , [ RANDOM_SEED + 0 ]] Z80:17cyc, R800:7cyc
-00a170: 2a 93 a1
+00a16e: 2a 91 a1
 
 [	LD DE , [ RANDOM_SEED + 2 ]] Z80:22cyc, R800:8cyc
-00a173: ed 5b 95 a1
+00a171: ed 5b 93 a1
 
 [	LD BC , 0XB213] Z80:11cyc, R800:3cyc
-00a177: 01 13 b2
+00a175: 01 13 b2
 
 [	ADD HL , BC] Z80:12cyc, R800:1cyc
-00a17a: 09
+00a178: 09
 
 [	LD A , H] Z80:5cyc, R800:2cyc
-00a17b: 7c
+00a179: 7c
 
 [	XOR A , 0X3] Z80:8cyc, R800:2cyc
-00a17c: ee 03
+00a17a: ee 03
 
 [	XOR A , E] Z80:5cyc, R800:1cyc
-00a17e: ab
+00a17c: ab
 
 [	LD H , A] Z80:5cyc, R800:2cyc
-00a17f: 67
+00a17d: 67
 
 [	LD A , L] Z80:5cyc, R800:2cyc
-00a180: 7d
+00a17e: 7d
 
 [	XOR A , 0X4] Z80:8cyc, R800:2cyc
-00a181: ee 04
+00a17f: ee 04
 
 [	XOR A , D] Z80:5cyc, R800:1cyc
-00a183: aa
+00a181: aa
 
 [	RLA] Z80:5cyc, R800:1cyc
-00a184: 17
+00a182: 17
 
 [	RL H] Z80:10cyc, R800:2cyc
-00a185: cb 14
+00a183: cb 14
 
 [	ADC A , 0] Z80:8cyc, R800:2cyc
-00a187: ce 00
+00a185: ce 00
 
 [	LD L , A] Z80:5cyc, R800:2cyc
-00a189: 6f
+00a187: 6f
 
 [	LD [ RANDOM_SEED + 0 ] , DE] Z80:22cyc, R800:8cyc
-00a18a: ed 53 93 a1
+00a188: ed 53 91 a1
 
 [	LD [ RANDOM_SEED + 2 ] , HL] Z80:17cyc, R800:7cyc
-00a18e: 22 95 a1
+00a18c: 22 93 a1
 
 [	LD A , L] Z80:5cyc, R800:2cyc
-00a191: 7d
+00a18f: 7d
 
 [	RET] Z80:11cyc, R800:5cyc
-00a192: c9
+00a190: c9
 
 [	ENDSCOPE]
 	Scope path: 
 
 [RANDOM_SEED ::]
-	global label address: 0x00a193
+	global label address: 0x00a191
+
+[	DW 0]
+00a191: 00 00
 
 [	DW 0]
 00a193: 00 00
 
-[	DW 0]
-00a195: 00 00
-
 [	INCLUDE ".//random.asm"] end
 
 [SPRITE_PATTERN ::]
-	global label address: 0x00a197
+	global label address: 0x00a195
 
 [	DB 0B00000011]
-00a197: 03
+00a195: 03
 
 [	DB 0B00001111]
-00a198: 0f
+00a196: 0f
 
 [	DB 0B00011111]
-00a199: 1f
+00a197: 1f
 
 [	DB 0B00111111]
-00a19a: 3f
+00a198: 3f
 
 [	DB 0B01111111]
-00a19b: 7f
+00a199: 7f
 
 [	DB 0B01111111]
-00a19c: 7f
+00a19a: 7f
+
+[	DB 0B11111111]
+00a19b: ff
+
+[	DB 0B11111111]
+00a19c: ff
 
 [	DB 0B11111111]
 00a19d: ff
@@ -894,47 +897,47 @@ Programmed by t.hara
 [	DB 0B11111111]
 00a19e: ff
 
-[	DB 0B11111111]
-00a19f: ff
-
-[	DB 0B11111111]
-00a1a0: ff
+[	DB 0B01111111]
+00a19f: 7f
 
 [	DB 0B01111111]
-00a1a1: 7f
-
-[	DB 0B01111111]
-00a1a2: 7f
+00a1a0: 7f
 
 [	DB 0B00111111]
-00a1a3: 3f
+00a1a1: 3f
 
 [	DB 0B00011111]
-00a1a4: 1f
+00a1a2: 1f
 
 [	DB 0B00001111]
-00a1a5: 0f
+00a1a3: 0f
 
 [	DB 0B00000011]
-00a1a6: 03
+00a1a4: 03
 
 [	DB 0B11000000]
-00a1a7: c0
+00a1a5: c0
 
 [	DB 0B11110000]
-00a1a8: f0
+00a1a6: f0
 
 [	DB 0B11111000]
-00a1a9: f8
+00a1a7: f8
 
 [	DB 0B11111100]
-00a1aa: fc
+00a1a8: fc
 
 [	DB 0B11111110]
-00a1ab: fe
+00a1a9: fe
 
 [	DB 0B11111110]
-00a1ac: fe
+00a1aa: fe
+
+[	DB 0B11111111]
+00a1ab: ff
+
+[	DB 0B11111111]
+00a1ac: ff
 
 [	DB 0B11111111]
 00a1ad: ff
@@ -942,150 +945,131 @@ Programmed by t.hara
 [	DB 0B11111111]
 00a1ae: ff
 
-[	DB 0B11111111]
-00a1af: ff
-
-[	DB 0B11111111]
-00a1b0: ff
+[	DB 0B11111110]
+00a1af: fe
 
 [	DB 0B11111110]
-00a1b1: fe
-
-[	DB 0B11111110]
-00a1b2: fe
+00a1b0: fe
 
 [	DB 0B11111100]
-00a1b3: fc
+00a1b1: fc
 
 [	DB 0B11111000]
-00a1b4: f8
+00a1b2: f8
 
 [	DB 0B11110000]
-00a1b5: f0
+00a1b3: f0
 
 [	DB 0B11000000]
-00a1b6: c0
+00a1b4: c0
 
 [JIFFY_BACK ::]
-	global label address: 0x00a1b7
+	global label address: 0x00a1b5
 
 [	DB 0]
-00a1b7: 00
+00a1b5: 00
 
 [SPRITE_POS ::]
-	global label address: 0x00a1b8
+	global label address: 0x00a1b6
 
 [	DB 0 , 0 , 0 , 0]
-00a1b8: 00 00 00 00
+00a1b6: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1bc: 00 00 00 00
+00a1ba: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1c0: 00 00 00 00
+00a1be: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1c4: 00 00 00 00
+00a1c2: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1c8: 00 00 00 00
+00a1c6: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1cc: 00 00 00 00
+00a1ca: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1d0: 00 00 00 00
+00a1ce: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1d4: 00 00 00 00
+00a1d2: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1d8: 00 00 00 00
+00a1d6: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1dc: 00 00 00 00
+00a1da: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1e0: 00 00 00 00
+00a1de: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1e4: 00 00 00 00
+00a1e2: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1e8: 00 00 00 00
+00a1e6: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1ec: 00 00 00 00
+00a1ea: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1f0: 00 00 00 00
+00a1ee: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1f4: 00 00 00 00
+00a1f2: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1f8: 00 00 00 00
+00a1f6: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a1fc: 00 00 00 00
+00a1fa: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a200: 00 00 00 00
+00a1fe: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a204: 00 00 00 00
+00a202: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a208: 00 00 00 00
+00a206: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a20c: 00 00 00 00
+00a20a: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a210: 00 00 00 00
+00a20e: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a214: 00 00 00 00
+00a212: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a218: 00 00 00 00
+00a216: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a21c: 00 00 00 00
+00a21a: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a220: 00 00 00 00
+00a21e: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a224: 00 00 00 00
+00a222: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a228: 00 00 00 00
+00a226: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a22c: 00 00 00 00
+00a22a: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a230: 00 00 00 00
+00a22e: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
-00a234: 00 00 00 00
+00a232: 00 00 00 00
 
-[	INCLUDE ".//sprite_driver_work.asm"] begin
-[SPRITE_PAGE ::]
-	global label address: 0x00a238
-
-[	DB 0]
-00a238: 00
-
-[SPRITE_INDEX ::]
-	global label address: 0x00a239
-
-[	DB 0]
-00a239: 00
-
-[SPRITE_ATTRIBUTE ::]
-	global label address: 0x00a23a
+[	DB 0 , 0 , 0 , 0]
+00a236: 00 00 00 00
 
 [	DB 0 , 0 , 0 , 0]
 00a23a: 00 00 00 00
@@ -1180,13 +1164,218 @@ Programmed by t.hara
 [	DB 0 , 0 , 0 , 0]
 00a2b2: 00 00 00 00
 
+[	INCLUDE ".//sprite_driver_work.asm"] begin
+[SPRITE_PAGE ::]
+	global label address: 0x00a2b6
+
+[	DB 0]
+00a2b6: 00
+
+[SPRITE_INDEX ::]
+	global label address: 0x00a2b7
+
+[	DB 0]
+00a2b7: 00
+
+[SPRITE_ATTRIBUTE ::]
+	global label address: 0x00a2b8
+
 [	DB 0 , 0 , 0 , 0]
-00a2b6: 00 00 00 00
+00a2b8: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2bc: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2c0: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2c4: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2c8: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2cc: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2d0: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2d4: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2d8: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2dc: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2e0: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2e4: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2e8: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2ec: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2f0: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2f4: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2f8: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a2fc: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a300: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a304: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a308: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a30c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a310: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a314: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a318: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a31c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a320: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a324: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a328: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a32c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a330: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a334: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a338: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a33c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a340: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a344: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a348: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a34c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a350: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a354: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a358: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a35c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a360: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a364: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a368: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a36c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a370: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a374: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a378: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a37c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a380: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a384: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a388: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a38c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a390: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a394: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a398: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a39c: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a3a0: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a3a4: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a3a8: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a3ac: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a3b0: 00 00 00 00
+
+[	DB 0 , 0 , 0 , 0]
+00a3b4: 00 00 00 00
 
 [	INCLUDE ".//sprite_driver_work.asm"] end
 
 [END_ADDRESS ::]
-	global label address: 0x00a2ba
+	global label address: 0x00a3b8
 
 << label >>
 BALL_INITIALIZE 41052 ( 0xa05c )
@@ -1204,15 +1393,15 @@ BALL_MOVE:NO_INVERSION_X 41169 ( 0xa0d1 )
 BALL_MOVE:NO_INVERSION_Y 41184 ( 0xa0e0 )
 BALL_SETUP 41018 ( 0xa03a )
 CHGMOD 95 ( 0x5f )
-END_ADDRESS 41658 ( 0xa2ba )
+END_ADDRESS 41912 ( 0xa3b8 )
 FILVRM 86 ( 0x56 )
 JIFFY 64670 ( 0xfc9e )
-JIFFY_BACK 41399 ( 0xa1b7 )
+JIFFY_BACK 41397 ( 0xa1b5 )
 LDIRMV 89 ( 0x59 )
 LDIRVM 92 ( 0x5c )
 LOOP 41025 ( 0xa041 )
-RANDOM 41328 ( 0xa170 )
-RANDOM_SEED 41363 ( 0xa193 )
+RANDOM 41326 ( 0xa16e )
+RANDOM_SEED 41361 ( 0xa191 )
 RG0SAV 62431 ( 0xf3df )
 RG1SAV 62432 ( 0xf3e0 )
 RG2SAV 62433 ( 0xf3e1 )
@@ -1226,12 +1415,12 @@ SPDRV_INITIALIZE 41202 ( 0xa0f2 )
 SPDRV_UPDATE 41254 ( 0xa126 )
 SPDRV_UPDATE:EXIT 41317 ( 0xa165 )
 SPDRV_UPDATE:LOOP 41277 ( 0xa13d )
-SPDRV_UPDATE:SKIP 41301 ( 0xa155 )
-SPRITE_ATTRIBUTE 41530 ( 0xa23a )
-SPRITE_INDEX 41529 ( 0xa239 )
-SPRITE_PAGE 41528 ( 0xa238 )
-SPRITE_PATTERN 41367 ( 0xa197 )
-SPRITE_POS 41400 ( 0xa1b8 )
+SPDRV_UPDATE:SKIP 41303 ( 0xa157 )
+SPRITE_ATTRIBUTE 41656 ( 0xa2b8 )
+SPRITE_INDEX 41655 ( 0xa2b7 )
+SPRITE_PAGE 41654 ( 0xa2b6 )
+SPRITE_PATTERN 41365 ( 0xa195 )
+SPRITE_POS 41398 ( 0xa1b6 )
 START_ADDRESS 40960 ( 0xa000 )
 VDP_PORT0 152 ( 0x98 )
 VDP_PORT1 153 ( 0x99 )
