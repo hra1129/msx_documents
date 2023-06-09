@@ -76,7 +76,6 @@ random::
 		; update seed
 		ld			[random_seed + 0], de
 		ld			[random_seed + 2], hl
-		ld			a, l
 		ret
 		endscope
 

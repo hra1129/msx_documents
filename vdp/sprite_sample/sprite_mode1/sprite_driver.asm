@@ -108,7 +108,8 @@ spdrv_flip::
 
 				; update write page
 				ld			a, b
-				xor			a, 1						; 0x36 --> 0x37, 0x37 --> 0x36
+				;     0x36 --> 0x37, 0x37 --> 0x36
+				xor			a, ((vram_sprite_attribute1 >> 7) ^ (vram_sprite_attribute2 >> 7)) & 255
 				ld			[sprite_page], a
 				ret
 				endscope

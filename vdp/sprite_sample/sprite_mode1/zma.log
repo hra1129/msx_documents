@@ -628,7 +628,7 @@ Programmed by t.hara
 [	LD A , B] Z80:5cyc, R800:2cyc
 00a11f: 78
 
-[	XOR A , 1] Z80:8cyc, R800:2cyc
+[	XOR A , ( ( VRAM_SPRITE_ATTRIBUTE1 >> 7 ) ^ ( VRAM_SPRITE_ATTRIBUTE2 >> 7 ) ) & 255] Z80:8cyc, R800:2cyc
 00a120: ee 01
 
 [	LD [ SPRITE_PAGE ] , A] Z80:14cyc, R800:6cyc
