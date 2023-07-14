@@ -1,0 +1,649 @@
+Z80 Macro Assembler ZMA v1.0.15
+=====================================================
+Programmed by t.hara
+
+<< code >>
+[	ORG 0X4000]
+	code address: 0x004000
+
+[	DS "AB"]
+004000: 41 42
+
+[	DW INIT]
+004002: 10 40
+
+[	DW 0]
+004004: 00 00
+
+[	DW 0]
+004006: 00 00
+
+[	DW 0]
+004008: 00 00
+
+[	DW 0]
+00400a: 00 00
+
+[	DW 0]
+00400c: 00 00
+
+[	DW 0]
+00400e: 00 00
+
+[INIT ::]
+	global label address: 0x004010
+
+[	LD A , 1] Z80:8cyc, R800:2cyc
+004010: 3e 01
+
+[	CALL CHGMOD] Z80:18cyc, R800:5cyc
+004012: cd 5f 00
+
+[	LD HL , 0X1800] Z80:11cyc, R800:3cyc
+004015: 21 00 18
+
+[	CALL SETWRT] Z80:18cyc, R800:5cyc
+004018: cd 53 00
+
+[	CALL SEARCH_OPLL] Z80:18cyc, R800:5cyc
+00401b: cd bb 40
+
+[	OR A , A] Z80:5cyc, R800:1cyc
+00401e: b7
+
+[	JP Z , NOT_FOUND_OPLL] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+00401f: ca 31 40
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+004022: f5
+
+[	LD HL , S_FOUND] Z80:11cyc, R800:3cyc
+004023: 21 74 40
+
+[	CALL PUTS] Z80:18cyc, R800:5cyc
+004026: cd 3a 40
+
+[	POP AF] Z80:11cyc, R800:5cyc
+004029: f1
+
+[	CALL PUTS_SLOT_NUM] Z80:18cyc, R800:5cyc
+00402a: cd 43 40
+
+[END_LOOP :]
+	label address: 0x00402d
+
+[	HALT] Z80:5cyc, R800:2cyc and wait interrupt
+00402d: 76
+
+[	JP END_LOOP] Z80:11cyc, R800:5cyc
+00402e: c3 2d 40
+
+[NOT_FOUND_OPLL ::]
+	global label address: 0x004031
+
+[	LD HL , S_NOT_FOUND] Z80:11cyc, R800:3cyc
+004031: 21 5c 40
+
+[	CALL PUTS] Z80:18cyc, R800:5cyc
+004034: cd 3a 40
+
+[	JP END_LOOP] Z80:11cyc, R800:5cyc
+004037: c3 2d 40
+
+[PUTS ::]
+	global label address: 0x00403a
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00403a: 7e
+
+[	INC HL] Z80:7cyc, R800:1cyc
+00403b: 23
+
+[	OR A , A] Z80:5cyc, R800:1cyc
+00403c: b7
+
+[	RET Z] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
+00403d: c8
+
+[	OUT [ VDPPORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+00403e: d3 98
+
+[	NOP] Z80:5cyc, R800:1cyc
+004040: 00
+
+[	JR PUTS] Z80:13cyc, R800:3cyc
+004041: 18 f7
+
+[PUTS_SLOT_NUM ::]
+	global label address: 0x004043
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+004043: f5
+
+[	AND A , 3] Z80:8cyc, R800:2cyc
+004044: e6 03
+
+[	ADD A , 48] Z80:8cyc, R800:2cyc
+004046: c6 30
+
+[	OUT [ VDPPORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+004048: d3 98
+
+[	POP AF] Z80:11cyc, R800:5cyc
+00404a: f1
+
+[	OR A , A] Z80:5cyc, R800:1cyc
+00404b: b7
+
+[	RET P] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
+00404c: f0
+
+[	RRCA] Z80:5cyc, R800:1cyc
+00404d: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+00404e: 0f
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+00404f: f5
+
+[	LD A , 45] Z80:8cyc, R800:2cyc
+004050: 3e 2d
+
+[	OUT [ VDPPORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+004052: d3 98
+
+[	POP AF] Z80:11cyc, R800:5cyc
+004054: f1
+
+[	AND A , 3] Z80:8cyc, R800:2cyc
+004055: e6 03
+
+[	ADD A , 48] Z80:8cyc, R800:2cyc
+004057: c6 30
+
+[	OUT [ VDPPORT0 ] , A] Z80:12cyc, R800:10 or 9cyc
+004059: d3 98
+
+[	RET] Z80:11cyc, R800:5cyc
+00405b: c9
+
+[S_NOT_FOUND ::]
+	global label address: 0x00405c
+
+[	DS "MSX-MUSIC is not found."]
+00405c: 4d 53 58 2d 4d 55 53 49
+004064: 43 20 69 73 20 6e 6f 74
+00406c: 20 66 6f 75 6e 64 2e
+
+[	DB 0]
+004073: 00
+
+[S_FOUND ::]
+	global label address: 0x004074
+
+[	DS "Found MSX-MUSIC on SLOT#"]
+004074: 46 6f 75 6e 64 20 4d 53
+00407c: 58 2d 4d 55 53 49 43 20
+004084: 6f 6e 20 53 4c 4f 54 23
+
+[	DB 0]
+00408c: 00
+
+[	INCLUDE ".//msx.asm"] begin
+[	INCLUDE ".//msx.asm"] end
+
+[	INCLUDE ".//get_page1_slot.asm"] begin
+[	SCOPE GET_PAGE1_SLOT]
+	Scope path: GET_PAGE1_SLOT:
+
+[GET_PAGE1_SLOT ::]
+	global label address: 0x00408d
+
+[	IN A , [ 0XA8 ]] Z80:12cyc, R800:10 or 9cyc
+00408d: db a8
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+00408f: 47
+
+[	AND A , 0B00_00_11_00] Z80:8cyc, R800:2cyc
+004090: e6 0c
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004092: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+004093: 0f
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+004094: 4f
+
+[	LD HL , EXPTBL] Z80:11cyc, R800:3cyc
+004095: 21 c1 fc
+
+[	ADD A , L] Z80:5cyc, R800:1cyc
+004098: 85
+
+[	LD L , A] Z80:5cyc, R800:2cyc
+004099: 6f
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+00409a: 7e
+
+[	AND A , 0X80] Z80:8cyc, R800:2cyc
+00409b: e6 80
+
+[	OR A , C] Z80:5cyc, R800:1cyc
+00409d: b1
+
+[	RET P] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
+00409e: f0
+
+[	LD C , A] Z80:5cyc, R800:2cyc
+00409f: 4f
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+0040a0: 78
+
+[	AND A , 0B00_11_11_11] Z80:8cyc, R800:2cyc
+0040a1: e6 3f
+
+[	LD D , A] Z80:5cyc, R800:2cyc
+0040a3: 57
+
+[	LD A , C] Z80:5cyc, R800:2cyc
+0040a4: 79
+
+[	RRCA] Z80:5cyc, R800:1cyc
+0040a5: 0f
+
+[	RRCA] Z80:5cyc, R800:1cyc
+0040a6: 0f
+
+[	AND A , 0B11_00_00_00] Z80:8cyc, R800:2cyc
+0040a7: e6 c0
+
+[	OR A , D] Z80:5cyc, R800:1cyc
+0040a9: b2
+
+[	DI] Z80:5cyc, R800:2cyc
+0040aa: f3
+
+[	OUT [ 0XA8 ] , A] Z80:12cyc, R800:10 or 9cyc
+0040ab: d3 a8
+
+[	LD A , [ 0XFFFF ]] Z80:14cyc, R800:6cyc
+0040ad: 3a ff ff
+
+[	CPL] Z80:5cyc, R800:1cyc
+0040b0: 2f
+
+[	LD D , A] Z80:5cyc, R800:2cyc
+0040b1: 57
+
+[	LD A , B] Z80:5cyc, R800:2cyc
+0040b2: 78
+
+[	OUT [ 0XA8 ] , A] Z80:12cyc, R800:10 or 9cyc
+0040b3: d3 a8
+
+[	EI] Z80:5cyc, R800:1cyc
+0040b5: fb
+
+[	LD A , D] Z80:5cyc, R800:2cyc
+0040b6: 7a
+
+[	AND A , 0B00_00_11_00] Z80:8cyc, R800:2cyc
+0040b7: e6 0c
+
+[	OR A , C] Z80:5cyc, R800:1cyc
+0040b9: b1
+
+[	RET] Z80:11cyc, R800:5cyc
+0040ba: c9
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	INCLUDE ".//get_page1_slot.asm"] end
+
+[	INCLUDE ".//search_opll.asm"] begin
+[	SCOPE SEARCH_OPLL]
+	Scope path: SEARCH_OPLL:
+
+[SEARCH_OPLL ::]
+	global label address: 0x0040bb
+
+[	CALL GET_PAGE1_SLOT] Z80:18cyc, R800:5cyc
+0040bb: cd 8d 40
+
+[	LD [ SCH_OPLL_PAGE1_SLOT ] , A] Z80:14cyc, R800:6cyc
+0040be: 32 1f f4
+
+[	LD HL , COPY_SIGNATURE_SOURCE_START] Z80:11cyc, R800:3cyc
+0040c1: 21 42 41
+
+[	LD DE , SCH_OPLL_COPY_SIGNATURE] Z80:11cyc, R800:3cyc
+0040c4: 11 29 f4
+
+[	LD BC , COPY_SIGNATURE_SIZE] Z80:11cyc, R800:3cyc
+0040c7: 01 19 00
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+0040ca: ed b0
+
+[	LD A , 0XFF] Z80:8cyc, R800:2cyc
+0040cc: 3e ff
+
+[	LD [ SCH_OPLL_SLOT ] , A] Z80:14cyc, R800:6cyc
+0040ce: 32 20 f4
+
+[	INC A] Z80:5cyc, R800:1cyc
+0040d1: 3c
+
+[	JR ENTER_PRIMARY_SLOT_LOOP] Z80:13cyc, R800:3cyc
+0040d2: 18 05
+
+[PRIMARY_SLOT_LOOP :]
+	label address: 0x0040d4
+
+[	INC A] Z80:5cyc, R800:1cyc
+0040d4: 3c
+
+[	AND A , 0B000000_11] Z80:8cyc, R800:2cyc
+0040d5: e6 03
+
+[	JR Z , NOT_FOUND_ARPLOPLL] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+0040d7: 28 43
+
+[ENTER_PRIMARY_SLOT_LOOP :]
+	label address: 0x0040d9
+
+[	LD B , A] Z80:5cyc, R800:2cyc
+0040d9: 47
+
+[	LD H , EXPTBL >> 8] Z80:8cyc, R800:2cyc
+0040da: 26 fc
+
+[	ADD A , EXPTBL & 255] Z80:8cyc, R800:2cyc
+0040dc: c6 c1
+
+[	LD L , A] Z80:5cyc, R800:2cyc
+0040de: 6f
+
+[	LD A , [ HL ]] Z80:8cyc, R800:4cyc
+0040df: 7e
+
+[	AND A , 0X80] Z80:8cyc, R800:2cyc
+0040e0: e6 80
+
+[	OR A , B] Z80:5cyc, R800:1cyc
+0040e2: b0
+
+[EXPANSION_SLOT_LOOP :]
+	label address: 0x0040e3
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+0040e3: f5
+
+[	CALL COPY_SIGNATURE] Z80:18cyc, R800:5cyc
+0040e4: cd 29 f4
+
+[	LD HL , S_OPLL] Z80:11cyc, R800:3cyc
+0040e7: 21 3e 41
+
+[	LD DE , SCH_OPLL_SIGNATURE + 4] Z80:11cyc, R800:3cyc
+0040ea: 11 25 f4
+
+[	LD B , 4] Z80:8cyc, R800:2cyc
+0040ed: 06 04
+
+[COMPARE_OPLL_LOOP :]
+	label address: 0x0040ef
+
+[	LD A , [ DE ]] Z80:8cyc, R800:4cyc
+0040ef: 1a
+
+[	INC DE] Z80:7cyc, R800:1cyc
+0040f0: 13
+
+[	CP A , [ HL ]] Z80:8cyc, R800:4cyc
+0040f1: be
+
+[	INC HL] Z80:7cyc, R800:1cyc
+0040f2: 23
+
+[	JR NZ , NO_MATCH] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+0040f3: 20 1a
+
+[	DJNZ COMPARE_OPLL_LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+0040f5: 10 f8
+
+[	POP AF] Z80:11cyc, R800:5cyc
+0040f7: f1
+
+[	PUSH AF] Z80:12cyc, R800:6cyc
+0040f8: f5
+
+[	LD [ SCH_OPLL_SLOT ] , A] Z80:14cyc, R800:6cyc
+0040f9: 32 20 f4
+
+[	LD HL , S_ARPL] Z80:11cyc, R800:3cyc
+0040fc: 21 3a 41
+
+[	LD DE , SCH_OPLL_SIGNATURE + 0] Z80:11cyc, R800:3cyc
+0040ff: 11 21 f4
+
+[	LD B , 4] Z80:8cyc, R800:2cyc
+004102: 06 04
+
+[COMPARE_ARPL_LOOP :]
+	label address: 0x004104
+
+[	LD A , [ DE ]] Z80:8cyc, R800:4cyc
+004104: 1a
+
+[	INC DE] Z80:7cyc, R800:1cyc
+004105: 13
+
+[	CP A , [ HL ]] Z80:8cyc, R800:4cyc
+004106: be
+
+[	INC HL] Z80:7cyc, R800:1cyc
+004107: 23
+
+[	JR NZ , NO_MATCH] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+004108: 20 05
+
+[	DJNZ COMPARE_ARPL_LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+00410a: 10 f8
+
+[	POP AF] Z80:11cyc, R800:5cyc
+00410c: f1
+
+[	EI] Z80:5cyc, R800:1cyc
+00410d: fb
+
+[	RET] Z80:11cyc, R800:5cyc
+00410e: c9
+
+[NO_MATCH :]
+	label address: 0x00410f
+
+[	POP AF] Z80:11cyc, R800:5cyc
+00410f: f1
+
+[	OR A , A] Z80:5cyc, R800:1cyc
+004110: b7
+
+[	JP P , PRIMARY_SLOT_LOOP] Z80:11cyc, R800:5cyc(cond=true), 3cyc(cond=false)
+004111: f2 d4 40
+
+[	ADD A , 0X04] Z80:8cyc, R800:2cyc
+004114: c6 04
+
+[	BIT 4 , A] Z80:10cyc, R800:2cyc
+004116: cb 67
+
+[	JR Z , EXPANSION_SLOT_LOOP] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+004118: 28 c9
+
+[	JR PRIMARY_SLOT_LOOP] Z80:13cyc, R800:3cyc
+00411a: 18 b8
+
+[NOT_FOUND_ARPLOPLL :]
+	label address: 0x00411c
+
+[	EI] Z80:5cyc, R800:1cyc
+00411c: fb
+
+[	LD A , [ SCH_OPLL_SLOT ]] Z80:14cyc, R800:6cyc
+00411d: 3a 20 f4
+
+[	INC A] Z80:5cyc, R800:1cyc
+004120: 3c
+
+[	RET Z] Z80:12cyc(branch), 6cyc(through), R800:5cyc(branch), 1cyc(through)
+004121: c8
+
+[	DEC A] Z80:5cyc, R800:1cyc
+004122: 3d
+
+[	LD HL , EXTOPLL_IO_SW] Z80:11cyc, R800:3cyc
+004123: 21 f6 7f
+
+[	CALL RDSLT] Z80:18cyc, R800:5cyc
+004126: cd 0c 00
+
+[	OR A , 1] Z80:8cyc, R800:2cyc
+004129: f6 01
+
+[	LD E , A] Z80:5cyc, R800:2cyc
+00412b: 5f
+
+[	LD A , [ SCH_OPLL_SLOT ]] Z80:14cyc, R800:6cyc
+00412c: 3a 20 f4
+
+[	LD HL , EXTOPLL_IO_SW] Z80:11cyc, R800:3cyc
+00412f: 21 f6 7f
+
+[	CALL WRSLT] Z80:18cyc, R800:5cyc
+004132: cd 14 00
+
+[	LD A , [ SCH_OPLL_SLOT ]] Z80:14cyc, R800:6cyc
+004135: 3a 20 f4
+
+[	EI] Z80:5cyc, R800:1cyc
+004138: fb
+
+[	RET] Z80:11cyc, R800:5cyc
+004139: c9
+
+[S_ARPL :]
+	label address: 0x00413a
+
+[	DS "ARPL"]
+00413a: 41 52 50 4c
+
+[S_OPLL :]
+	label address: 0x00413e
+
+[	DS "OPLL"]
+00413e: 4f 50 4c 4c
+
+[	ENDSCOPE]
+	Scope path: 
+
+[COPY_SIGNATURE_SOURCE_START ::]
+	global label address: 0x004142
+
+[	ORG SCH_OPLL_COPY_SIGNATURE]
+	code address: 0x00f429
+
+[	SCOPE COPY_SIGNATURE]
+	Scope path: COPY_SIGNATURE:
+
+[COPY_SIGNATURE ::]
+	global label address: 0x00f429
+
+[	LD H , 0X40] Z80:8cyc, R800:2cyc
+00f429: 26 40
+
+[	CALL ENASLT] Z80:18cyc, R800:5cyc
+00f42b: cd 24 00
+
+[	LD HL , OPLL_SIGNATURE] Z80:11cyc, R800:3cyc
+00f42e: 21 18 40
+
+[	LD DE , SCH_OPLL_SIGNATURE] Z80:11cyc, R800:3cyc
+00f431: 11 21 f4
+
+[	LD BC , 8] Z80:11cyc, R800:3cyc
+00f434: 01 08 00
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+00f437: ed b0
+
+[	LD A , [ SCH_OPLL_PAGE1_SLOT ]] Z80:14cyc, R800:6cyc
+00f439: 3a 1f f4
+
+[	LD H , 0X40] Z80:8cyc, R800:2cyc
+00f43c: 26 40
+
+[	CALL ENASLT] Z80:18cyc, R800:5cyc
+00f43e: cd 24 00
+
+[	RET] Z80:11cyc, R800:5cyc
+00f441: c9
+
+[COPY_SIGNATURE_END ::]
+	global label address: 0x00f442
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	ORG COPY_SIGNATURE_SOURCE_START + COPY_SIGNATURE_SIZE]
+	code address: 0x00415b
+
+[	INCLUDE ".//search_opll.asm"] end
+
+<< label >>
+CHGMOD 95 ( 0x5f )
+COPY_SIGNATURE 62505 ( 0xf429 )
+COPY_SIGNATURE_END 62530 ( 0xf442 )
+COPY_SIGNATURE_SIZE 25 ( 0x19 )
+COPY_SIGNATURE_SOURCE_START 16706 ( 0x4142 )
+ENASLT 36 ( 0x24 )
+END_LOOP 16429 ( 0x402d )
+EXPTBL 64705 ( 0xfcc1 )
+EXTOPLL_IO_SW 32758 ( 0x7ff6 )
+GET_PAGE1_SLOT 16525 ( 0x408d )
+INIT 16400 ( 0x4010 )
+NOT_FOUND_OPLL 16433 ( 0x4031 )
+OPLL_SIGNATURE 16408 ( 0x4018 )
+PUTS 16442 ( 0x403a )
+PUTS_SLOT_NUM 16451 ( 0x4043 )
+RDSLT 12 ( 0xc )
+SCH_OPLL_COPY_SIGNATURE 62505 ( 0xf429 )
+SCH_OPLL_PAGE1_SLOT 62495 ( 0xf41f )
+SCH_OPLL_SIGNATURE 62497 ( 0xf421 )
+SCH_OPLL_SLOT 62496 ( 0xf420 )
+SEARCH_OPLL 16571 ( 0x40bb )
+SEARCH_OPLL:COMPARE_ARPL_LOOP 16644 ( 0x4104 )
+SEARCH_OPLL:COMPARE_OPLL_LOOP 16623 ( 0x40ef )
+SEARCH_OPLL:ENTER_PRIMARY_SLOT_LOOP 16601 ( 0x40d9 )
+SEARCH_OPLL:EXPANSION_SLOT_LOOP 16611 ( 0x40e3 )
+SEARCH_OPLL:NOT_FOUND_ARPLOPLL 16668 ( 0x411c )
+SEARCH_OPLL:NO_MATCH 16655 ( 0x410f )
+SEARCH_OPLL:PRIMARY_SLOT_LOOP 16596 ( 0x40d4 )
+SEARCH_OPLL:S_ARPL 16698 ( 0x413a )
+SEARCH_OPLL:S_OPLL 16702 ( 0x413e )
+SETWRT 83 ( 0x53 )
+SIGNATURE_WORK 62495 ( 0xf41f )
+S_FOUND 16500 ( 0x4074 )
+S_NOT_FOUND 16476 ( 0x405c )
+VDPPORT0 152 ( 0x98 )
+VDPPORT1 153 ( 0x99 )
+VDPPORT2 154 ( 0x9a )
+VDPPORT3 155 ( 0x9b )
+WRSLT 20 ( 0x14 )
