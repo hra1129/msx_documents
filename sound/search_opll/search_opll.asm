@@ -102,7 +102,7 @@ search_opll::
 	primary_slot_loop:
 			inc			a
 			and			a, 0b000000_11
-			jr			z, not_found_arplopll			; ARPLOPLL が見つからなかった場合一巡する。XXXXOPLL が見つかったか調べる。
+			jr			z, not_found_aprlopll			; APRLOPLL が見つからなかった場合一巡する。XXXXOPLL が見つかったか調べる。
 	enter_primary_slot_loop:
 			; 拡張スロットフラグ
 			ld			b, a
@@ -131,32 +131,32 @@ search_opll::
 			pop			af
 			push		af
 			ld			[SCH_OPLL_SLOT], a
-			; 前半4byte が "ARPL" か調べる
-			ld			hl, s_arpl
+			; 前半4byte が "APRL" か調べる
+			ld			hl, s_aprl
 			ld			de, SCH_OPLL_SIGNATURE + 0
 			ld			b, 4
-	compare_arpl_loop:
+	compare_aprl_loop:
 			ld			a, [de]
 			inc			de
 			cp			a, [hl]
 			inc			hl
 			jr			nz, no_match
-			djnz		compare_arpl_loop
-			; ARPLOPLL が見つかったので、戻る
+			djnz		compare_aprl_loop
+			; APRLOPLL が見つかったので、戻る
 			pop			af
 			ei
 			ret
 	no_match:
 			pop			af
-			; ARPLOPLL が見つからなかったので、次のスロット
+			; APRLOPLL が見つからなかったので、次のスロット
 			or			a, a							; 拡張されたスロットか？
 			jp			p, primary_slot_loop			; 拡張されたスロットでないので、次の基本スロットへ。
 			add			a, 0x04							; 次の拡張スロット
 			bit			4, a							; 拡張スロットも全部見終わった？
 			jr			z, expansion_slot_loop			; まだ残ってる場合は、expansion_slot_loop へ。
 			jr			primary_slot_loop				; 次の基本スロットへ。
-	not_found_arplopll:
-			; 全スロット調べたが ARPLOPLL が見つからなかった
+	not_found_aprlopll:
+			; 全スロット調べたが APRLOPLL が見つからなかった
 			ei
 			ld			a, [SCH_OPLL_SLOT]
 			inc			a
@@ -173,8 +173,8 @@ search_opll::
 			ld			a, [SCH_OPLL_SLOT]
 			ei
 			ret
-	s_arpl:
-			ds			"ARPL"
+	s_aprl:
+			ds			"APRL"
 	s_opll:
 			ds			"OPLL"
 			endscope

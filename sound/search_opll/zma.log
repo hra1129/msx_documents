@@ -353,7 +353,7 @@ Programmed by t.hara
 [	AND A , 0B000000_11] Z80:8cyc, R800:2cyc
 0040d5: e6 03
 
-[	JR Z , NOT_FOUND_ARPLOPLL] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+[	JR Z , NOT_FOUND_APRLOPLL] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
 0040d7: 28 43
 
 [ENTER_PRIMARY_SLOT_LOOP :]
@@ -428,7 +428,7 @@ Programmed by t.hara
 [	LD [ SCH_OPLL_SLOT ] , A] Z80:14cyc, R800:6cyc
 0040f9: 32 20 f4
 
-[	LD HL , S_ARPL] Z80:11cyc, R800:3cyc
+[	LD HL , S_APRL] Z80:11cyc, R800:3cyc
 0040fc: 21 3a 41
 
 [	LD DE , SCH_OPLL_SIGNATURE + 0] Z80:11cyc, R800:3cyc
@@ -437,7 +437,7 @@ Programmed by t.hara
 [	LD B , 4] Z80:8cyc, R800:2cyc
 004102: 06 04
 
-[COMPARE_ARPL_LOOP :]
+[COMPARE_APRL_LOOP :]
 	label address: 0x004104
 
 [	LD A , [ DE ]] Z80:8cyc, R800:4cyc
@@ -455,7 +455,7 @@ Programmed by t.hara
 [	JR NZ , NO_MATCH] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
 004108: 20 05
 
-[	DJNZ COMPARE_ARPL_LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
+[	DJNZ COMPARE_APRL_LOOP] Z80:14cyc(cond=true), 9cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
 00410a: 10 f8
 
 [	POP AF] Z80:11cyc, R800:5cyc
@@ -491,7 +491,7 @@ Programmed by t.hara
 [	JR PRIMARY_SLOT_LOOP] Z80:13cyc, R800:3cyc
 00411a: 18 b8
 
-[NOT_FOUND_ARPLOPLL :]
+[NOT_FOUND_APRLOPLL :]
 	label address: 0x00411c
 
 [	EI] Z80:5cyc, R800:1cyc
@@ -539,11 +539,11 @@ Programmed by t.hara
 [	RET] Z80:11cyc, R800:5cyc
 004139: c9
 
-[S_ARPL :]
+[S_APRL :]
 	label address: 0x00413a
 
-[	DS "ARPL"]
-00413a: 41 52 50 4c
+[	DS "APRL"]
+00413a: 41 50 52 4c
 
 [S_OPLL :]
 	label address: 0x00413e
@@ -629,14 +629,14 @@ SCH_OPLL_PAGE1_SLOT 62495 ( 0xf41f )
 SCH_OPLL_SIGNATURE 62497 ( 0xf421 )
 SCH_OPLL_SLOT 62496 ( 0xf420 )
 SEARCH_OPLL 16571 ( 0x40bb )
-SEARCH_OPLL:COMPARE_ARPL_LOOP 16644 ( 0x4104 )
+SEARCH_OPLL:COMPARE_APRL_LOOP 16644 ( 0x4104 )
 SEARCH_OPLL:COMPARE_OPLL_LOOP 16623 ( 0x40ef )
 SEARCH_OPLL:ENTER_PRIMARY_SLOT_LOOP 16601 ( 0x40d9 )
 SEARCH_OPLL:EXPANSION_SLOT_LOOP 16611 ( 0x40e3 )
-SEARCH_OPLL:NOT_FOUND_ARPLOPLL 16668 ( 0x411c )
+SEARCH_OPLL:NOT_FOUND_APRLOPLL 16668 ( 0x411c )
 SEARCH_OPLL:NO_MATCH 16655 ( 0x410f )
 SEARCH_OPLL:PRIMARY_SLOT_LOOP 16596 ( 0x40d4 )
-SEARCH_OPLL:S_ARPL 16698 ( 0x413a )
+SEARCH_OPLL:S_APRL 16698 ( 0x413a )
 SEARCH_OPLL:S_OPLL 16702 ( 0x413e )
 SETWRT 83 ( 0x53 )
 SIGNATURE_WORK 62495 ( 0xf41f )
