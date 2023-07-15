@@ -74,8 +74,9 @@ init::
 				call		SETWRT
 				; OPLLスロットを調べる
 				call		search_opll
-				or			a, a
+				inc			a
 				jp			z, not_found_opll
+				dec			a
 				; 文字列を表示する
 				push		af
 				ld			hl, s_found

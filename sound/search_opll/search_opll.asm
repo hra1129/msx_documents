@@ -80,7 +80,7 @@ SCH_OPLL_COPY_SIGNATURE	:= SCH_OPLL_SIGNATURE + 8		; Xbytes: 指定のスロットの 40
 ;		all
 ;	description)
 ;		MSX-MUSIC の存在を調べて、そのスロット番号を返す。
-;		見つからなかった場合は、A には 00h が返る。
+;		見つからなかった場合は、A には FFh が返る。
 ; ------------------------------------------------------------------------------
 			scope		search_opll
 search_opll::
@@ -159,9 +159,8 @@ search_opll::
 			; 全スロット調べたが APRLOPLL が見つからなかった
 			ei
 			ld			a, [SCH_OPLL_SLOT]
-			inc			a
+			cp			a, 0xFF
 			ret			z								; XXXXOPLL も見つからなかった
-			dec			a
 			; 見つけたスロットの EXTOPLL_IO_SW の bit0 を 1 にする
 			ld			hl, EXTOPLL_IO_SW
 			call		RDSLT
