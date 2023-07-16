@@ -131,6 +131,88 @@ search_pac::
 			endscope
 
 ; ------------------------------------------------------------------------------
+;	open_pac
+;	input)
+;		A ..... PACのスロット (※これが PAC であるかのチェックは行いません)
+;	output)
+;		none
+;	break)
+;		all
+;	description)
+;		page1 を PAC のスロットへ切り替えて、SRAMを出現させます。
+;		このルーチンの中で割り込み禁止にして、そのまま戻ります。
+;		page1 を PAC のスロットへ切り替えて戻るので、page1 から呼び出すと
+;		暴走するのでご注意下さい。
+;		このルーチン自体が page1 に存在していても問題ありません。
+;		A に PAC 以外のスロットを指定した場合の動作は保証しません。
+;		SRAMへのアクセスが完了後に、page1 を元のスロットへ戻すのは、
+;		disable_pac で戻して下さい。
+;		H.TIMI から OPLDRV を呼ぶようにしていて、FMPAC のスロットを A に指定
+;		して呼び出している場合、disable_pac せずに ENASLT で page1 を戻すと
+;		FMPAC のスロットに OPLDRV が見えなくなっている（SRAMになっている)状態
+;		になり、暴走するのでご注意下さい。
+; ------------------------------------------------------------------------------
+			scope		open_pac
+open_pac::
+			; 指定のスロットがPACであるか調べるルーチンを Page3へコピーする
+			ld			hl, open_pac_sub_start
+			ld			de, SCH_PAC_CHECK_PAC
+			ld			bc, open_pac_sub_size
+			ldir
+			jp			open_pac_sub
+
+open_pac_sub_start:
+			org			SCH_PAC_CHECK_PAC
+open_pac_sub:
+			; page1 を指定のスロットへ切り替える
+			ld			h, 0x40
+			call		ENASLT
+			; SRAMバンクに切り替える
+			ld			hl, 0x694D				; SRAMバンクID
+			ld			[PAC_IO_SW1], hl
+			ret
+open_pac_sub_end:
+open_pac_sub_size		= open_pac_sub_end - open_pac_sub
+			org			open_pac_sub_start + open_pac_sub_size
+			endscope
+
+; ------------------------------------------------------------------------------
+;	close_pac
+;	input)
+;		A ..... page1 に出現させるスロット
+;	output)
+;		none
+;	break)
+;		all
+;	description)
+;		open_pac した後に、page1 を元に戻す場合に close_pac を使います。
+;		SRAMを隠してからスロットを切り替えるので、FMPAC の FM-BIOS が復活します。
+;		open_pac した場合は、必ずこのルーチンで page1 を戻して下さい。
+; ------------------------------------------------------------------------------
+			scope		close_pac
+close_pac::
+			; 指定のスロットがPACであるか調べるルーチンを Page3へコピーする
+			ld			hl, close_pac_sub_start
+			ld			de, SCH_PAC_CHECK_PAC
+			ld			bc, close_pac_sub_size
+			ldir
+			jp			close_pac_sub
+
+close_pac_sub_start:
+			org			SCH_PAC_CHECK_PAC
+close_pac_sub:
+			; SRAMを隠す
+			ld			[PAC_IO_SW1], bc
+			; page1 を指定のスロットへ切り替える
+			ld			h, 0x40
+			call		ENASLT
+			ret
+close_pac_sub_end:
+close_pac_sub_size		= close_pac_sub_end - close_pac_sub
+			org			close_pac_sub_start + close_pac_sub_size
+			endscope
+
+; ------------------------------------------------------------------------------
 ;	check_pac
 ;	input)
 ;		A ..... 対象のスロット
@@ -173,6 +255,9 @@ check_pac::
 			; スロット番号を記録する
 			pop			af
 			ld			[SCH_PAC_SLOT], a
+			; SRAMを隠す
+			xor			a, a
+			ld			[PAC_IO_SW1], a
 	_exit:
 			; 元のスロットへ戻す
 			ld			a, [SCH_PAC_PAGE1_SLOT]

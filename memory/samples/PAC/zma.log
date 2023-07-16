@@ -324,13 +324,13 @@ Programmed by t.hara
 0040b3: 32 1f f4
 
 [	LD HL , CHECK_PAC_START] Z80:11cyc, R800:3cyc
-0040b6: 21 f5 40
+0040b6: 21 27 41
 
 [	LD DE , SCH_PAC_CHECK_PAC] Z80:11cyc, R800:3cyc
 0040b9: 11 21 f4
 
 [	LD BC , CHECK_PAC_SIZE] Z80:11cyc, R800:3cyc
-0040bc: 01 4d 00
+0040bc: 01 51 00
 
 [	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
 0040bf: ed b0
@@ -446,8 +446,113 @@ Programmed by t.hara
 [	ENDSCOPE]
 	Scope path: 
 
-[CHECK_PAC_START ::]
+[	SCOPE OPEN_PAC]
+	Scope path: OPEN_PAC:
+
+[OPEN_PAC ::]
 	global label address: 0x0040f5
+
+[	LD HL , OPEN_PAC_SUB_START] Z80:11cyc, R800:3cyc
+0040f5: 21 03 41
+
+[	LD DE , SCH_PAC_CHECK_PAC] Z80:11cyc, R800:3cyc
+0040f8: 11 21 f4
+
+[	LD BC , OPEN_PAC_SUB_SIZE] Z80:11cyc, R800:3cyc
+0040fb: 01 0c 00
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+0040fe: ed b0
+
+[	JP OPEN_PAC_SUB] Z80:11cyc, R800:5cyc
+004100: c3 21 f4
+
+[OPEN_PAC_SUB_START :]
+	label address: 0x004103
+
+[	ORG SCH_PAC_CHECK_PAC]
+	code address: 0x00f421
+
+[OPEN_PAC_SUB :]
+	label address: 0x00f421
+
+[	LD H , 0X40] Z80:8cyc, R800:2cyc
+00f421: 26 40
+
+[	CALL ENASLT] Z80:18cyc, R800:5cyc
+00f423: cd 24 00
+
+[	LD HL , 0X694D] Z80:11cyc, R800:3cyc
+00f426: 21 4d 69
+
+[	LD [ PAC_IO_SW1 ] , HL] Z80:17cyc, R800:7cyc
+00f429: 22 fe 5f
+
+[	RET] Z80:11cyc, R800:5cyc
+00f42c: c9
+
+[OPEN_PAC_SUB_END :]
+	label address: 0x00f42d
+
+[	ORG OPEN_PAC_SUB_START + OPEN_PAC_SUB_SIZE]
+	code address: 0x00410f
+
+[	ENDSCOPE]
+	Scope path: 
+
+[	SCOPE CLOSE_PAC]
+	Scope path: CLOSE_PAC:
+
+[CLOSE_PAC ::]
+	global label address: 0x00410f
+
+[	LD HL , CLOSE_PAC_SUB_START] Z80:11cyc, R800:3cyc
+00410f: 21 1d 41
+
+[	LD DE , SCH_PAC_CHECK_PAC] Z80:11cyc, R800:3cyc
+004112: 11 21 f4
+
+[	LD BC , CLOSE_PAC_SUB_SIZE] Z80:11cyc, R800:3cyc
+004115: 01 0a 00
+
+[	LDIR] Z80:23cyc(BC!=0), 18cyc(BC=0), R800:?cyc(BC!=0), 7cyc(BC=0)
+004118: ed b0
+
+[	JP CLOSE_PAC_SUB] Z80:11cyc, R800:5cyc
+00411a: c3 21 f4
+
+[CLOSE_PAC_SUB_START :]
+	label address: 0x00411d
+
+[	ORG SCH_PAC_CHECK_PAC]
+	code address: 0x00f421
+
+[CLOSE_PAC_SUB :]
+	label address: 0x00f421
+
+[	LD [ PAC_IO_SW1 ] , BC] Z80:22cyc, R800:8cyc
+00f421: ed 43 fe 5f
+
+[	LD H , 0X40] Z80:8cyc, R800:2cyc
+00f425: 26 40
+
+[	CALL ENASLT] Z80:18cyc, R800:5cyc
+00f427: cd 24 00
+
+[	RET] Z80:11cyc, R800:5cyc
+00f42a: c9
+
+[CLOSE_PAC_SUB_END :]
+	label address: 0x00f42b
+
+[	ORG CLOSE_PAC_SUB_START + CLOSE_PAC_SUB_SIZE]
+	code address: 0x004127
+
+[	ENDSCOPE]
+	Scope path: 
+
+[CHECK_PAC_START ::]
+	global label address: 0x004127
 
 [	ORG SCH_PAC_CHECK_PAC]
 	code address: 0x00f421
@@ -483,19 +588,19 @@ Programmed by t.hara
 00f42e: 21 00 40
 
 [	CALL CHECK_RAM] Z80:18cyc, R800:5cyc
-00f431: cd 67 f4
+00f431: cd 6b f4
 
 [	JR Z , NO_MATCH] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f434: 28 2e
+00f434: 28 32
 
 [	LD HL , 0X4800] Z80:11cyc, R800:3cyc
 00f436: 21 00 48
 
 [	CALL CHECK_RAM] Z80:18cyc, R800:5cyc
-00f439: cd 67 f4
+00f439: cd 6b f4
 
 [	JR Z , NO_MATCH] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f43c: 28 26
+00f43c: 28 2a
 
 [	LD HL , 0X694D] Z80:11cyc, R800:3cyc
 00f43e: 21 4d 69
@@ -507,19 +612,19 @@ Programmed by t.hara
 00f444: 21 00 40
 
 [	CALL CHECK_RAM] Z80:18cyc, R800:5cyc
-00f447: cd 67 f4
+00f447: cd 6b f4
 
 [	JR NZ , NO_MATCH] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f44a: 20 18
+00f44a: 20 1c
 
 [	LD HL , 0X4800] Z80:11cyc, R800:3cyc
 00f44c: 21 00 48
 
 [	CALL CHECK_RAM] Z80:18cyc, R800:5cyc
-00f44f: cd 67 f4
+00f44f: cd 6b f4
 
 [	JR NZ , NO_MATCH] Z80:13cyc(cond=true), 8cyc(cond=false), R800:3cyc(cond=true), 2cyc(cond=false)
-00f452: 20 10
+00f452: 20 14
 
 [	POP AF] Z80:11cyc, R800:5cyc
 00f454: f1
@@ -527,83 +632,99 @@ Programmed by t.hara
 [	LD [ SCH_PAC_SLOT ] , A] Z80:14cyc, R800:6cyc
 00f455: 32 20 f4
 
+[	XOR A , A] Z80:5cyc, R800:1cyc
+00f458: af
+
+[	LD [ PAC_IO_SW1 ] , A] Z80:14cyc, R800:6cyc
+00f459: 32 fe 5f
+
 [_EXIT :]
-	label address: 0x00f458
+	label address: 0x00f45c
 
 [	LD A , [ SCH_PAC_PAGE1_SLOT ]] Z80:14cyc, R800:6cyc
-00f458: 3a 1f f4
+00f45c: 3a 1f f4
 
 [	LD H , 0X40] Z80:8cyc, R800:2cyc
-00f45b: 26 40
+00f45f: 26 40
 
 [	CALL ENASLT] Z80:18cyc, R800:5cyc
-00f45d: cd 24 00
+00f461: cd 24 00
 
 [	LD A , [ SCH_PAC_SLOT ]] Z80:14cyc, R800:6cyc
-00f460: 3a 20 f4
+00f464: 3a 20 f4
 
 [	RET] Z80:11cyc, R800:5cyc
-00f463: c9
+00f467: c9
 
 [NO_MATCH :]
-	label address: 0x00f464
+	label address: 0x00f468
 
 [	POP AF] Z80:11cyc, R800:5cyc
-00f464: f1
+00f468: f1
 
 [	JR _EXIT] Z80:13cyc, R800:3cyc
-00f465: 18 f1
+00f469: 18 f1
 
 [CHECK_RAM :]
-	label address: 0x00f467
+	label address: 0x00f46b
 
 [	LD A , [ HL ]] Z80:8cyc, R800:4cyc
-00f467: 7e
+00f46b: 7e
 
 [	CPL] Z80:5cyc, R800:1cyc
-00f468: 2f
+00f46c: 2f
 
 [	LD [ HL ] , A] Z80:8cyc, R800:4cyc
-00f469: 77
+00f46d: 77
 
 [	CP A , [ HL ]] Z80:8cyc, R800:4cyc
-00f46a: be
+00f46e: be
 
 [	CPL] Z80:5cyc, R800:1cyc
-00f46b: 2f
+00f46f: 2f
 
 [	LD [ HL ] , A] Z80:8cyc, R800:4cyc
-00f46c: 77
+00f470: 77
 
 [	RET] Z80:11cyc, R800:5cyc
-00f46d: c9
+00f471: c9
 
 [CHECK_PAC_END ::]
-	global label address: 0x00f46e
+	global label address: 0x00f472
 
 [	ENDSCOPE]
 	Scope path: 
 
 [	ORG CHECK_PAC_START + CHECK_PAC_SIZE]
-	code address: 0x004142
+	code address: 0x004178
 
 [	INCLUDE ".//search_pac.asm"] end
 
 << label >>
 CHECK_PAC 62497 ( 0xf421 )
-CHECK_PAC:CHECK_RAM 62567 ( 0xf467 )
-CHECK_PAC:NO_MATCH 62564 ( 0xf464 )
-CHECK_PAC:_EXIT 62552 ( 0xf458 )
-CHECK_PAC_END 62574 ( 0xf46e )
-CHECK_PAC_SIZE 77 ( 0x4d )
-CHECK_PAC_START 16629 ( 0x40f5 )
+CHECK_PAC:CHECK_RAM 62571 ( 0xf46b )
+CHECK_PAC:NO_MATCH 62568 ( 0xf468 )
+CHECK_PAC:_EXIT 62556 ( 0xf45c )
+CHECK_PAC_END 62578 ( 0xf472 )
+CHECK_PAC_SIZE 81 ( 0x51 )
+CHECK_PAC_START 16679 ( 0x4127 )
 CHGMOD 95 ( 0x5f )
+CLOSE_PAC 16655 ( 0x410f )
+CLOSE_PAC:CLOSE_PAC_SUB 62497 ( 0xf421 )
+CLOSE_PAC:CLOSE_PAC_SUB_END 62507 ( 0xf42b )
+CLOSE_PAC:CLOSE_PAC_SUB_SIZE 10 ( 0xa )
+CLOSE_PAC:CLOSE_PAC_SUB_START 16669 ( 0x411d )
 ENASLT 36 ( 0x24 )
 END_LOOP 16430 ( 0x402e )
 EXPTBL 64705 ( 0xfcc1 )
 GET_PAGE1_SLOT 16514 ( 0x4082 )
 INIT 16400 ( 0x4010 )
 NOT_FOUND_PAC 16434 ( 0x4032 )
+OPEN_PAC 16629 ( 0x40f5 )
+OPEN_PAC:OPEN_PAC_SUB 62497 ( 0xf421 )
+OPEN_PAC:OPEN_PAC_SUB_END 62509 ( 0xf42d )
+OPEN_PAC:OPEN_PAC_SUB_SIZE 12 ( 0xc )
+OPEN_PAC:OPEN_PAC_SUB_START 16643 ( 0x4103 )
 PAC_IO_SW1 24574 ( 0x5ffe )
 PAC_IO_SW2 24575 ( 0x5fff )
 PUTS 16443 ( 0x403b )
