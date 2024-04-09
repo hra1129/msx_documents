@@ -1,0 +1,3059 @@
+Z80 Macro Assembler ZMA v1.0.18
+=====================================================
+Programmed by t.hara
+
+  DEFS is DEFINE STRING (default).
+  OUTPUT TYPE: BINARY
+
+<< code >>
+LINE# |OFFSET|ADDR|MNEMONIC
+======+======+====+==================================
+     7|      |    |INCLUDE "msxbios.asm" begin
+    61|      |    |CHKRAM := 0x0000
+      |      |    |  Global integer symbol [CHKRAM] = 0 (0x0)
+------+------+----+----------------------------------
+    62|      |    |SYNCHR := 0x0008
+      |      |    |  Global integer symbol [SYNCHR] = 8 (0x8)
+------+------+----+----------------------------------
+    63|      |    |RDSLT := 0x000C
+      |      |    |  Global integer symbol [RDSLT] = 12 (0xc)
+------+------+----+----------------------------------
+    64|      |    |CHRGTR := 0x0010
+      |      |    |  Global integer symbol [CHRGTR] = 16 (0x10)
+------+------+----+----------------------------------
+    65|      |    |WRSLT := 0x0014
+      |      |    |  Global integer symbol [WRSLT] = 20 (0x14)
+------+------+----+----------------------------------
+    66|      |    |OUTDO := 0x0018
+      |      |    |  Global integer symbol [OUTDO] = 24 (0x18)
+------+------+----+----------------------------------
+    67|      |    |CALSLT := 0x001C
+      |      |    |  Global integer symbol [CALSLT] = 28 (0x1c)
+------+------+----+----------------------------------
+    68|      |    |DCOMPR := 0x0020
+      |      |    |  Global integer symbol [DCOMPR] = 32 (0x20)
+------+------+----+----------------------------------
+    69|      |    |ENASLT := 0x0024
+      |      |    |  Global integer symbol [ENASLT] = 36 (0x24)
+------+------+----+----------------------------------
+    70|      |    |GETYPR := 0x0028
+      |      |    |  Global integer symbol [GETYPR] = 40 (0x28)
+------+------+----+----------------------------------
+    71|      |    |CALLF := 0x0030
+      |      |    |  Global integer symbol [CALLF] = 48 (0x30)
+------+------+----+----------------------------------
+    72|      |    |KEYINT := 0x0038
+      |      |    |  Global integer symbol [KEYINT] = 56 (0x38)
+------+------+----+----------------------------------
+    73|      |    |INITIO := 0x003B
+      |      |    |  Global integer symbol [INITIO] = 59 (0x3b)
+------+------+----+----------------------------------
+    74|      |    |INIFNK := 0x003E
+      |      |    |  Global integer symbol [INIFNK] = 62 (0x3e)
+------+------+----+----------------------------------
+    75|      |    |DISSCR := 0x0041
+      |      |    |  Global integer symbol [DISSCR] = 65 (0x41)
+------+------+----+----------------------------------
+    76|      |    |ENASCR := 0x0044
+      |      |    |  Global integer symbol [ENASCR] = 68 (0x44)
+------+------+----+----------------------------------
+    77|      |    |WRTVDP := 0x0047
+      |      |    |  Global integer symbol [WRTVDP] = 71 (0x47)
+------+------+----+----------------------------------
+    78|      |    |RDVRM := 0x004A
+      |      |    |  Global integer symbol [RDVRM] = 74 (0x4a)
+------+------+----+----------------------------------
+    79|      |    |WRTVRM := 0x004D
+      |      |    |  Global integer symbol [WRTVRM] = 77 (0x4d)
+------+------+----+----------------------------------
+    80|      |    |SETRD := 0x0050
+      |      |    |  Global integer symbol [SETRD] = 80 (0x50)
+------+------+----+----------------------------------
+    81|      |    |SETWRT := 0x0053
+      |      |    |  Global integer symbol [SETWRT] = 83 (0x53)
+------+------+----+----------------------------------
+    82|      |    |FILVRM := 0x0056
+      |      |    |  Global integer symbol [FILVRM] = 86 (0x56)
+------+------+----+----------------------------------
+    83|      |    |LDIRMV := 0x0059
+      |      |    |  Global integer symbol [LDIRMV] = 89 (0x59)
+------+------+----+----------------------------------
+    84|      |    |LDIRVM := 0x005C
+      |      |    |  Global integer symbol [LDIRVM] = 92 (0x5c)
+------+------+----+----------------------------------
+    85|      |    |CHGMOD := 0x005F
+      |      |    |  Global integer symbol [CHGMOD] = 95 (0x5f)
+------+------+----+----------------------------------
+    86|      |    |CHGCLR := 0x0062
+      |      |    |  Global integer symbol [CHGCLR] = 98 (0x62)
+------+------+----+----------------------------------
+    87|      |    |NMI := 0x0066
+      |      |    |  Global integer symbol [NMI] = 102 (0x66)
+------+------+----+----------------------------------
+    88|      |    |CLRSPR := 0x0069
+      |      |    |  Global integer symbol [CLRSPR] = 105 (0x69)
+------+------+----+----------------------------------
+    89|      |    |INITXT := 0x006C
+      |      |    |  Global integer symbol [INITXT] = 108 (0x6c)
+------+------+----+----------------------------------
+    90|      |    |INIT32 := 0x006F
+      |      |    |  Global integer symbol [INIT32] = 111 (0x6f)
+------+------+----+----------------------------------
+    91|      |    |INIGRP := 0x0072
+      |      |    |  Global integer symbol [INIGRP] = 114 (0x72)
+------+------+----+----------------------------------
+    92|      |    |INIMLT := 0x0075
+      |      |    |  Global integer symbol [INIMLT] = 117 (0x75)
+------+------+----+----------------------------------
+    93|      |    |SETTXT := 0x0078
+      |      |    |  Global integer symbol [SETTXT] = 120 (0x78)
+------+------+----+----------------------------------
+    94|      |    |SETT32 := 0x007B
+      |      |    |  Global integer symbol [SETT32] = 123 (0x7b)
+------+------+----+----------------------------------
+    95|      |    |SETGRP := 0x007E
+      |      |    |  Global integer symbol [SETGRP] = 126 (0x7e)
+------+------+----+----------------------------------
+    96|      |    |SETMLT := 0x0081
+      |      |    |  Global integer symbol [SETMLT] = 129 (0x81)
+------+------+----+----------------------------------
+    97|      |    |CALPAT := 0x0084
+      |      |    |  Global integer symbol [CALPAT] = 132 (0x84)
+------+------+----+----------------------------------
+    98|      |    |CALATR := 0x0087
+      |      |    |  Global integer symbol [CALATR] = 135 (0x87)
+------+------+----+----------------------------------
+    99|      |    |GSPSIZ := 0x008A
+      |      |    |  Global integer symbol [GSPSIZ] = 138 (0x8a)
+------+------+----+----------------------------------
+   100|      |    |GRPPRT := 0x008D
+      |      |    |  Global integer symbol [GRPPRT] = 141 (0x8d)
+------+------+----+----------------------------------
+   101|      |    |GICINI := 0x0090
+      |      |    |  Global integer symbol [GICINI] = 144 (0x90)
+------+------+----+----------------------------------
+   102|      |    |WRTPSG := 0x0093
+      |      |    |  Global integer symbol [WRTPSG] = 147 (0x93)
+------+------+----+----------------------------------
+   103|      |    |RDPSG := 0x0096
+      |      |    |  Global integer symbol [RDPSG] = 150 (0x96)
+------+------+----+----------------------------------
+   104|      |    |STRTMS := 0x0099
+      |      |    |  Global integer symbol [STRTMS] = 153 (0x99)
+------+------+----+----------------------------------
+   105|      |    |CHSNS := 0x009C
+      |      |    |  Global integer symbol [CHSNS] = 156 (0x9c)
+------+------+----+----------------------------------
+   106|      |    |CHGET := 0x009F
+      |      |    |  Global integer symbol [CHGET] = 159 (0x9f)
+------+------+----+----------------------------------
+   107|      |    |CHPUT := 0x00A2
+      |      |    |  Global integer symbol [CHPUT] = 162 (0xa2)
+------+------+----+----------------------------------
+   108|      |    |LPTOUT := 0x00A5
+      |      |    |  Global integer symbol [LPTOUT] = 165 (0xa5)
+------+------+----+----------------------------------
+   109|      |    |LPTSTT := 0x00A8
+      |      |    |  Global integer symbol [LPTSTT] = 168 (0xa8)
+------+------+----+----------------------------------
+   110|      |    |CNVCHR := 0x00AB
+      |      |    |  Global integer symbol [CNVCHR] = 171 (0xab)
+------+------+----+----------------------------------
+   111|      |    |PINLIN := 0x00AE
+      |      |    |  Global integer symbol [PINLIN] = 174 (0xae)
+------+------+----+----------------------------------
+   112|      |    |INLIN := 0x00B1
+      |      |    |  Global integer symbol [INLIN] = 177 (0xb1)
+------+------+----+----------------------------------
+   113|      |    |QINLIN := 0x00B4
+      |      |    |  Global integer symbol [QINLIN] = 180 (0xb4)
+------+------+----+----------------------------------
+   114|      |    |BREAKX := 0x00B7
+      |      |    |  Global integer symbol [BREAKX] = 183 (0xb7)
+------+------+----+----------------------------------
+   115|      |    |BEEP := 0x00C0
+      |      |    |  Global integer symbol [BEEP] = 192 (0xc0)
+------+------+----+----------------------------------
+   116|      |    |CLS := 0x00C3
+      |      |    |  Global integer symbol [CLS] = 195 (0xc3)
+------+------+----+----------------------------------
+   117|      |    |POSIT := 0x00C6
+      |      |    |  Global integer symbol [POSIT] = 198 (0xc6)
+------+------+----+----------------------------------
+   118|      |    |FNKSB := 0x00C9
+      |      |    |  Global integer symbol [FNKSB] = 201 (0xc9)
+------+------+----+----------------------------------
+   119|      |    |ERAFNK := 0x00CC
+      |      |    |  Global integer symbol [ERAFNK] = 204 (0xcc)
+------+------+----+----------------------------------
+   120|      |    |DSPFNK := 0x00CF
+      |      |    |  Global integer symbol [DSPFNK] = 207 (0xcf)
+------+------+----+----------------------------------
+   121|      |    |TOTEXT := 0x00D2
+      |      |    |  Global integer symbol [TOTEXT] = 210 (0xd2)
+------+------+----+----------------------------------
+   122|      |    |GTSTCK := 0x00D5
+      |      |    |  Global integer symbol [GTSTCK] = 213 (0xd5)
+------+------+----+----------------------------------
+   123|      |    |GTTRIG := 0x00D8
+      |      |    |  Global integer symbol [GTTRIG] = 216 (0xd8)
+------+------+----+----------------------------------
+   124|      |    |GTPAD := 0x00DB
+      |      |    |  Global integer symbol [GTPAD] = 219 (0xdb)
+------+------+----+----------------------------------
+   125|      |    |GTPDL := 0x00DE
+      |      |    |  Global integer symbol [GTPDL] = 222 (0xde)
+------+------+----+----------------------------------
+   126|      |    |TAPION := 0x00E1
+      |      |    |  Global integer symbol [TAPION] = 225 (0xe1)
+------+------+----+----------------------------------
+   127|      |    |TAPIN := 0x00E4
+      |      |    |  Global integer symbol [TAPIN] = 228 (0xe4)
+------+------+----+----------------------------------
+   128|      |    |TAPIOF := 0x00E7
+      |      |    |  Global integer symbol [TAPIOF] = 231 (0xe7)
+------+------+----+----------------------------------
+   129|      |    |TAPOON := 0x00EA
+      |      |    |  Global integer symbol [TAPOON] = 234 (0xea)
+------+------+----+----------------------------------
+   130|      |    |TAPOUT := 0x00ED
+      |      |    |  Global integer symbol [TAPOUT] = 237 (0xed)
+------+------+----+----------------------------------
+   131|      |    |TAPOOF := 0x00F0
+      |      |    |  Global integer symbol [TAPOOF] = 240 (0xf0)
+------+------+----+----------------------------------
+   132|      |    |STMOTR := 0x00F3
+      |      |    |  Global integer symbol [STMOTR] = 243 (0xf3)
+------+------+----+----------------------------------
+   133|      |    |CHGCAP := 0x0132
+      |      |    |  Global integer symbol [CHGCAP] = 306 (0x132)
+------+------+----+----------------------------------
+   134|      |    |CHGSND := 0x0135
+      |      |    |  Global integer symbol [CHGSND] = 309 (0x135)
+------+------+----+----------------------------------
+   135|      |    |RSLREG := 0x0138
+      |      |    |  Global integer symbol [RSLREG] = 312 (0x138)
+------+------+----+----------------------------------
+   136|      |    |WSLREG := 0x013B
+      |      |    |  Global integer symbol [WSLREG] = 315 (0x13b)
+------+------+----+----------------------------------
+   137|      |    |RDVDP := 0x013E
+      |      |    |  Global integer symbol [RDVDP] = 318 (0x13e)
+------+------+----+----------------------------------
+   138|      |    |SNSMAT := 0x0141
+      |      |    |  Global integer symbol [SNSMAT] = 321 (0x141)
+------+------+----+----------------------------------
+   139|      |    |ISFLIO := 0x014A
+      |      |    |  Global integer symbol [ISFLIO] = 330 (0x14a)
+------+------+----+----------------------------------
+   140|      |    |OUTDLP := 0x014D
+      |      |    |  Global integer symbol [OUTDLP] = 333 (0x14d)
+------+------+----+----------------------------------
+   141|      |    |KILBUF := 0x0156
+      |      |    |  Global integer symbol [KILBUF] = 342 (0x156)
+------+------+----+----------------------------------
+   142|      |    |CALBAS := 0x0159
+      |      |    |  Global integer symbol [CALBAS] = 345 (0x159)
+------+------+----+----------------------------------
+   145|      |    |SUBROM := 0x015C
+      |      |    |  Global integer symbol [SUBROM] = 348 (0x15c)
+------+------+----+----------------------------------
+   146|      |    |EXTROM := 0x015F
+      |      |    |  Global integer symbol [EXTROM] = 351 (0x15f)
+------+------+----+----------------------------------
+   147|      |    |EOL := 0x0168
+      |      |    |  Global integer symbol [EOL] = 360 (0x168)
+------+------+----+----------------------------------
+   148|      |    |BIGFIL := 0x016B
+      |      |    |  Global integer symbol [BIGFIL] = 363 (0x16b)
+------+------+----+----------------------------------
+   149|      |    |NSETRD := 0x016E
+      |      |    |  Global integer symbol [NSETRD] = 366 (0x16e)
+------+------+----+----------------------------------
+   150|      |    |NSTWRT := 0x0171
+      |      |    |  Global integer symbol [NSTWRT] = 369 (0x171)
+------+------+----+----------------------------------
+   151|      |    |NRDVRM := 0x0174
+      |      |    |  Global integer symbol [NRDVRM] = 372 (0x174)
+------+------+----+----------------------------------
+   152|      |    |NWRVRM := 0x0177
+      |      |    |  Global integer symbol [NWRVRM] = 375 (0x177)
+------+------+----+----------------------------------
+   153|      |    |RDRES := 0x017A
+      |      |    |  Global integer symbol [RDRES] = 378 (0x17a)
+------+------+----+----------------------------------
+   154|      |    |WRRES := 0x017D
+      |      |    |  Global integer symbol [WRRES] = 381 (0x17d)
+------+------+----+----------------------------------
+   157|      |    |CHGCPU := 0x0180
+      |      |    |  Global integer symbol [CHGCPU] = 384 (0x180)
+------+------+----+----------------------------------
+   158|      |    |GETCPU := 0x0183
+      |      |    |  Global integer symbol [GETCPU] = 387 (0x183)
+------+------+----+----------------------------------
+   159|      |    |PCMPLY := 0x0186
+      |      |    |  Global integer symbol [PCMPLY] = 390 (0x186)
+------+------+----+----------------------------------
+   160|      |    |PCMREC := 0x0189
+      |      |    |  Global integer symbol [PCMREC] = 393 (0x189)
+------+------+----+----------------------------------
+   163|      |    |SUB_GTPPRT := 0x0089
+      |      |    |  Global integer symbol [SUB_GTPPRT] = 137 (0x89)
+------+------+----+----------------------------------
+   164|      |    |SUB_NVBXLN := 0x00C9
+      |      |    |  Global integer symbol [SUB_NVBXLN] = 201 (0xc9)
+------+------+----+----------------------------------
+   165|      |    |SUB_NVBXFL := 0x00CD
+      |      |    |  Global integer symbol [SUB_NVBXFL] = 205 (0xcd)
+------+------+----+----------------------------------
+   166|      |    |SUB_CHGMOD := 0x00D1
+      |      |    |  Global integer symbol [SUB_CHGMOD] = 209 (0xd1)
+------+------+----+----------------------------------
+   167|      |    |SUB_INITXT := 0x00D5
+      |      |    |  Global integer symbol [SUB_INITXT] = 213 (0xd5)
+------+------+----+----------------------------------
+   168|      |    |SUB_INIT32 := 0x00D9
+      |      |    |  Global integer symbol [SUB_INIT32] = 217 (0xd9)
+------+------+----+----------------------------------
+   169|      |    |SUB_INIGRP := 0x00DD
+      |      |    |  Global integer symbol [SUB_INIGRP] = 221 (0xdd)
+------+------+----+----------------------------------
+   170|      |    |SUB_INIMLT := 0x00E1
+      |      |    |  Global integer symbol [SUB_INIMLT] = 225 (0xe1)
+------+------+----+----------------------------------
+   171|      |    |SUB_SETTXT := 0x00E5
+      |      |    |  Global integer symbol [SUB_SETTXT] = 229 (0xe5)
+------+------+----+----------------------------------
+   172|      |    |SUB_SETT32 := 0x00E9
+      |      |    |  Global integer symbol [SUB_SETT32] = 233 (0xe9)
+------+------+----+----------------------------------
+   173|      |    |SUB_SETGRP := 0x00ED
+      |      |    |  Global integer symbol [SUB_SETGRP] = 237 (0xed)
+------+------+----+----------------------------------
+   174|      |    |SUB_SETMLT := 0x00F1
+      |      |    |  Global integer symbol [SUB_SETMLT] = 241 (0xf1)
+------+------+----+----------------------------------
+   175|      |    |SUB_CLRSPR := 0x00F5
+      |      |    |  Global integer symbol [SUB_CLRSPR] = 245 (0xf5)
+------+------+----+----------------------------------
+   176|      |    |SUB_CALPAT := 0x00F9
+      |      |    |  Global integer symbol [SUB_CALPAT] = 249 (0xf9)
+------+------+----+----------------------------------
+   177|      |    |SUB_CALATR := 0x00FD
+      |      |    |  Global integer symbol [SUB_CALATR] = 253 (0xfd)
+------+------+----+----------------------------------
+   178|      |    |SUB_GSPSIZ := 0x0101
+      |      |    |  Global integer symbol [SUB_GSPSIZ] = 257 (0x101)
+------+------+----+----------------------------------
+   179|      |    |SUB_GETPAT := 0x0105
+      |      |    |  Global integer symbol [SUB_GETPAT] = 261 (0x105)
+------+------+----+----------------------------------
+   180|      |    |SUB_WRTVRM := 0x0109
+      |      |    |  Global integer symbol [SUB_WRTVRM] = 265 (0x109)
+------+------+----+----------------------------------
+   181|      |    |SUB_RDVRM := 0x010D
+      |      |    |  Global integer symbol [SUB_RDVRM] = 269 (0x10d)
+------+------+----+----------------------------------
+   182|      |    |SUB_CHGCLR := 0x0111
+      |      |    |  Global integer symbol [SUB_CHGCLR] = 273 (0x111)
+------+------+----+----------------------------------
+   183|      |    |SUB_CLSSUB := 0x0115
+      |      |    |  Global integer symbol [SUB_CLSSUB] = 277 (0x115)
+------+------+----+----------------------------------
+   184|      |    |SUB_DSPFNK := 0x011D
+      |      |    |  Global integer symbol [SUB_DSPFNK] = 285 (0x11d)
+------+------+----+----------------------------------
+   185|      |    |SUB_WRTVDP := 0x012D
+      |      |    |  Global integer symbol [SUB_WRTVDP] = 301 (0x12d)
+------+------+----+----------------------------------
+   186|      |    |SUB_VDPSTA := 0x0131
+      |      |    |  Global integer symbol [SUB_VDPSTA] = 305 (0x131)
+------+------+----+----------------------------------
+   187|      |    |SUB_SETPAG := 0x013D
+      |      |    |  Global integer symbol [SUB_SETPAG] = 317 (0x13d)
+------+------+----+----------------------------------
+   188|      |    |SUB_INIPLT := 0x0141
+      |      |    |  Global integer symbol [SUB_INIPLT] = 321 (0x141)
+------+------+----+----------------------------------
+   189|      |    |SUB_RSTPLT := 0x0145
+      |      |    |  Global integer symbol [SUB_RSTPLT] = 325 (0x145)
+------+------+----+----------------------------------
+   190|      |    |SUB_GETPLT := 0x0149
+      |      |    |  Global integer symbol [SUB_GETPLT] = 329 (0x149)
+------+------+----+----------------------------------
+   191|      |    |SUB_SETPLT := 0x014D
+      |      |    |  Global integer symbol [SUB_SETPLT] = 333 (0x14d)
+------+------+----+----------------------------------
+   192|      |    |SUB_BEEP := 0x017D
+      |      |    |  Global integer symbol [SUB_BEEP] = 381 (0x17d)
+------+------+----+----------------------------------
+   193|      |    |SUB_PROMPT := 0x0181
+      |      |    |  Global integer symbol [SUB_PROMPT] = 385 (0x181)
+------+------+----+----------------------------------
+   194|      |    |SUB_NEWPAD := 0x01AD
+      |      |    |  Global integer symbol [SUB_NEWPAD] = 429 (0x1ad)
+------+------+----+----------------------------------
+   195|      |    |SUB_CHGMDP := 0x01B5
+      |      |    |  Global integer symbol [SUB_CHGMDP] = 437 (0x1b5)
+------+------+----+----------------------------------
+   196|      |    |SUB_KNJPRT := 0x01BD
+      |      |    |  Global integer symbol [SUB_KNJPRT] = 445 (0x1bd)
+------+------+----+----------------------------------
+   197|      |    |SUB_REDCLK := 0x01F5
+      |      |    |  Global integer symbol [SUB_REDCLK] = 501 (0x1f5)
+------+------+----+----------------------------------
+   198|      |    |SUB_WRTCLK := 0x01F9
+      |      |    |  Global integer symbol [SUB_WRTCLK] = 505 (0x1f9)
+------+------+----+----------------------------------
+   200|      |    |H_PROMPT := 0xF24F
+      |      |    |  Global integer symbol [H_PROMPT] = 62031 (0xf24f)
+------+------+----+----------------------------------
+   202|      |    |DISKVE := 0xF323
+      |      |    |  Global integer symbol [DISKVE] = 62243 (0xf323)
+------+------+----+----------------------------------
+   203|      |    |BREAKV := 0xF325
+      |      |    |  Global integer symbol [BREAKV] = 62245 (0xf325)
+------+------+----+----------------------------------
+   204|      |    |RAMAD0 := 0xF341
+      |      |    |  Global integer symbol [RAMAD0] = 62273 (0xf341)
+------+------+----+----------------------------------
+   205|      |    |RAMAD1 := 0xF342
+      |      |    |  Global integer symbol [RAMAD1] = 62274 (0xf342)
+------+------+----+----------------------------------
+   206|      |    |RAMAD2 := 0xF343
+      |      |    |  Global integer symbol [RAMAD2] = 62275 (0xf343)
+------+------+----+----------------------------------
+   207|      |    |RAMAD3 := 0xF344
+      |      |    |  Global integer symbol [RAMAD3] = 62276 (0xf344)
+------+------+----+----------------------------------
+   208|      |    |MASTERS := 0xF348
+      |      |    |  Global integer symbol [MASTERS] = 62280 (0xf348)
+------+------+----+----------------------------------
+   210|      |    |RDPRIM := 0xF380
+      |      |    |  Global integer symbol [RDPRIM] = 62336 (0xf380)
+------+------+----+----------------------------------
+   211|      |    |WRPRIM := 0xF385
+      |      |    |  Global integer symbol [WRPRIM] = 62341 (0xf385)
+------+------+----+----------------------------------
+   212|      |    |CLPRIM := 0xF38C
+      |      |    |  Global integer symbol [CLPRIM] = 62348 (0xf38c)
+------+------+----+----------------------------------
+   214|      |    |CLIKSW := 0xF3DB
+      |      |    |  Global integer symbol [CLIKSW] = 62427 (0xf3db)
+------+------+----+----------------------------------
+   215|      |    |CSRY := 0xF3DC
+      |      |    |  Global integer symbol [CSRY] = 62428 (0xf3dc)
+------+------+----+----------------------------------
+   216|      |    |CSRX := 0xF3DD
+      |      |    |  Global integer symbol [CSRX] = 62429 (0xf3dd)
+------+------+----+----------------------------------
+   217|      |    |CNSDFG := 0xF3DE
+      |      |    |  Global integer symbol [CNSDFG] = 62430 (0xf3de)
+------+------+----+----------------------------------
+   219|      |    |RG0SAV := 0xF3DF
+      |      |    |  Global integer symbol [RG0SAV] = 62431 (0xf3df)
+------+------+----+----------------------------------
+   220|      |    |RG1SAV := 0xF3E0
+      |      |    |  Global integer symbol [RG1SAV] = 62432 (0xf3e0)
+------+------+----+----------------------------------
+   221|      |    |RG2SAV := 0xF3E1
+      |      |    |  Global integer symbol [RG2SAV] = 62433 (0xf3e1)
+------+------+----+----------------------------------
+   222|      |    |RG3SAV := 0xF3E2
+      |      |    |  Global integer symbol [RG3SAV] = 62434 (0xf3e2)
+------+------+----+----------------------------------
+   223|      |    |RG4SAV := 0xF3E3
+      |      |    |  Global integer symbol [RG4SAV] = 62435 (0xf3e3)
+------+------+----+----------------------------------
+   224|      |    |RG5SAV := 0xF3E4
+      |      |    |  Global integer symbol [RG5SAV] = 62436 (0xf3e4)
+------+------+----+----------------------------------
+   225|      |    |RG6SAV := 0xF3E5
+      |      |    |  Global integer symbol [RG6SAV] = 62437 (0xf3e5)
+------+------+----+----------------------------------
+   226|      |    |RG7SAV := 0xF3E6
+      |      |    |  Global integer symbol [RG7SAV] = 62438 (0xf3e6)
+------+------+----+----------------------------------
+   227|      |    |STATFL := 0xF3E7
+      |      |    |  Global integer symbol [STATFL] = 62439 (0xf3e7)
+------+------+----+----------------------------------
+   229|      |    |FNKSTR := 0xF87F
+      |      |    |  Global integer symbol [FNKSTR] = 63615 (0xf87f)
+------+------+----+----------------------------------
+   231|      |    |EXBRSA := 0xFAF8
+      |      |    |  Global integer symbol [EXBRSA] = 64248 (0xfaf8)
+------+------+----+----------------------------------
+   233|      |    |HOKVLD := 0xFB20
+      |      |    |  Global integer symbol [HOKVLD] = 64288 (0xfb20)
+------+------+----+----------------------------------
+   235|      |    |OLDKEY := 0xFBDA
+      |      |    |  Global integer symbol [OLDKEY] = 64474 (0xfbda)
+------+------+----+----------------------------------
+   236|      |    |NEWKEY := 0xFBE5
+      |      |    |  Global integer symbol [NEWKEY] = 64485 (0xfbe5)
+------+------+----+----------------------------------
+   237|      |    |KEYBUF := 0xFBF0
+      |      |    |  Global integer symbol [KEYBUF] = 64496 (0xfbf0)
+------+------+----+----------------------------------
+   238|      |    |LINWRK := 0xFC18
+      |      |    |  Global integer symbol [LINWRK] = 64536 (0xfc18)
+------+------+----+----------------------------------
+   239|      |    |PATWRK := 0xFC40
+      |      |    |  Global integer symbol [PATWRK] = 64576 (0xfc40)
+------+------+----+----------------------------------
+   240|      |    |BOTTOM := 0xFC48
+      |      |    |  Global integer symbol [BOTTOM] = 64584 (0xfc48)
+------+------+----+----------------------------------
+   241|      |    |HIMEM := 0xFC4A
+      |      |    |  Global integer symbol [HIMEM] = 64586 (0xfc4a)
+------+------+----+----------------------------------
+   242|      |    |TRPTBL := 0xFC4C
+      |      |    |  Global integer symbol [TRPTBL] = 64588 (0xfc4c)
+------+------+----+----------------------------------
+   244|      |    |SCRMOD := 0xFCAF
+      |      |    |  Global integer symbol [SCRMOD] = 64687 (0xfcaf)
+------+------+----+----------------------------------
+   245|      |    |OLDSCR := 0xFCB0
+      |      |    |  Global integer symbol [OLDSCR] = 64688 (0xfcb0)
+------+------+----+----------------------------------
+   247|      |    |EXPTBL := 0xFCC1
+      |      |    |  Global integer symbol [EXPTBL] = 64705 (0xfcc1)
+------+------+----+----------------------------------
+   248|      |    |SLTTBL := 0xFCC5
+      |      |    |  Global integer symbol [SLTTBL] = 64709 (0xfcc5)
+------+------+----+----------------------------------
+   249|      |    |SLTATR := 0xFCC9
+      |      |    |  Global integer symbol [SLTATR] = 64713 (0xfcc9)
+------+------+----+----------------------------------
+   250|      |    |SLTWRK := 0xFD09
+      |      |    |  Global integer symbol [SLTWRK] = 64777 (0xfd09)
+------+------+----+----------------------------------
+   251|      |    |PROCNM := 0xFD89
+      |      |    |  Global integer symbol [PROCNM] = 64905 (0xfd89)
+------+------+----+----------------------------------
+   252|      |    |DEVICE := 0xFD99
+      |      |    |  Global integer symbol [DEVICE] = 64921 (0xfd99)
+------+------+----+----------------------------------
+   254|      |    |H_TIMI := 0xFD9F
+      |      |    |  Global integer symbol [H_TIMI] = 64927 (0xfd9f)
+------+------+----+----------------------------------
+   256|      |    |EXTBIO := 0xFFCA
+      |      |    |  Global integer symbol [EXTBIO] = 65482 (0xffca)
+------+------+----+----------------------------------
+   258|      |    |RG8SAV := 0xFFE7
+      |      |    |  Global integer symbol [RG8SAV] = 65511 (0xffe7)
+------+------+----+----------------------------------
+   259|      |    |RG9SAV := 0xFFE8
+      |      |    |  Global integer symbol [RG9SAV] = 65512 (0xffe8)
+------+------+----+----------------------------------
+     7|      |    |INCLUDE "msxbios.asm" end
+     8|      |    |INCLUDE "msxdos1.asm" begin
+    58|      |    |BDOS := 0x0005
+      |      |    |  Global integer symbol [BDOS] = 5 (0x5)
+------+------+----+----------------------------------
+    59|      |    |DMA := 0x0080
+      |      |    |  Global integer symbol [DMA] = 128 (0x80)
+------+------+----+----------------------------------
+    60|      |    |TPA_BOTTOM := 0x0006
+      |      |    |  Global integer symbol [TPA_BOTTOM] = 6 (0x6)
+------+------+----+----------------------------------
+    69|      |    |D1F_TERM0 := 0x00
+      |      |    |  Global integer symbol [D1F_TERM0] = 0 (0x0)
+------+------+----+----------------------------------
+    81|      |    |D1F_CONIN := 0x01
+      |      |    |  Global integer symbol [D1F_CONIN] = 1 (0x1)
+------+------+----+----------------------------------
+    91|      |    |D1F_CONOUT := 0x02
+      |      |    |  Global integer symbol [D1F_CONOUT] = 2 (0x2)
+------+------+----+----------------------------------
+    93|      |    |D1F_AUXIN := 0x03
+      |      |    |  Global integer symbol [D1F_AUXIN] = 3 (0x3)
+------+------+----+----------------------------------
+    94|      |    |D1F_AUXOUT := 0x04
+      |      |    |  Global integer symbol [D1F_AUXOUT] = 4 (0x4)
+------+------+----+----------------------------------
+    95|      |    |D1F_LSTOUT := 0x05
+      |      |    |  Global integer symbol [D1F_LSTOUT] = 5 (0x5)
+------+------+----+----------------------------------
+    96|      |    |D1F_DIRIO := 0x06
+      |      |    |  Global integer symbol [D1F_DIRIO] = 6 (0x6)
+------+------+----+----------------------------------
+    97|      |    |D1F_DIRIN := 0x07
+      |      |    |  Global integer symbol [D1F_DIRIN] = 7 (0x7)
+------+------+----+----------------------------------
+    98|      |    |D1F_INNOE := 0x08
+      |      |    |  Global integer symbol [D1F_INNOE] = 8 (0x8)
+------+------+----+----------------------------------
+    99|      |    |D1F_STROUT := 0x09
+      |      |    |  Global integer symbol [D1F_STROUT] = 9 (0x9)
+------+------+----+----------------------------------
+   100|      |    |D1F_BUFIN := 0x0A
+      |      |    |  Global integer symbol [D1F_BUFIN] = 10 (0xa)
+------+------+----+----------------------------------
+   101|      |    |D1F_CONST := 0x0B
+      |      |    |  Global integer symbol [D1F_CONST] = 11 (0xb)
+------+------+----+----------------------------------
+   102|      |    |D1F_CPMVER := 0x0C
+      |      |    |  Global integer symbol [D1F_CPMVER] = 12 (0xc)
+------+------+----+----------------------------------
+   103|      |    |D1F_DSKRST := 0x0D
+      |      |    |  Global integer symbol [D1F_DSKRST] = 13 (0xd)
+------+------+----+----------------------------------
+   104|      |    |D1F_SELDSK := 0x0E
+      |      |    |  Global integer symbol [D1F_SELDSK] = 14 (0xe)
+------+------+----+----------------------------------
+   105|      |    |D1F_FOPEN := 0x0F
+      |      |    |  Global integer symbol [D1F_FOPEN] = 15 (0xf)
+------+------+----+----------------------------------
+   106|      |    |D1F_FCLOSE := 0x10
+      |      |    |  Global integer symbol [D1F_FCLOSE] = 16 (0x10)
+------+------+----+----------------------------------
+   107|      |    |D1F_SFIRST := 0x11
+      |      |    |  Global integer symbol [D1F_SFIRST] = 17 (0x11)
+------+------+----+----------------------------------
+   108|      |    |D1F_SNEXT := 0x12
+      |      |    |  Global integer symbol [D1F_SNEXT] = 18 (0x12)
+------+------+----+----------------------------------
+   109|      |    |D1F_FDEL := 0x13
+      |      |    |  Global integer symbol [D1F_FDEL] = 19 (0x13)
+------+------+----+----------------------------------
+   110|      |    |D1F_RDSEQ := 0x14
+      |      |    |  Global integer symbol [D1F_RDSEQ] = 20 (0x14)
+------+------+----+----------------------------------
+   111|      |    |D1F_WRSEQ := 0x15
+      |      |    |  Global integer symbol [D1F_WRSEQ] = 21 (0x15)
+------+------+----+----------------------------------
+   112|      |    |D1F_FMAKE := 0x16
+      |      |    |  Global integer symbol [D1F_FMAKE] = 22 (0x16)
+------+------+----+----------------------------------
+   113|      |    |D1F_FREN := 0x17
+      |      |    |  Global integer symbol [D1F_FREN] = 23 (0x17)
+------+------+----+----------------------------------
+   114|      |    |D1F_LOGIN := 0x18
+      |      |    |  Global integer symbol [D1F_LOGIN] = 24 (0x18)
+------+------+----+----------------------------------
+   115|      |    |D1F_CURDRV := 0x19
+      |      |    |  Global integer symbol [D1F_CURDRV] = 25 (0x19)
+------+------+----+----------------------------------
+   116|      |    |D1F_SETDTA := 0x1A
+      |      |    |  Global integer symbol [D1F_SETDTA] = 26 (0x1a)
+------+------+----+----------------------------------
+   117|      |    |D1F_ALLOC := 0x1B
+      |      |    |  Global integer symbol [D1F_ALLOC] = 27 (0x1b)
+------+------+----+----------------------------------
+   119|      |    |D1F_RDRND := 0x21
+      |      |    |  Global integer symbol [D1F_RDRND] = 33 (0x21)
+------+------+----+----------------------------------
+   120|      |    |D1F_WRRND := 0x22
+      |      |    |  Global integer symbol [D1F_WRRND] = 34 (0x22)
+------+------+----+----------------------------------
+   121|      |    |D1F_FSIZE := 0x23
+      |      |    |  Global integer symbol [D1F_FSIZE] = 35 (0x23)
+------+------+----+----------------------------------
+   122|      |    |D1F_SETRND := 0x24
+      |      |    |  Global integer symbol [D1F_SETRND] = 36 (0x24)
+------+------+----+----------------------------------
+   124|      |    |D1F_WRBLK := 0x26
+      |      |    |  Global integer symbol [D1F_WRBLK] = 38 (0x26)
+------+------+----+----------------------------------
+   125|      |    |D1F_RDBLK := 0x27
+      |      |    |  Global integer symbol [D1F_RDBLK] = 39 (0x27)
+------+------+----+----------------------------------
+   126|      |    |D1F_WRZER := 0x28
+      |      |    |  Global integer symbol [D1F_WRZER] = 40 (0x28)
+------+------+----+----------------------------------
+   128|      |    |D1F_GDATE := 0x2A
+      |      |    |  Global integer symbol [D1F_GDATE] = 42 (0x2a)
+------+------+----+----------------------------------
+   129|      |    |D1F_SDATE := 0x2B
+      |      |    |  Global integer symbol [D1F_SDATE] = 43 (0x2b)
+------+------+----+----------------------------------
+   130|      |    |D1F_GTIME := 0x2C
+      |      |    |  Global integer symbol [D1F_GTIME] = 44 (0x2c)
+------+------+----+----------------------------------
+   131|      |    |D1F_STIME := 0x2D
+      |      |    |  Global integer symbol [D1F_STIME] = 45 (0x2d)
+------+------+----+----------------------------------
+   132|      |    |D1F_VERIFY := 0x2E
+      |      |    |  Global integer symbol [D1F_VERIFY] = 46 (0x2e)
+------+------+----+----------------------------------
+   133|      |    |D1F_RDABS := 0x2F
+      |      |    |  Global integer symbol [D1F_RDABS] = 47 (0x2f)
+------+------+----+----------------------------------
+   134|      |    |D1F_WRABS := 0x30
+      |      |    |  Global integer symbol [D1F_WRABS] = 48 (0x30)
+------+------+----+----------------------------------
+   135|      |    |D1F_DPARM := 0x31
+      |      |    |  Global integer symbol [D1F_DPARM] = 49 (0x31)
+------+------+----+----------------------------------
+   140|      |    |D1E_EOF := 0xC7
+      |      |    |  Global integer symbol [D1E_EOF] = 199 (0xc7)
+------+------+----+----------------------------------
+     8|      |    |INCLUDE "msxdos1.asm" end
+     9|      |    |INCLUDE "msxdos2.asm" begin
+    60|      |    |FIB_SIGNATURE := 0
+      |      |    |  Global integer symbol [FIB_SIGNATURE] = 0 (0x0)
+------+------+----+----------------------------------
+    61|      |    |FIB_FILENAME := 1
+      |      |    |  Global integer symbol [FIB_FILENAME] = 1 (0x1)
+------+------+----+----------------------------------
+    62|      |    |FIB_ATTRIBUTE := 14
+      |      |    |  Global integer symbol [FIB_ATTRIBUTE] = 14 (0xe)
+------+------+----+----------------------------------
+    63|      |    |FIB_UPDATE_TIME := 15
+      |      |    |  Global integer symbol [FIB_UPDATE_TIME] = 15 (0xf)
+------+------+----+----------------------------------
+    64|      |    |FIB_UPDATE_DATE := 17
+      |      |    |  Global integer symbol [FIB_UPDATE_DATE] = 17 (0x11)
+------+------+----+----------------------------------
+    65|      |    |FIB_CLUSTER := 19
+      |      |    |  Global integer symbol [FIB_CLUSTER] = 19 (0x13)
+------+------+----+----------------------------------
+    66|      |    |FIB_SIZE := 21
+      |      |    |  Global integer symbol [FIB_SIZE] = 21 (0x15)
+------+------+----+----------------------------------
+    67|      |    |FIB_DRIVE := 25
+      |      |    |  Global integer symbol [FIB_DRIVE] = 25 (0x19)
+------+------+----+----------------------------------
+    68|      |    |FIB_INTERNAL := 26
+      |      |    |  Global integer symbol [FIB_INTERNAL] = 26 (0x1a)
+------+------+----+----------------------------------
+    72|      |    |FIB_ATTR_READ_ONLY := 0b0000_0001
+      |      |    |  Global integer symbol [FIB_ATTR_READ_ONLY] = 1 (0x1)
+------+------+----+----------------------------------
+    73|      |    |FIB_ATTR_HIDDEN := 0b0000_0010
+      |      |    |  Global integer symbol [FIB_ATTR_HIDDEN] = 2 (0x2)
+------+------+----+----------------------------------
+    74|      |    |FIB_ATTR_SYSTEM := 0b0000_0100
+      |      |    |  Global integer symbol [FIB_ATTR_SYSTEM] = 4 (0x4)
+------+------+----+----------------------------------
+    75|      |    |FIB_ATTR_VOLUME := 0b0000_1000
+      |      |    |  Global integer symbol [FIB_ATTR_VOLUME] = 8 (0x8)
+------+------+----+----------------------------------
+    76|      |    |FIB_ATTR_DIRECTORY := 0b0001_0000
+      |      |    |  Global integer symbol [FIB_ATTR_DIRECTORY] = 16 (0x10)
+------+------+----+----------------------------------
+    77|      |    |FIB_ATTR_ARCHIVE := 0b0010_0000
+      |      |    |  Global integer symbol [FIB_ATTR_ARCHIVE] = 32 (0x20)
+------+------+----+----------------------------------
+    78|      |    |FIB_ATTR_RESERVED := 0b0100_0000
+      |      |    |  Global integer symbol [FIB_ATTR_RESERVED] = 64 (0x40)
+------+------+----+----------------------------------
+    79|      |    |FIB_ATTR_DEVICE := 0b1000_0000
+      |      |    |  Global integer symbol [FIB_ATTR_DEVICE] = 128 (0x80)
+------+------+----+----------------------------------
+    83|      |    |D2E_NCOMP := 0xFF
+      |      |    |  Global integer symbol [D2E_NCOMP] = 255 (0xff)
+------+------+----+----------------------------------
+    84|      |    |D2E_WRERR := 0xFE
+      |      |    |  Global integer symbol [D2E_WRERR] = 254 (0xfe)
+------+------+----+----------------------------------
+    85|      |    |D2E_DISK := 0xFD
+      |      |    |  Global integer symbol [D2E_DISK] = 253 (0xfd)
+------+------+----+----------------------------------
+    86|      |    |D2E_NRDY := 0xFC
+      |      |    |  Global integer symbol [D2E_NRDY] = 252 (0xfc)
+------+------+----+----------------------------------
+    87|      |    |D2E_VERFY := 0xFB
+      |      |    |  Global integer symbol [D2E_VERFY] = 251 (0xfb)
+------+------+----+----------------------------------
+    88|      |    |D2E_DATA := 0xFA
+      |      |    |  Global integer symbol [D2E_DATA] = 250 (0xfa)
+------+------+----+----------------------------------
+    89|      |    |D2E_RNF := 0xF9
+      |      |    |  Global integer symbol [D2E_RNF] = 249 (0xf9)
+------+------+----+----------------------------------
+    90|      |    |D2E_WPROT := 0xF8
+      |      |    |  Global integer symbol [D2E_WPROT] = 248 (0xf8)
+------+------+----+----------------------------------
+    91|      |    |D2E_UFORM := 0xF7
+      |      |    |  Global integer symbol [D2E_UFORM] = 247 (0xf7)
+------+------+----+----------------------------------
+    92|      |    |D2E_NDOS := 0xF6
+      |      |    |  Global integer symbol [D2E_NDOS] = 246 (0xf6)
+------+------+----+----------------------------------
+    93|      |    |D2E_WDISK := 0xF5
+      |      |    |  Global integer symbol [D2E_WDISK] = 245 (0xf5)
+------+------+----+----------------------------------
+    94|      |    |D2E_WFILE := 0xF4
+      |      |    |  Global integer symbol [D2E_WFILE] = 244 (0xf4)
+------+------+----+----------------------------------
+    95|      |    |D2E_SEEK := 0xF3
+      |      |    |  Global integer symbol [D2E_SEEK] = 243 (0xf3)
+------+------+----+----------------------------------
+    96|      |    |D2E_IFAT := 0xF2
+      |      |    |  Global integer symbol [D2E_IFAT] = 242 (0xf2)
+------+------+----+----------------------------------
+    97|      |    |D2E_NOUPB := 0xF1
+      |      |    |  Global integer symbol [D2E_NOUPB] = 241 (0xf1)
+------+------+----+----------------------------------
+    98|      |    |D2E_IFORM := 0xF0
+      |      |    |  Global integer symbol [D2E_IFORM] = 240 (0xf0)
+------+------+----+----------------------------------
+    99|      |    |D2E_SUCCESS := 0x00
+      |      |    |  Global integer symbol [D2E_SUCCESS] = 0 (0x0)
+------+------+----+----------------------------------
+   119|      |    |D2F_FFIRST := 0x40
+      |      |    |  Global integer symbol [D2F_FFIRST] = 64 (0x40)
+------+------+----+----------------------------------
+   129|      |    |D2F_FNEXT := 0x41
+      |      |    |  Global integer symbol [D2F_FNEXT] = 65 (0x41)
+------+------+----+----------------------------------
+   149|      |    |D2F_FNEW := 0x42
+      |      |    |  Global integer symbol [D2F_FNEW] = 66 (0x42)
+------+------+----+----------------------------------
+   164|      |    |D2F_OPEN := 0x43
+      |      |    |  Global integer symbol [D2F_OPEN] = 67 (0x43)
+------+------+----+----------------------------------
+   166|      |    |D2F_CREATE := 0x44
+      |      |    |  Global integer symbol [D2F_CREATE] = 68 (0x44)
+------+------+----+----------------------------------
+   167|      |    |D2F_CLOSE := 0x45
+      |      |    |  Global integer symbol [D2F_CLOSE] = 69 (0x45)
+------+------+----+----------------------------------
+   168|      |    |D2F_ENSURE := 0x46
+      |      |    |  Global integer symbol [D2F_ENSURE] = 70 (0x46)
+------+------+----+----------------------------------
+   169|      |    |D2F_DUP := 0x47
+      |      |    |  Global integer symbol [D2F_DUP] = 71 (0x47)
+------+------+----+----------------------------------
+   170|      |    |D2F_READ := 0x48
+      |      |    |  Global integer symbol [D2F_READ] = 72 (0x48)
+------+------+----+----------------------------------
+   171|      |    |D2F_WRITE := 0x49
+      |      |    |  Global integer symbol [D2F_WRITE] = 73 (0x49)
+------+------+----+----------------------------------
+   172|      |    |D2F_SEEK := 0x4A
+      |      |    |  Global integer symbol [D2F_SEEK] = 74 (0x4a)
+------+------+----+----------------------------------
+   173|      |    |D2F_IOCTL := 0x4B
+      |      |    |  Global integer symbol [D2F_IOCTL] = 75 (0x4b)
+------+------+----+----------------------------------
+   174|      |    |D2F_HTEST := 0x4C
+      |      |    |  Global integer symbol [D2F_HTEST] = 76 (0x4c)
+------+------+----+----------------------------------
+   175|      |    |D2F_DELETE := 0x4D
+      |      |    |  Global integer symbol [D2F_DELETE] = 77 (0x4d)
+------+------+----+----------------------------------
+   176|      |    |D2F_RENAME := 0x4E
+      |      |    |  Global integer symbol [D2F_RENAME] = 78 (0x4e)
+------+------+----+----------------------------------
+   177|      |    |D2F_MOVE := 0x4F
+      |      |    |  Global integer symbol [D2F_MOVE] = 79 (0x4f)
+------+------+----+----------------------------------
+   178|      |    |D2F_ATTR := 0x50
+      |      |    |  Global integer symbol [D2F_ATTR] = 80 (0x50)
+------+------+----+----------------------------------
+   179|      |    |D2F_FTIME := 0x51
+      |      |    |  Global integer symbol [D2F_FTIME] = 81 (0x51)
+------+------+----+----------------------------------
+   180|      |    |D2F_HDELETE := 0x52
+      |      |    |  Global integer symbol [D2F_HDELETE] = 82 (0x52)
+------+------+----+----------------------------------
+   181|      |    |D2F_HRENAME := 0x53
+      |      |    |  Global integer symbol [D2F_HRENAME] = 83 (0x53)
+------+------+----+----------------------------------
+   182|      |    |D2F_HMOVE := 0x54
+      |      |    |  Global integer symbol [D2F_HMOVE] = 84 (0x54)
+------+------+----+----------------------------------
+   183|      |    |D2F_HATTR := 0x55
+      |      |    |  Global integer symbol [D2F_HATTR] = 85 (0x55)
+------+------+----+----------------------------------
+   184|      |    |D2F_HFTIME := 0x56
+      |      |    |  Global integer symbol [D2F_HFTIME] = 86 (0x56)
+------+------+----+----------------------------------
+   185|      |    |D2F_HGETDTA := 0x57
+      |      |    |  Global integer symbol [D2F_HGETDTA] = 87 (0x57)
+------+------+----+----------------------------------
+   186|      |    |D2F_GETVFY := 0x58
+      |      |    |  Global integer symbol [D2F_GETVFY] = 88 (0x58)
+------+------+----+----------------------------------
+   187|      |    |D2F_GETCD := 0x59
+      |      |    |  Global integer symbol [D2F_GETCD] = 89 (0x59)
+------+------+----+----------------------------------
+   188|      |    |D2F_CHDIR := 0x5A
+      |      |    |  Global integer symbol [D2F_CHDIR] = 90 (0x5a)
+------+------+----+----------------------------------
+   189|      |    |D2F_PARSE := 0x5B
+      |      |    |  Global integer symbol [D2F_PARSE] = 91 (0x5b)
+------+------+----+----------------------------------
+   190|      |    |D2F_PFILE := 0x5C
+      |      |    |  Global integer symbol [D2F_PFILE] = 92 (0x5c)
+------+------+----+----------------------------------
+   191|      |    |D2F_CHKCHR := 0x5D
+      |      |    |  Global integer symbol [D2F_CHKCHR] = 93 (0x5d)
+------+------+----+----------------------------------
+   192|      |    |D2F_WPATH := 0x5E
+      |      |    |  Global integer symbol [D2F_WPATH] = 94 (0x5e)
+------+------+----+----------------------------------
+   193|      |    |D2F_FLUSH := 0x5F
+      |      |    |  Global integer symbol [D2F_FLUSH] = 95 (0x5f)
+------+------+----+----------------------------------
+   194|      |    |D2F_FORK := 0x60
+      |      |    |  Global integer symbol [D2F_FORK] = 96 (0x60)
+------+------+----+----------------------------------
+   195|      |    |D2F_JOIN := 0x61
+      |      |    |  Global integer symbol [D2F_JOIN] = 97 (0x61)
+------+------+----+----------------------------------
+   196|      |    |D2F_TERM := 0x62
+      |      |    |  Global integer symbol [D2F_TERM] = 98 (0x62)
+------+------+----+----------------------------------
+   197|      |    |D2F_DEFAB := 0x63
+      |      |    |  Global integer symbol [D2F_DEFAB] = 99 (0x63)
+------+------+----+----------------------------------
+   198|      |    |D2F_DEFER := 0x64
+      |      |    |  Global integer symbol [D2F_DEFER] = 100 (0x64)
+------+------+----+----------------------------------
+   199|      |    |D2F_ERROR := 0x65
+      |      |    |  Global integer symbol [D2F_ERROR] = 101 (0x65)
+------+------+----+----------------------------------
+   200|      |    |D2F_EXPLAIN := 0x66
+      |      |    |  Global integer symbol [D2F_EXPLAIN] = 102 (0x66)
+------+------+----+----------------------------------
+   201|      |    |D2F_FORMAT := 0x67
+      |      |    |  Global integer symbol [D2F_FORMAT] = 103 (0x67)
+------+------+----+----------------------------------
+   202|      |    |D2F_RAMD := 0x68
+      |      |    |  Global integer symbol [D2F_RAMD] = 104 (0x68)
+------+------+----+----------------------------------
+   203|      |    |D2F_BUFFER := 0x69
+      |      |    |  Global integer symbol [D2F_BUFFER] = 105 (0x69)
+------+------+----+----------------------------------
+   204|      |    |D2F_ASSIGN := 0x6A
+      |      |    |  Global integer symbol [D2F_ASSIGN] = 106 (0x6a)
+------+------+----+----------------------------------
+   205|      |    |D2F_GENV := 0x6B
+      |      |    |  Global integer symbol [D2F_GENV] = 107 (0x6b)
+------+------+----+----------------------------------
+   206|      |    |D2F_SENV := 0x6C
+      |      |    |  Global integer symbol [D2F_SENV] = 108 (0x6c)
+------+------+----+----------------------------------
+   207|      |    |D2F_FENV := 0x6D
+      |      |    |  Global integer symbol [D2F_FENV] = 109 (0x6d)
+------+------+----+----------------------------------
+   208|      |    |D2F_DSKCHK := 0x6E
+      |      |    |  Global integer symbol [D2F_DSKCHK] = 110 (0x6e)
+------+------+----+----------------------------------
+   209|      |    |D2F_DOSVER := 0x6F
+      |      |    |  Global integer symbol [D2F_DOSVER] = 111 (0x6f)
+------+------+----+----------------------------------
+   210|      |    |D2F_REDIR := 0x70
+      |      |    |  Global integer symbol [D2F_REDIR] = 112 (0x70)
+------+------+----+----------------------------------
+     9|      |    |INCLUDE "msxdos2.asm" end
+    16|      |    |CHECK_ADDRESS := 0x8000
+      |      |    |  Global integer symbol [CHECK_ADDRESS] = 32768 (0x8000)
+------+------+----+----------------------------------
+    18|      |    |ORG 0x100
+------+------+----+----------------------------------
+    20|      |    |ENTRY ::
+      |      |    |  global label [ENTRY] address: 0x000100
+------+------+----+----------------------------------
+    22|      |    |LD DE, MSG_ENTRY
+      |      |    |  Z80:11cyc R800:3cyc
+      |000000|0100|  11 EB 02
+------+------+----+----------------------------------
+    23|      |    |CALL PUTS
+      |      |    |  Z80:18cyc R800:5cyc
+      |000003|0103|  CD 7D 05
+------+------+----+----------------------------------
+    26|      |    |CALL GET_SLOT_NUM
+      |      |    |  Z80:18cyc R800:5cyc
+      |000006|0106|  CD FE 01
+------+------+----+----------------------------------
+    27|      |    |LD [ SLOT_NUM ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |000009|0109|  32 5D 01
+------+------+----+----------------------------------
+    28|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |00000C|010C|  B7
+------+------+----+----------------------------------
+    29|      |    |JP Z, CHECK_ALL_SLOT
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |00000D|010D|  CA 16 01
+------+------+----+----------------------------------
+    31|      |    |CALL CHECK_SLOT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000010|0110|  CD 49 01
+------+------+----+----------------------------------
+    32|      |    |JP EXIT_TO_DOS
+      |      |    |  Z80:11cyc R800:5cyc
+      |000013|0113|  C3 42 01
+------+------+----+----------------------------------
+    34|      |    |CHECK_ALL_SLOT ::
+      |      |    |  global label [CHECK_ALL_SLOT] address: 0x000116
+------+------+----+----------------------------------
+    35|      |    |PUSH AF
+      |      |    |  Z80:12cyc R800:6cyc
+      |000016|0116|  F5
+------+------+----+----------------------------------
+    37|      |    |LD B, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |000017|0117|  47
+------+------+----+----------------------------------
+    38|      |    |ADD A, EXPTBL & 0x0FF
+      |      |    |  Z80:8cyc R800:2cyc
+      |000018|0118|  C6 C1
+------+------+----+----------------------------------
+    39|      |    |LD L, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |00001A|011A|  6F
+------+------+----+----------------------------------
+    40|      |    |LD H, EXPTBL >> 8
+      |      |    |  Z80:8cyc R800:2cyc
+      |00001B|011B|  26 FC
+------+------+----+----------------------------------
+    41|      |    |LD A, [ HL ]
+      |      |    |  Z80:8cyc R800:4cyc
+      |00001D|011D|  7E
+------+------+----+----------------------------------
+    42|      |    |AND A, 0x80
+      |      |    |  Z80:8cyc R800:2cyc
+      |00001E|011E|  E6 80
+------+------+----+----------------------------------
+    43|      |    |JR Z, NOT_EXPAND
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |000020|0120|  28 12
+------+------+----+----------------------------------
+    45|      |    |OR A, B
+      |      |    |  Z80:5cyc R800:1cyc
+      |000022|0122|  B0
+------+------+----+----------------------------------
+    46|      |    |EXPAND :
+      |      |    |  label [EXPAND] address: 0x000123
+------+------+----+----------------------------------
+    47|      |    |LD [ SLOT_NUM ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |000023|0123|  32 5D 01
+------+------+----+----------------------------------
+    48|      |    |CALL CHECK_SLOT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000026|0126|  CD 49 01
+------+------+----+----------------------------------
+    49|      |    |LD A, [ SLOT_NUM ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |000029|0129|  3A 5D 01
+------+------+----+----------------------------------
+    50|      |    |ADD A, 0x04
+      |      |    |  Z80:8cyc R800:2cyc
+      |00002C|012C|  C6 04
+------+------+----+----------------------------------
+    51|      |    |BIT 4, A
+      |      |    |  Z80:10cyc R800:2cyc
+      |00002E|012E|  CB 67
+------+------+----+----------------------------------
+    52|      |    |JR Z, EXPAND
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |000030|0130|  28 F1
+------+------+----+----------------------------------
+    53|      |    |JR SKIP_CHECK_ALL_SLOT
+      |      |    |  Z80:13cyc R800:3cyc
+      |000032|0132|  18 07
+------+------+----+----------------------------------
+    54|      |    |NOT_EXPAND :
+      |      |    |  label [NOT_EXPAND] address: 0x000134
+------+------+----+----------------------------------
+    56|      |    |LD A, B
+      |      |    |  Z80:5cyc R800:2cyc
+      |000034|0134|  78
+------+------+----+----------------------------------
+    57|      |    |LD [ SLOT_NUM ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |000035|0135|  32 5D 01
+------+------+----+----------------------------------
+    58|      |    |CALL CHECK_SLOT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000038|0138|  CD 49 01
+------+------+----+----------------------------------
+    59|      |    |SKIP_CHECK_ALL_SLOT ::
+      |      |    |  global label [SKIP_CHECK_ALL_SLOT] address: 0x00013b
+------+------+----+----------------------------------
+    60|      |    |POP AF
+      |      |    |  Z80:11cyc R800:5cyc
+      |00003B|013B|  F1
+------+------+----+----------------------------------
+    61|      |    |INC A
+      |      |    |  Z80:5cyc R800:1cyc
+      |00003C|013C|  3C
+------+------+----+----------------------------------
+    62|      |    |BIT 2, A
+      |      |    |  Z80:10cyc R800:2cyc
+      |00003D|013D|  CB 57
+------+------+----+----------------------------------
+    63|      |    |JP Z, CHECK_ALL_SLOT
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |00003F|013F|  CA 16 01
+------+------+----+----------------------------------
+    64|      |    |EXIT_TO_DOS ::
+      |      |    |  global label [EXIT_TO_DOS] address: 0x000142
+------+------+----+----------------------------------
+    65|      |    |LD B, 0
+      |      |    |  Z80:8cyc R800:2cyc
+      |000042|0142|  06 00
+------+------+----+----------------------------------
+    66|      |    |LD C, D2F_TERM
+      |      |    |  Z80:8cyc R800:2cyc
+      |000044|0144|  0E 62
+------+------+----+----------------------------------
+    67|      |    |JP BDOS
+      |      |    |  Z80:11cyc R800:5cyc
+      |000046|0146|  C3 05 00
+------+------+----+----------------------------------
+    74|      |    |SCOPE CHECK_SLOT
+      |      |    |  Enter scope: CHECK_SLOT:
+------+------+----+----------------------------------
+    76|      |    |CHECK_SLOT ::
+      |      |    |  global label [CHECK_SLOT] address: 0x000149
+------+------+----+----------------------------------
+    77|      |    |LD DE, MSG_SLOT
+      |      |    |  Z80:11cyc R800:3cyc
+      |000049|0149|  11 3D 03
+------+------+----+----------------------------------
+    78|      |    |CALL PUTS
+      |      |    |  Z80:18cyc R800:5cyc
+      |00004C|014C|  CD 7D 05
+------+------+----+----------------------------------
+    79|      |    |CALL PUT_SLOT_NUM
+      |      |    |  Z80:18cyc R800:5cyc
+      |00004F|014F|  CD 45 02
+------+------+----+----------------------------------
+    82|      |    |CALL MMAP_INIT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000052|0152|  CD 8B 05
+------+------+----+----------------------------------
+    83|      |    |RET Z
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |000055|0155|  C8
+------+------+----+----------------------------------
+    86|      |    |CALL MAPPER_GET_P2
+      |      |    |  Z80:18cyc R800:5cyc
+      |000056|0156|  CD 14 06
+------+------+----+----------------------------------
+    87|      |    |LD [ PAGE2_SEGMENT ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |000059|0159|  32 7B 03
+------+------+----+----------------------------------
+    90|      |    |SLOT_NUM := $ + 1
+      |      |    |  Global integer symbol [SLOT_NUM] = 349 (0x15d)
+------+------+----+----------------------------------
+    91|      |    |LD A, 0x01
+      |      |    |  Z80:8cyc R800:2cyc
+      |00005C|015C|  3E 01
+------+------+----+----------------------------------
+    92|      |    |LD H, 0x80
+      |      |    |  Z80:8cyc R800:2cyc
+      |00005E|015E|  26 80
+------+------+----+----------------------------------
+    93|      |    |CALL ENASLT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000060|0160|  CD 24 00
+------+------+----+----------------------------------
+    96|      |    |DI
+      |      |    |  Z80:5cyc R800:2cyc
+      |000063|0163|  F3
+------+------+----+----------------------------------
+    97|      |    |CALL CHECK_ROM
+      |      |    |  Z80:18cyc R800:5cyc
+      |000064|0164|  CD F0 01
+------+------+----+----------------------------------
+    98|      |    |EI
+      |      |    |  Z80:5cyc R800:1cyc
+      |000067|0167|  FB
+------+------+----+----------------------------------
+    99|      |    |JR Z, IS_RAM
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |000068|0168|  28 10
+------+------+----+----------------------------------
+   100|      |    |LD DE, MSG_IS_NOT_MAPPER
+      |      |    |  Z80:11cyc R800:3cyc
+      |00006A|016A|  11 47 03
+------+------+----+----------------------------------
+   101|      |    |CALL PUTS
+      |      |    |  Z80:18cyc R800:5cyc
+      |00006D|016D|  CD 7D 05
+------+------+----+----------------------------------
+   103|      |    |LD A, [ RAMAD2 ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |000070|0170|  3A 43 F3
+------+------+----+----------------------------------
+   104|      |    |LD H, 0x80
+      |      |    |  Z80:8cyc R800:2cyc
+      |000073|0173|  26 80
+------+------+----+----------------------------------
+   105|      |    |CALL ENASLT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000075|0175|  CD 24 00
+------+------+----+----------------------------------
+   106|      |    |EI
+      |      |    |  Z80:5cyc R800:1cyc
+      |000078|0178|  FB
+------+------+----+----------------------------------
+   107|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |000079|0179|  C9
+------+------+----+----------------------------------
+   108|      |    |IS_RAM :
+      |      |    |  label [CHECK_SLOT:IS_RAM] address: 0x00017a
+------+------+----+----------------------------------
+   110|      |    |DI
+      |      |    |  Z80:5cyc R800:2cyc
+      |00007A|017A|  F3
+------+------+----+----------------------------------
+   111|      |    |XOR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |00007B|017B|  AF
+------+------+----+----------------------------------
+   112|      |    |LD HL, SEGMENT_BACKUP_AREA + 255
+      |      |    |  Z80:11cyc R800:3cyc
+      |00007C|017C|  21 7C 04
+------+------+----+----------------------------------
+   113|      |    |SEGMENT_BACKUP_LOOP ::
+      |      |    |  global label [SEGMENT_BACKUP_LOOP] address: 0x00017f
+------+------+----+----------------------------------
+   114|      |    |DEC A
+      |      |    |  Z80:5cyc R800:1cyc
+      |00007F|017F|  3D
+------+------+----+----------------------------------
+   115|      |    |PUSH AF
+      |      |    |  Z80:12cyc R800:6cyc
+      |000080|0180|  F5
+------+------+----+----------------------------------
+   116|      |    |CALL MAPPER_PUT_P2
+      |      |    |  Z80:18cyc R800:5cyc
+      |000081|0181|  CD 11 06
+------+------+----+----------------------------------
+   117|      |    |LD A, [ CHECK_ADDRESS ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |000084|0184|  3A 00 80
+------+------+----+----------------------------------
+   118|      |    |LD [ HL ], A
+      |      |    |  Z80:8cyc R800:4cyc
+      |000087|0187|  77
+------+------+----+----------------------------------
+   119|      |    |POP AF
+      |      |    |  Z80:11cyc R800:5cyc
+      |000088|0188|  F1
+------+------+----+----------------------------------
+   120|      |    |LD [ CHECK_ADDRESS ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |000089|0189|  32 00 80
+------+------+----+----------------------------------
+   121|      |    |DEC HL
+      |      |    |  Z80:7cyc R800:1cyc
+      |00008C|018C|  2B
+------+------+----+----------------------------------
+   122|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |00008D|018D|  B7
+------+------+----+----------------------------------
+   123|      |    |JP NZ, SEGMENT_BACKUP_LOOP
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |00008E|018E|  C2 7F 01
+------+------+----+----------------------------------
+   126|      |    |LD HL, READ_BACK_AREA
+      |      |    |  Z80:11cyc R800:3cyc
+      |000091|0191|  21 7D 04
+------+------+----+----------------------------------
+   127|      |    |XOR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |000094|0194|  AF
+------+------+----+----------------------------------
+   128|      |    |READ_BACK_LOOP ::
+      |      |    |  global label [READ_BACK_LOOP] address: 0x000195
+------+------+----+----------------------------------
+   129|      |    |PUSH AF
+      |      |    |  Z80:12cyc R800:6cyc
+      |000095|0195|  F5
+------+------+----+----------------------------------
+   130|      |    |CALL MAPPER_PUT_P2
+      |      |    |  Z80:18cyc R800:5cyc
+      |000096|0196|  CD 11 06
+------+------+----+----------------------------------
+   131|      |    |LD A, [ CHECK_ADDRESS ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |000099|0199|  3A 00 80
+------+------+----+----------------------------------
+   132|      |    |LD [ HL ], A
+      |      |    |  Z80:8cyc R800:4cyc
+      |00009C|019C|  77
+------+------+----+----------------------------------
+   134|      |    |CALL CHECK_ROM
+      |      |    |  Z80:18cyc R800:5cyc
+      |00009D|019D|  CD F0 01
+------+------+----+----------------------------------
+   135|      |    |JR Z, SEGMENT_BACKUP_SKIP
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |0000A0|01A0|  28 02
+------+------+----+----------------------------------
+   136|      |    |ROM_SEGMENT :
+      |      |    |  label [CHECK_SLOT:ROM_SEGMENT] address: 0x0001a2
+------+------+----+----------------------------------
+   137|      |    |LD [ HL ], 0
+      |      |    |  Z80:11cyc R800:5cyc
+      |0000A2|01A2|  36 00
+------+------+----+----------------------------------
+   138|      |    |SEGMENT_BACKUP_SKIP :
+      |      |    |  label [CHECK_SLOT:SEGMENT_BACKUP_SKIP] address: 0x0001a4
+------+------+----+----------------------------------
+   139|      |    |POP AF
+      |      |    |  Z80:11cyc R800:5cyc
+      |0000A4|01A4|  F1
+------+------+----+----------------------------------
+   140|      |    |INC HL
+      |      |    |  Z80:7cyc R800:1cyc
+      |0000A5|01A5|  23
+------+------+----+----------------------------------
+   141|      |    |INC A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000A6|01A6|  3C
+------+------+----+----------------------------------
+   142|      |    |JP NZ, READ_BACK_LOOP
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |0000A7|01A7|  C2 95 01
+------+------+----+----------------------------------
+   145|      |    |XOR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000AA|01AA|  AF
+------+------+----+----------------------------------
+   146|      |    |LD HL, SEGMENT_BACKUP_AREA
+      |      |    |  Z80:11cyc R800:3cyc
+      |0000AB|01AB|  21 7D 03
+------+------+----+----------------------------------
+   147|      |    |SEGMENT_RESTORE_LOOP ::
+      |      |    |  global label [SEGMENT_RESTORE_LOOP] address: 0x0001ae
+------+------+----+----------------------------------
+   148|      |    |PUSH AF
+      |      |    |  Z80:12cyc R800:6cyc
+      |0000AE|01AE|  F5
+------+------+----+----------------------------------
+   149|      |    |CALL MAPPER_PUT_P2
+      |      |    |  Z80:18cyc R800:5cyc
+      |0000AF|01AF|  CD 11 06
+------+------+----+----------------------------------
+   150|      |    |LD A, [ HL ]
+      |      |    |  Z80:8cyc R800:4cyc
+      |0000B2|01B2|  7E
+------+------+----+----------------------------------
+   151|      |    |LD [ CHECK_ADDRESS ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |0000B3|01B3|  32 00 80
+------+------+----+----------------------------------
+   152|      |    |POP AF
+      |      |    |  Z80:11cyc R800:5cyc
+      |0000B6|01B6|  F1
+------+------+----+----------------------------------
+   153|      |    |INC HL
+      |      |    |  Z80:7cyc R800:1cyc
+      |0000B7|01B7|  23
+------+------+----+----------------------------------
+   154|      |    |INC A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000B8|01B8|  3C
+------+------+----+----------------------------------
+   155|      |    |JP NZ, SEGMENT_RESTORE_LOOP
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |0000B9|01B9|  C2 AE 01
+------+------+----+----------------------------------
+   158|      |    |LD A, [ PAGE2_SEGMENT ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |0000BC|01BC|  3A 7B 03
+------+------+----+----------------------------------
+   159|      |    |CALL MAPPER_PUT_P2
+      |      |    |  Z80:18cyc R800:5cyc
+      |0000BF|01BF|  CD 11 06
+------+------+----+----------------------------------
+   162|      |    |LD A, [ RAMAD2 ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |0000C2|01C2|  3A 43 F3
+------+------+----+----------------------------------
+   163|      |    |LD H, 0x80
+      |      |    |  Z80:8cyc R800:2cyc
+      |0000C5|01C5|  26 80
+------+------+----+----------------------------------
+   164|      |    |CALL ENASLT
+      |      |    |  Z80:18cyc R800:5cyc
+      |0000C7|01C7|  CD 24 00
+------+------+----+----------------------------------
+   165|      |    |EI
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000CA|01CA|  FB
+------+------+----+----------------------------------
+   168|      |    |LD HL, READ_BACK_AREA
+      |      |    |  Z80:11cyc R800:3cyc
+      |0000CB|01CB|  21 7D 04
+------+------+----+----------------------------------
+   169|      |    |XOR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000CE|01CE|  AF
+------+------+----+----------------------------------
+   170|      |    |LD B, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |0000CF|01CF|  47
+------+------+----+----------------------------------
+   171|      |    |CHECK_LOOP :
+      |      |    |  label [CHECK_SLOT:CHECK_LOOP] address: 0x0001d0
+------+------+----+----------------------------------
+   172|      |    |LD C, [ HL ]
+      |      |    |  Z80:8cyc R800:4cyc
+      |0000D0|01D0|  4E
+------+------+----+----------------------------------
+   173|      |    |INC HL
+      |      |    |  Z80:7cyc R800:1cyc
+      |0000D1|01D1|  23
+------+------+----+----------------------------------
+   174|      |    |CP A, C
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000D2|01D2|  B9
+------+------+----+----------------------------------
+   175|      |    |JR NC, SKIP_CHECK_LOOP
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |0000D3|01D3|  30 01
+------+------+----+----------------------------------
+   176|      |    |LD A, C
+      |      |    |  Z80:5cyc R800:2cyc
+      |0000D5|01D5|  79
+------+------+----+----------------------------------
+   177|      |    |SKIP_CHECK_LOOP :
+      |      |    |  label [CHECK_SLOT:SKIP_CHECK_LOOP] address: 0x0001d6
+------+------+----+----------------------------------
+   178|      |    |DJNZ CHECK_LOOP
+      |      |    |  Z80:14cyc/9cyc R800:3cyc/2cyc
+      |0000D6|01D6|  10 F8
+------+------+----+----------------------------------
+   180|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000D8|01D8|  B7
+------+------+----+----------------------------------
+   181|      |    |LD DE, MSG_NO_MAPPER_RAM
+      |      |    |  Z80:11cyc R800:3cyc
+      |0000D9|01D9|  11 5A 03
+------+------+----+----------------------------------
+   182|      |    |JP Z, PUTS
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |0000DC|01DC|  CA 7D 05
+------+------+----+----------------------------------
+   184|      |    |LD L, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |0000DF|01DF|  6F
+------+------+----+----------------------------------
+   185|      |    |LD H, 0
+      |      |    |  Z80:8cyc R800:2cyc
+      |0000E0|01E0|  26 00
+------+------+----+----------------------------------
+   186|      |    |INC HL
+      |      |    |  Z80:7cyc R800:1cyc
+      |0000E2|01E2|  23
+------+------+----+----------------------------------
+   187|      |    |ADD HL, HL
+      |      |    |  Z80:12cyc R800:1cyc
+      |0000E3|01E3|  29
+------+------+----+----------------------------------
+   188|      |    |ADD HL, HL
+      |      |    |  Z80:12cyc R800:1cyc
+      |0000E4|01E4|  29
+------+------+----+----------------------------------
+   189|      |    |ADD HL, HL
+      |      |    |  Z80:12cyc R800:1cyc
+      |0000E5|01E5|  29
+------+------+----+----------------------------------
+   190|      |    |ADD HL, HL
+      |      |    |  Z80:12cyc R800:1cyc
+      |0000E6|01E6|  29
+------+------+----+----------------------------------
+   191|      |    |CALL PUTS_DIGIT
+      |      |    |  Z80:18cyc R800:5cyc
+      |0000E7|01E7|  CD A9 02
+------+------+----+----------------------------------
+   192|      |    |LD DE, MSG_KB
+      |      |    |  Z80:11cyc R800:3cyc
+      |0000EA|01EA|  11 6C 03
+------+------+----+----------------------------------
+   193|      |    |JP PUTS
+      |      |    |  Z80:11cyc R800:5cyc
+      |0000ED|01ED|  C3 7D 05
+------+------+----+----------------------------------
+   194|      |    |ENDSCOPE
+      |      |    |  Exit scope: CHECK_SLOT:
+------+------+----+----------------------------------
+   204|      |    |SCOPE CHECK_ROM
+      |      |    |  Enter scope: CHECK_ROM:
+------+------+----+----------------------------------
+   205|      |    |CHECK_ROM ::
+      |      |    |  global label [CHECK_ROM] address: 0x0001f0
+------+------+----+----------------------------------
+   206|      |    |PUSH HL
+      |      |    |  Z80:12cyc R800:6cyc
+      |0000F0|01F0|  E5
+------+------+----+----------------------------------
+   207|      |    |LD HL, CHECK_ADDRESS
+      |      |    |  Z80:11cyc R800:3cyc
+      |0000F1|01F1|  21 00 80
+------+------+----+----------------------------------
+   208|      |    |LD A, [ HL ]
+      |      |    |  Z80:8cyc R800:4cyc
+      |0000F4|01F4|  7E
+------+------+----+----------------------------------
+   209|      |    |CPL
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000F5|01F5|  2F
+------+------+----+----------------------------------
+   210|      |    |LD [ HL ], A
+      |      |    |  Z80:8cyc R800:4cyc
+      |0000F6|01F6|  77
+------+------+----+----------------------------------
+   211|      |    |CP A, [ HL ]
+      |      |    |  Z80:8cyc R800:4cyc
+      |0000F7|01F7|  BE
+------+------+----+----------------------------------
+   212|      |    |JR NZ, EXIT
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |0000F8|01F8|  20 02
+------+------+----+----------------------------------
+   213|      |    |CPL
+      |      |    |  Z80:5cyc R800:1cyc
+      |0000FA|01FA|  2F
+------+------+----+----------------------------------
+   214|      |    |LD [ HL ], A
+      |      |    |  Z80:8cyc R800:4cyc
+      |0000FB|01FB|  77
+------+------+----+----------------------------------
+   215|      |    |EXIT :
+      |      |    |  label [CHECK_ROM:EXIT] address: 0x0001fc
+------+------+----+----------------------------------
+   216|      |    |POP HL
+      |      |    |  Z80:11cyc R800:5cyc
+      |0000FC|01FC|  E1
+------+------+----+----------------------------------
+   217|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |0000FD|01FD|  C9
+------+------+----+----------------------------------
+   218|      |    |ENDSCOPE
+      |      |    |  Exit scope: CHECK_ROM:
+------+------+----+----------------------------------
+   223|      |    |SCOPE GET_SLOT_NUM
+      |      |    |  Enter scope: GET_SLOT_NUM:
+------+------+----+----------------------------------
+   224|      |    |GET_SLOT_NUM ::
+      |      |    |  global label [GET_SLOT_NUM] address: 0x0001fe
+------+------+----+----------------------------------
+   225|      |    |LD HL, 0x0081
+      |      |    |  Z80:11cyc R800:3cyc
+      |0000FE|01FE|  21 81 00
+------+------+----+----------------------------------
+   226|      |    |SKIP_WHITE_SPACE ::
+      |      |    |  global label [SKIP_WHITE_SPACE] address: 0x000201
+------+------+----+----------------------------------
+   227|      |    |LD A, [ HL ]
+      |      |    |  Z80:8cyc R800:4cyc
+      |000101|0201|  7E
+------+------+----+----------------------------------
+   228|      |    |INC HL
+      |      |    |  Z80:7cyc R800:1cyc
+      |000102|0202|  23
+------+------+----+----------------------------------
+   230|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |000103|0203|  B7
+------+------+----+----------------------------------
+   231|      |    |RET Z
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |000104|0204|  C8
+------+------+----+----------------------------------
+   233|      |    |CP A, ' ' + 1
+      |      |    |  Z80:8cyc R800:2cyc
+      |000105|0205|  FE 21
+------+------+----+----------------------------------
+   234|      |    |JP C, SKIP_WHITE_SPACE
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |000107|0207|  DA 01 02
+------+------+----+----------------------------------
+   236|      |    |CALL ISXDIGIT
+      |      |    |  Z80:18cyc R800:5cyc
+      |00010A|020A|  CD 26 02
+------+------+----+----------------------------------
+   237|      |    |JP C, SKIP_WHITE_SPACE
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |00010D|020D|  DA 01 02
+------+------+----+----------------------------------
+   239|      |    |CALL GET_DIGIT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000110|0210|  CD 3B 02
+------+------+----+----------------------------------
+   240|      |    |LD B, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |000113|0213|  47
+------+------+----+----------------------------------
+   242|      |    |LD A, [ HL ]
+      |      |    |  Z80:8cyc R800:4cyc
+      |000114|0214|  7E
+------+------+----+----------------------------------
+   243|      |    |CALL ISXDIGIT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000115|0215|  CD 26 02
+------+------+----+----------------------------------
+   244|      |    |RET C
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |000118|0218|  D8
+------+------+----+----------------------------------
+   246|      |    |CALL GET_DIGIT
+      |      |    |  Z80:18cyc R800:5cyc
+      |000119|0219|  CD 3B 02
+------+------+----+----------------------------------
+   247|      |    |RLCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |00011C|021C|  07
+------+------+----+----------------------------------
+   248|      |    |RLCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |00011D|021D|  07
+------+------+----+----------------------------------
+   249|      |    |RLCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |00011E|021E|  07
+------+------+----+----------------------------------
+   250|      |    |RLCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |00011F|021F|  07
+------+------+----+----------------------------------
+   251|      |    |OR A, B
+      |      |    |  Z80:5cyc R800:1cyc
+      |000120|0220|  B0
+------+------+----+----------------------------------
+   253|      |    |RLCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |000121|0221|  07
+------+------+----+----------------------------------
+   254|      |    |RLCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |000122|0222|  07
+------+------+----+----------------------------------
+   255|      |    |RLCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |000123|0223|  07
+------+------+----+----------------------------------
+   256|      |    |RLCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |000124|0224|  07
+------+------+----+----------------------------------
+   257|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |000125|0225|  C9
+------+------+----+----------------------------------
+   258|      |    |ENDSCOPE
+      |      |    |  Exit scope: GET_SLOT_NUM:
+------+------+----+----------------------------------
+   267|      |    |SCOPE ISXDIGIT
+      |      |    |  Enter scope: ISXDIGIT:
+------+------+----+----------------------------------
+   268|      |    |ISXDIGIT ::
+      |      |    |  global label [ISXDIGIT] address: 0x000226
+------+------+----+----------------------------------
+   269|      |    |CP A, '0'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000126|0226|  FE 30
+------+------+----+----------------------------------
+   270|      |    |RET C
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |000128|0228|  D8
+------+------+----+----------------------------------
+   271|      |    |CP A, '9'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000129|0229|  FE 39
+------+------+----+----------------------------------
+   272|      |    |CCF
+      |      |    |  Z80:5cyc R800:1cyc
+      |00012B|022B|  3F
+------+------+----+----------------------------------
+   273|      |    |RET NC
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |00012C|022C|  D0
+------+------+----+----------------------------------
+   275|      |    |CP A, 'a'
+      |      |    |  Z80:8cyc R800:2cyc
+      |00012D|022D|  FE 61
+------+------+----+----------------------------------
+   276|      |    |RET C
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |00012F|022F|  D8
+------+------+----+----------------------------------
+   277|      |    |CP A, 'z'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000130|0230|  FE 7A
+------+------+----+----------------------------------
+   278|      |    |CCF
+      |      |    |  Z80:5cyc R800:1cyc
+      |000132|0232|  3F
+------+------+----+----------------------------------
+   279|      |    |RET NC
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |000133|0233|  D0
+------+------+----+----------------------------------
+   281|      |    |CP A, 'A'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000134|0234|  FE 41
+------+------+----+----------------------------------
+   282|      |    |RET C
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |000136|0236|  D8
+------+------+----+----------------------------------
+   283|      |    |CP A, 'Z'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000137|0237|  FE 5A
+------+------+----+----------------------------------
+   284|      |    |CCF
+      |      |    |  Z80:5cyc R800:1cyc
+      |000139|0239|  3F
+------+------+----+----------------------------------
+   285|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |00013A|023A|  C9
+------+------+----+----------------------------------
+   286|      |    |ENDSCOPE
+      |      |    |  Exit scope: ISXDIGIT:
+------+------+----+----------------------------------
+   295|      |    |SCOPE GET_DIGIT
+      |      |    |  Enter scope: GET_DIGIT:
+------+------+----+----------------------------------
+   296|      |    |GET_DIGIT ::
+      |      |    |  global label [GET_DIGIT] address: 0x00023b
+------+------+----+----------------------------------
+   297|      |    |OR A, 0x20
+      |      |    |  Z80:8cyc R800:2cyc
+      |00013B|023B|  F6 20
+------+------+----+----------------------------------
+   298|      |    |SUB A, '0'
+      |      |    |  Z80:8cyc R800:2cyc
+      |00013D|023D|  D6 30
+------+------+----+----------------------------------
+   299|      |    |CP A, 10
+      |      |    |  Z80:8cyc R800:2cyc
+      |00013F|023F|  FE 0A
+------+------+----+----------------------------------
+   300|      |    |RET C
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |000141|0241|  D8
+------+------+----+----------------------------------
+   301|      |    |SUB A, 'a' - '0' - 10
+      |      |    |  Z80:8cyc R800:2cyc
+      |000142|0242|  D6 27
+------+------+----+----------------------------------
+   302|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |000144|0244|  C9
+------+------+----+----------------------------------
+   303|      |    |ENDSCOPE
+      |      |    |  Exit scope: GET_DIGIT:
+------+------+----+----------------------------------
+   310|      |    |SCOPE PUT_SLOT_NUM
+      |      |    |  Enter scope: PUT_SLOT_NUM:
+------+------+----+----------------------------------
+   311|      |    |PUT_SLOT_NUM ::
+      |      |    |  global label [PUT_SLOT_NUM] address: 0x000245
+------+------+----+----------------------------------
+   313|      |    |LD A, [ SLOT_NUM ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |000145|0245|  3A 5D 01
+------+------+----+----------------------------------
+   314|      |    |AND A, 0x03
+      |      |    |  Z80:8cyc R800:2cyc
+      |000148|0248|  E6 03
+------+------+----+----------------------------------
+   315|      |    |ADD A, '0'
+      |      |    |  Z80:8cyc R800:2cyc
+      |00014A|024A|  C6 30
+------+------+----+----------------------------------
+   316|      |    |LD E, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |00014C|024C|  5F
+------+------+----+----------------------------------
+   317|      |    |LD C, D1F_CONOUT
+      |      |    |  Z80:8cyc R800:2cyc
+      |00014D|024D|  0E 02
+------+------+----+----------------------------------
+   318|      |    |CALL BDOS
+      |      |    |  Z80:18cyc R800:5cyc
+      |00014F|024F|  CD 05 00
+------+------+----+----------------------------------
+   320|      |    |LD A, [ SLOT_NUM ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |000152|0252|  3A 5D 01
+------+------+----+----------------------------------
+   321|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |000155|0255|  B7
+------+------+----+----------------------------------
+   322|      |    |JP M, PUT_EXPAND_SLOT
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |000156|0256|  FA 60 02
+------+------+----+----------------------------------
+   324|      |    |LD DE, MSG_SPACE
+      |      |    |  Z80:11cyc R800:3cyc
+      |000159|0259|  11 43 03
+------+------+----+----------------------------------
+   325|      |    |CALL PUTS
+      |      |    |  Z80:18cyc R800:5cyc
+      |00015C|025C|  CD 7D 05
+------+------+----+----------------------------------
+   326|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |00015F|025F|  C9
+------+------+----+----------------------------------
+   327|      |    |PUT_EXPAND_SLOT :
+      |      |    |  label [PUT_SLOT_NUM:PUT_EXPAND_SLOT] address: 0x000260
+------+------+----+----------------------------------
+   329|      |    |LD E, '-'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000160|0260|  1E 2D
+------+------+----+----------------------------------
+   330|      |    |LD C, D1F_CONOUT
+      |      |    |  Z80:8cyc R800:2cyc
+      |000162|0262|  0E 02
+------+------+----+----------------------------------
+   331|      |    |CALL BDOS
+      |      |    |  Z80:18cyc R800:5cyc
+      |000164|0264|  CD 05 00
+------+------+----+----------------------------------
+   332|      |    |LD A, [ SLOT_NUM ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |000167|0267|  3A 5D 01
+------+------+----+----------------------------------
+   333|      |    |RRCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |00016A|026A|  0F
+------+------+----+----------------------------------
+   334|      |    |RRCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |00016B|026B|  0F
+------+------+----+----------------------------------
+   335|      |    |AND A, 0x03
+      |      |    |  Z80:8cyc R800:2cyc
+      |00016C|026C|  E6 03
+------+------+----+----------------------------------
+   336|      |    |ADD A, '0'
+      |      |    |  Z80:8cyc R800:2cyc
+      |00016E|026E|  C6 30
+------+------+----+----------------------------------
+   337|      |    |LD E, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |000170|0270|  5F
+------+------+----+----------------------------------
+   338|      |    |LD C, D1F_CONOUT
+      |      |    |  Z80:8cyc R800:2cyc
+      |000171|0271|  0E 02
+------+------+----+----------------------------------
+   339|      |    |CALL BDOS
+      |      |    |  Z80:18cyc R800:5cyc
+      |000173|0273|  CD 05 00
+------+------+----+----------------------------------
+   340|      |    |LD E, ':'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000176|0276|  1E 3A
+------+------+----+----------------------------------
+   341|      |    |LD C, D1F_CONOUT
+      |      |    |  Z80:8cyc R800:2cyc
+      |000178|0278|  0E 02
+------+------+----+----------------------------------
+   342|      |    |CALL BDOS
+      |      |    |  Z80:18cyc R800:5cyc
+      |00017A|027A|  CD 05 00
+------+------+----+----------------------------------
+   343|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |00017D|027D|  C9
+------+------+----+----------------------------------
+   344|      |    |ENDSCOPE
+      |      |    |  Exit scope: PUT_SLOT_NUM:
+------+------+----+----------------------------------
+   351|      |    |SCOPE DEC2HEX
+      |      |    |  Enter scope: DEC2HEX:
+------+------+----+----------------------------------
+   352|      |    |DEC2HEX ::
+      |      |    |  global label [DEC2HEX] address: 0x00027e
+------+------+----+----------------------------------
+   353|      |    |LD B, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |00017E|027E|  47
+------+------+----+----------------------------------
+   354|      |    |RRCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |00017F|027F|  0F
+------+------+----+----------------------------------
+   355|      |    |RRCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |000180|0280|  0F
+------+------+----+----------------------------------
+   356|      |    |RRCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |000181|0281|  0F
+------+------+----+----------------------------------
+   357|      |    |RRCA
+      |      |    |  Z80:5cyc R800:1cyc
+      |000182|0282|  0F
+------+------+----+----------------------------------
+   358|      |    |AND A, 0x0F
+      |      |    |  Z80:8cyc R800:2cyc
+      |000183|0283|  E6 0F
+------+------+----+----------------------------------
+   359|      |    |ADD A, '0'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000185|0285|  C6 30
+------+------+----+----------------------------------
+   360|      |    |CP A, '9' + 1
+      |      |    |  Z80:8cyc R800:2cyc
+      |000187|0287|  FE 3A
+------+------+----+----------------------------------
+   361|      |    |JR C, SKIP1
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |000189|0289|  38 02
+------+------+----+----------------------------------
+   362|      |    |ADD A, 'A' - '0' - 10
+      |      |    |  Z80:8cyc R800:2cyc
+      |00018B|028B|  C6 07
+------+------+----+----------------------------------
+   363|      |    |SKIP1 :
+      |      |    |  label [DEC2HEX:SKIP1] address: 0x00028d
+------+------+----+----------------------------------
+   364|      |    |LD [ HEX2BYTE ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |00018D|028D|  32 A5 02
+------+------+----+----------------------------------
+   365|      |    |LD A, B
+      |      |    |  Z80:5cyc R800:2cyc
+      |000190|0290|  78
+------+------+----+----------------------------------
+   366|      |    |AND A, 0x0F
+      |      |    |  Z80:8cyc R800:2cyc
+      |000191|0291|  E6 0F
+------+------+----+----------------------------------
+   367|      |    |ADD A, '0'
+      |      |    |  Z80:8cyc R800:2cyc
+      |000193|0293|  C6 30
+------+------+----+----------------------------------
+   368|      |    |CP A, '9' + 1
+      |      |    |  Z80:8cyc R800:2cyc
+      |000195|0295|  FE 3A
+------+------+----+----------------------------------
+   369|      |    |JR C, SKIP2
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |000197|0297|  38 02
+------+------+----+----------------------------------
+   370|      |    |ADD A, 'A' - '0' - 10
+      |      |    |  Z80:8cyc R800:2cyc
+      |000199|0299|  C6 07
+------+------+----+----------------------------------
+   371|      |    |SKIP2 :
+      |      |    |  label [DEC2HEX:SKIP2] address: 0x00029b
+------+------+----+----------------------------------
+   372|      |    |LD [ HEX2BYTE + 1 ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |00019B|029B|  32 A6 02
+------+------+----+----------------------------------
+   373|      |    |LD DE, HEX2BYTE
+      |      |    |  Z80:11cyc R800:3cyc
+      |00019E|029E|  11 A5 02
+------+------+----+----------------------------------
+   374|      |    |CALL PUTS
+      |      |    |  Z80:18cyc R800:5cyc
+      |0001A1|02A1|  CD 7D 05
+------+------+----+----------------------------------
+   375|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |0001A4|02A4|  C9
+------+------+----+----------------------------------
+   376|      |    |HEX2BYTE ::
+      |      |    |  global label [HEX2BYTE] address: 0x0002a5
+------+------+----+----------------------------------
+   377|      |    |DS "00 "
+      |0001A5|02A5|  30 30 20
+------+------+----+----------------------------------
+   378|      |    |DB 0
+      |0001A8|02A8|  00
+------+------+----+----------------------------------
+   379|      |    |ENDSCOPE
+      |      |    |  Exit scope: DEC2HEX:
+------+------+----+----------------------------------
+   386|      |    |SCOPE PUTS_DIGIT
+      |      |    |  Enter scope: PUTS_DIGIT:
+------+------+----+----------------------------------
+   387|      |    |PUTS_DIGIT ::
+      |      |    |  global label [PUTS_DIGIT] address: 0x0002a9
+------+------+----+----------------------------------
+   388|      |    |LD B, 0
+      |      |    |  Z80:8cyc R800:2cyc
+      |0001A9|02A9|  06 00
+------+------+----+----------------------------------
+   389|      |    |LD DE, 10000
+      |      |    |  Z80:11cyc R800:3cyc
+      |0001AB|02AB|  11 10 27
+------+------+----+----------------------------------
+   390|      |    |CALL PUTS_DIGIT_1
+      |      |    |  Z80:18cyc R800:5cyc
+      |0001AE|02AE|  CD CA 02
+------+------+----+----------------------------------
+   391|      |    |LD DE, 1000
+      |      |    |  Z80:11cyc R800:3cyc
+      |0001B1|02B1|  11 E8 03
+------+------+----+----------------------------------
+   392|      |    |CALL PUTS_DIGIT_1
+      |      |    |  Z80:18cyc R800:5cyc
+      |0001B4|02B4|  CD CA 02
+------+------+----+----------------------------------
+   393|      |    |LD DE, 100
+      |      |    |  Z80:11cyc R800:3cyc
+      |0001B7|02B7|  11 64 00
+------+------+----+----------------------------------
+   394|      |    |CALL PUTS_DIGIT_1
+      |      |    |  Z80:18cyc R800:5cyc
+      |0001BA|02BA|  CD CA 02
+------+------+----+----------------------------------
+   395|      |    |LD DE, 10
+      |      |    |  Z80:11cyc R800:3cyc
+      |0001BD|02BD|  11 0A 00
+------+------+----+----------------------------------
+   396|      |    |CALL PUTS_DIGIT_1
+      |      |    |  Z80:18cyc R800:5cyc
+      |0001C0|02C0|  CD CA 02
+------+------+----+----------------------------------
+   397|      |    |LD DE, 1
+      |      |    |  Z80:11cyc R800:3cyc
+      |0001C3|02C3|  11 01 00
+------+------+----+----------------------------------
+   398|      |    |CALL PUTS_DIGIT_1
+      |      |    |  Z80:18cyc R800:5cyc
+      |0001C6|02C6|  CD CA 02
+------+------+----+----------------------------------
+   399|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |0001C9|02C9|  C9
+------+------+----+----------------------------------
+   400|      |    |PUTS_DIGIT_1 :
+      |      |    |  label [PUTS_DIGIT:PUTS_DIGIT_1] address: 0x0002ca
+------+------+----+----------------------------------
+   401|      |    |LD A, '0'
+      |      |    |  Z80:8cyc R800:2cyc
+      |0001CA|02CA|  3E 30
+------+------+----+----------------------------------
+   402|      |    |PUT_DIGIT_1_LOOP :
+      |      |    |  label [PUTS_DIGIT:PUT_DIGIT_1_LOOP] address: 0x0002cc
+------+------+----+----------------------------------
+   403|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0001CC|02CC|  B7
+------+------+----+----------------------------------
+   404|      |    |SBC HL, DE
+      |      |    |  Z80:17cyc R800:2cyc
+      |0001CD|02CD|  ED 52
+------+------+----+----------------------------------
+   405|      |    |JR C, PUT_DIGIT_1_SKIP
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |0001CF|02CF|  38 03
+------+------+----+----------------------------------
+   406|      |    |INC A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0001D1|02D1|  3C
+------+------+----+----------------------------------
+   407|      |    |JR PUT_DIGIT_1_LOOP
+      |      |    |  Z80:13cyc R800:3cyc
+      |0001D2|02D2|  18 F8
+------+------+----+----------------------------------
+   408|      |    |PUT_DIGIT_1_SKIP :
+      |      |    |  label [PUTS_DIGIT:PUT_DIGIT_1_SKIP] address: 0x0002d4
+------+------+----+----------------------------------
+   409|      |    |ADD HL, DE
+      |      |    |  Z80:12cyc R800:1cyc
+      |0001D4|02D4|  19
+------+------+----+----------------------------------
+   410|      |    |CP A, '0'
+      |      |    |  Z80:8cyc R800:2cyc
+      |0001D5|02D5|  FE 30
+------+------+----+----------------------------------
+   411|      |    |JR NZ, PUT_DIGIT_1_CHAR
+      |      |    |  Z80:13cyc/8cyc R800:3cyc/2cyc
+      |0001D7|02D7|  20 03
+------+------+----+----------------------------------
+   412|      |    |INC B
+      |      |    |  Z80:5cyc R800:1cyc
+      |0001D9|02D9|  04
+------+------+----+----------------------------------
+   413|      |    |DEC B
+      |      |    |  Z80:5cyc R800:1cyc
+      |0001DA|02DA|  05
+------+------+----+----------------------------------
+   414|      |    |RET Z
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |0001DB|02DB|  C8
+------+------+----+----------------------------------
+   415|      |    |PUT_DIGIT_1_CHAR :
+      |      |    |  label [PUTS_DIGIT:PUT_DIGIT_1_CHAR] address: 0x0002dc
+------+------+----+----------------------------------
+   416|      |    |INC B
+      |      |    |  Z80:5cyc R800:1cyc
+      |0001DC|02DC|  04
+------+------+----+----------------------------------
+   417|      |    |PUSH HL
+      |      |    |  Z80:12cyc R800:6cyc
+      |0001DD|02DD|  E5
+------+------+----+----------------------------------
+   418|      |    |PUSH BC
+      |      |    |  Z80:12cyc R800:6cyc
+      |0001DE|02DE|  C5
+------+------+----+----------------------------------
+   419|      |    |LD E, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |0001DF|02DF|  5F
+------+------+----+----------------------------------
+   420|      |    |LD C, D1F_CONOUT
+      |      |    |  Z80:8cyc R800:2cyc
+      |0001E0|02E0|  0E 02
+------+------+----+----------------------------------
+   421|      |    |CALL BDOS
+      |      |    |  Z80:18cyc R800:5cyc
+      |0001E2|02E2|  CD 05 00
+------+------+----+----------------------------------
+   422|      |    |POP BC
+      |      |    |  Z80:11cyc R800:5cyc
+      |0001E5|02E5|  C1
+------+------+----+----------------------------------
+   423|      |    |POP HL
+      |      |    |  Z80:11cyc R800:5cyc
+      |0001E6|02E6|  E1
+------+------+----+----------------------------------
+   424|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |0001E7|02E7|  C9
+------+------+----+----------------------------------
+   425|      |    |ENDSCOPE
+      |      |    |  Exit scope: PUTS_DIGIT:
+------+------+----+----------------------------------
+   430|      |    |MSG_CRLF ::
+      |      |    |  global label [MSG_CRLF] address: 0x0002e8
+------+------+----+----------------------------------
+   431|      |    |DB 0x0D, 0x0A, 0
+      |0001E8|02E8|  0D 0A 00
+------+------+----+----------------------------------
+   432|      |    |MSG_ENTRY ::
+      |      |    |  global label [MSG_ENTRY] address: 0x0002eb
+------+------+----+----------------------------------
+   433|      |    |DS "MemoryMapper Test Program\r\n"
+      |0001EB|02EB|  4D 65 6D 6F 72 79 4D 61
+      |0001F3|02F3|  70 70 65 72 20 54 65 73
+      |0001FB|02FB|  74 20 50 72 6F 67 72 61
+      |000203|0303|  6D 0D 0A
+------+------+----+----------------------------------
+   434|      |    |DS "================================\r\n"
+      |000206|0306|  3D 3D 3D 3D 3D 3D 3D 3D
+      |00020E|030E|  3D 3D 3D 3D 3D 3D 3D 3D
+      |000216|0316|  3D 3D 3D 3D 3D 3D 3D 3D
+      |00021E|031E|  3D 3D 3D 3D 3D 3D 3D 3D
+      |000226|0326|  0D 0A
+------+------+----+----------------------------------
+   435|      |    |DS "Programmed by HRA!\r\n"
+      |000228|0328|  50 72 6F 67 72 61 6D 6D
+      |000230|0330|  65 64 20 62 79 20 48 52
+      |000238|0338|  41 21 0D 0A
+------+------+----+----------------------------------
+   436|      |    |DB 0
+      |00023C|033C|  00
+------+------+----+----------------------------------
+   437|      |    |MSG_SLOT ::
+      |      |    |  global label [MSG_SLOT] address: 0x00033d
+------+------+----+----------------------------------
+   438|      |    |DS "SLOT#"
+      |00023D|033D|  53 4C 4F 54 23
+------+------+----+----------------------------------
+   439|      |    |DB 0
+      |000242|0342|  00
+------+------+----+----------------------------------
+   440|      |    |MSG_SPACE :
+      |      |    |  label [MSG_SPACE] address: 0x000343
+------+------+----+----------------------------------
+   441|      |    |DS "  :"
+      |000243|0343|  20 20 3A
+------+------+----+----------------------------------
+   442|      |    |DB 0
+      |000246|0346|  00
+------+------+----+----------------------------------
+   443|      |    |MSG_IS_NOT_MAPPER :
+      |      |    |  label [MSG_IS_NOT_MAPPER] address: 0x000347
+------+------+----+----------------------------------
+   444|      |    |DS "Is not MapperRAM"
+      |000247|0347|  49 73 20 6E 6F 74 20 4D
+      |00024F|034F|  61 70 70 65 72 52 41 4D
+------+------+----+----------------------------------
+   445|      |    |DB 13, 10, 0
+      |000257|0357|  0D 0A 00
+------+------+----+----------------------------------
+   446|      |    |MSG_NO_MAPPER_RAM :
+      |      |    |  label [MSG_NO_MAPPER_RAM] address: 0x00035a
+------+------+----+----------------------------------
+   447|      |    |DS "RAM (No Mapper)"
+      |00025A|035A|  52 41 4D 20 28 4E 6F 20
+      |000262|0362|  4D 61 70 70 65 72 29
+------+------+----+----------------------------------
+   448|      |    |DB 13, 10, 0
+      |000269|0369|  0D 0A 00
+------+------+----+----------------------------------
+   449|      |    |MSG_KB :
+      |      |    |  label [MSG_KB] address: 0x00036c
+------+------+----+----------------------------------
+   450|      |    |DS "KB MapperRAM"
+      |00026C|036C|  4B 42 20 4D 61 70 70 65
+      |000274|0374|  72 52 41 4D
+------+------+----+----------------------------------
+   451|      |    |DB 13, 10, 0
+      |000278|0378|  0D 0A 00
+------+------+----+----------------------------------
+   452|      |    |PAGE2_SEGMENT ::
+      |      |    |  global label [PAGE2_SEGMENT] address: 0x00037b
+------+------+----+----------------------------------
+   453|      |    |DB 1
+      |00027B|037B|  01
+------+------+----+----------------------------------
+   454|      |    |SEGMENT_COUNT ::
+      |      |    |  global label [SEGMENT_COUNT] address: 0x00037c
+------+------+----+----------------------------------
+   455|      |    |DB 0
+      |00027C|037C|  00
+------+------+----+----------------------------------
+   456|      |    |SEGMENT_BACKUP_AREA :
+      |      |    |  label [SEGMENT_BACKUP_AREA] address: 0x00037d
+------+------+----+----------------------------------
+   457|      |    |SPACE 256
+      |      |    |  Allocate space: 256byte(s)
+      |      |    |  Fill value    : 0(0x00)
+      |00027D|037D|  00 00 00 00 00 00 00 00
+      |000285|0385|  00 00 00 00 00 00 00 00
+      |00028D|038D|  00 00 00 00 00 00 00 00
+      |000295|0395|  00 00 00 00 00 00 00 00
+      |00029D|039D|  00 00 00 00 00 00 00 00
+      |0002A5|03A5|  00 00 00 00 00 00 00 00
+      |0002AD|03AD|  00 00 00 00 00 00 00 00
+      |0002B5|03B5|  00 00 00 00 00 00 00 00
+      |0002BD|03BD|  00 00 00 00 00 00 00 00
+      |0002C5|03C5|  00 00 00 00 00 00 00 00
+      |0002CD|03CD|  00 00 00 00 00 00 00 00
+      |0002D5|03D5|  00 00 00 00 00 00 00 00
+      |0002DD|03DD|  00 00 00 00 00 00 00 00
+      |0002E5|03E5|  00 00 00 00 00 00 00 00
+      |0002ED|03ED|  00 00 00 00 00 00 00 00
+      |0002F5|03F5|  00 00 00 00 00 00 00 00
+      |0002FD|03FD|  00 00 00 00 00 00 00 00
+      |000305|0405|  00 00 00 00 00 00 00 00
+      |00030D|040D|  00 00 00 00 00 00 00 00
+      |000315|0415|  00 00 00 00 00 00 00 00
+      |00031D|041D|  00 00 00 00 00 00 00 00
+      |000325|0425|  00 00 00 00 00 00 00 00
+      |00032D|042D|  00 00 00 00 00 00 00 00
+      |000335|0435|  00 00 00 00 00 00 00 00
+      |00033D|043D|  00 00 00 00 00 00 00 00
+      |000345|0445|  00 00 00 00 00 00 00 00
+      |00034D|044D|  00 00 00 00 00 00 00 00
+      |000355|0455|  00 00 00 00 00 00 00 00
+      |00035D|045D|  00 00 00 00 00 00 00 00
+      |000365|0465|  00 00 00 00 00 00 00 00
+      |00036D|046D|  00 00 00 00 00 00 00 00
+      |000375|0475|  00 00 00 00 00 00 00 00
+------+------+----+----------------------------------
+   458|      |    |READ_BACK_AREA :
+      |      |    |  label [READ_BACK_AREA] address: 0x00047d
+------+------+----+----------------------------------
+   459|      |    |SPACE 256
+      |      |    |  Allocate space: 256byte(s)
+      |      |    |  Fill value    : 0(0x00)
+      |00037D|047D|  00 00 00 00 00 00 00 00
+      |000385|0485|  00 00 00 00 00 00 00 00
+      |00038D|048D|  00 00 00 00 00 00 00 00
+      |000395|0495|  00 00 00 00 00 00 00 00
+      |00039D|049D|  00 00 00 00 00 00 00 00
+      |0003A5|04A5|  00 00 00 00 00 00 00 00
+      |0003AD|04AD|  00 00 00 00 00 00 00 00
+      |0003B5|04B5|  00 00 00 00 00 00 00 00
+      |0003BD|04BD|  00 00 00 00 00 00 00 00
+      |0003C5|04C5|  00 00 00 00 00 00 00 00
+      |0003CD|04CD|  00 00 00 00 00 00 00 00
+      |0003D5|04D5|  00 00 00 00 00 00 00 00
+      |0003DD|04DD|  00 00 00 00 00 00 00 00
+      |0003E5|04E5|  00 00 00 00 00 00 00 00
+      |0003ED|04ED|  00 00 00 00 00 00 00 00
+      |0003F5|04F5|  00 00 00 00 00 00 00 00
+      |0003FD|04FD|  00 00 00 00 00 00 00 00
+      |000405|0505|  00 00 00 00 00 00 00 00
+      |00040D|050D|  00 00 00 00 00 00 00 00
+      |000415|0515|  00 00 00 00 00 00 00 00
+      |00041D|051D|  00 00 00 00 00 00 00 00
+      |000425|0525|  00 00 00 00 00 00 00 00
+      |00042D|052D|  00 00 00 00 00 00 00 00
+      |000435|0535|  00 00 00 00 00 00 00 00
+      |00043D|053D|  00 00 00 00 00 00 00 00
+      |000445|0545|  00 00 00 00 00 00 00 00
+      |00044D|054D|  00 00 00 00 00 00 00 00
+      |000455|0555|  00 00 00 00 00 00 00 00
+      |00045D|055D|  00 00 00 00 00 00 00 00
+      |000465|0565|  00 00 00 00 00 00 00 00
+      |00046D|056D|  00 00 00 00 00 00 00 00
+      |000475|0575|  00 00 00 00 00 00 00 00
+------+------+----+----------------------------------
+   464|      |    |INCLUDE "stdio.asm" begin
+    72|      |    |SCOPE PUTS
+      |      |    |  Enter scope: PUTS:
+------+------+----+----------------------------------
+    73|      |    |PUTS ::
+      |      |    |  global label [PUTS] address: 0x00057d
+------+------+----+----------------------------------
+    74|      |    |LD A, [ DE ]
+      |      |    |  Z80:8cyc R800:4cyc
+      |00047D|057D|  1A
+------+------+----+----------------------------------
+    75|      |    |INC DE
+      |      |    |  Z80:7cyc R800:1cyc
+      |00047E|057E|  13
+------+------+----+----------------------------------
+    76|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |00047F|057F|  B7
+------+------+----+----------------------------------
+    77|      |    |RET Z
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |000480|0580|  C8
+------+------+----+----------------------------------
+    78|      |    |PUSH DE
+      |      |    |  Z80:12cyc R800:6cyc
+      |000481|0581|  D5
+------+------+----+----------------------------------
+    79|      |    |LD C, D1F_DIRIO
+      |      |    |  Z80:8cyc R800:2cyc
+      |000482|0582|  0E 06
+------+------+----+----------------------------------
+    80|      |    |LD E, A
+      |      |    |  Z80:5cyc R800:2cyc
+      |000484|0584|  5F
+------+------+----+----------------------------------
+    81|      |    |CALL BDOS
+      |      |    |  Z80:18cyc R800:5cyc
+      |000485|0585|  CD 05 00
+------+------+----+----------------------------------
+    82|      |    |POP DE
+      |      |    |  Z80:11cyc R800:5cyc
+      |000488|0588|  D1
+------+------+----+----------------------------------
+    83|      |    |JR PUTS
+      |      |    |  Z80:13cyc R800:3cyc
+      |000489|0589|  18 F2
+------+------+----+----------------------------------
+    84|      |    |ENDSCOPE
+      |      |    |  Exit scope: PUTS:
+------+------+----+----------------------------------
+   464|      |    |INCLUDE "stdio.asm" end
+   465|      |    |INCLUDE "memmapper.asm" begin
+    64|      |    |MMAP_SLOT := 0
+      |      |    |  Global integer symbol [MMAP_SLOT] = 0 (0x0)
+------+------+----+----------------------------------
+    65|      |    |MMAP_TOTAL_SEG := 1
+      |      |    |  Global integer symbol [MMAP_TOTAL_SEG] = 1 (0x1)
+------+------+----+----------------------------------
+    66|      |    |MMAP_FREE_SEG := 2
+      |      |    |  Global integer symbol [MMAP_FREE_SEG] = 2 (0x2)
+------+------+----+----------------------------------
+    67|      |    |MMAP_SYS_SEG := 3
+      |      |    |  Global integer symbol [MMAP_SYS_SEG] = 3 (0x3)
+------+------+----+----------------------------------
+    68|      |    |MMAP_USER_SEG := 4
+      |      |    |  Global integer symbol [MMAP_USER_SEG] = 4 (0x4)
+------+------+----+----------------------------------
+    69|      |    |MMAP_RESERVED := 5
+      |      |    |  Global integer symbol [MMAP_RESERVED] = 5 (0x5)
+------+------+----+----------------------------------
+    81|      |    |SCOPE MMAP_INIT
+      |      |    |  Enter scope: MMAP_INIT:
+------+------+----+----------------------------------
+    82|      |    |MMAP_INIT ::
+      |      |    |  global label [MMAP_INIT] address: 0x00058b
+------+------+----+----------------------------------
+    83|      |    |LD C, D2F_DOSVER
+      |      |    |  Z80:8cyc R800:2cyc
+      |00048B|058B|  0E 6F
+------+------+----+----------------------------------
+    84|      |    |CALL BDOS
+      |      |    |  Z80:18cyc R800:5cyc
+      |00048D|058D|  CD 05 00
+------+------+----+----------------------------------
+    85|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |000490|0590|  B7
+------+------+----+----------------------------------
+    86|      |    |JP NZ, MMAP_ERROR_EXIT
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |000491|0591|  C2 C9 05
+------+------+----+----------------------------------
+    87|      |    |LD A, B
+      |      |    |  Z80:5cyc R800:2cyc
+      |000494|0594|  78
+------+------+----+----------------------------------
+    88|      |    |CP A, 2
+      |      |    |  Z80:8cyc R800:2cyc
+      |000495|0595|  FE 02
+------+------+----+----------------------------------
+    89|      |    |JP C, MMAP_ERROR_EXIT
+      |      |    |  Z80:11cyc R800:5cyc/3cyc
+      |000497|0597|  DA C9 05
+------+------+----+----------------------------------
+    91|      |    |LD A, [ HOKVLD ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |00049A|059A|  3A 20 FB
+------+------+----+----------------------------------
+    92|      |    |AND A, 1
+      |      |    |  Z80:8cyc R800:2cyc
+      |00049D|059D|  E6 01
+------+------+----+----------------------------------
+    93|      |    |RET Z
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |00049F|059F|  C8
+------+------+----+----------------------------------
+    96|      |    |XOR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0004A0|05A0|  AF
+------+------+----+----------------------------------
+    97|      |    |LD DE, 0x0401
+      |      |    |  Z80:11cyc R800:3cyc
+      |0004A1|05A1|  11 01 04
+------+------+----+----------------------------------
+    98|      |    |CALL EXTBIO
+      |      |    |  Z80:18cyc R800:5cyc
+      |0004A4|05A4|  CD CA FF
+------+------+----+----------------------------------
+    99|      |    |OR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0004A7|05A7|  B7
+------+------+----+----------------------------------
+   100|      |    |RET Z
+      |      |    |  Z80:12cyc/6cyc R800:5cyc/1cyc
+      |0004A8|05A8|  C8
+------+------+----+----------------------------------
+   101|      |    |LD [ MMAP_TABLE_PTR ], HL
+      |      |    |  Z80:17cyc R800:7cyc
+      |0004A9|05A9|  22 E9 05
+------+------+----+----------------------------------
+   104|      |    |LD DE, 0x0402
+      |      |    |  Z80:11cyc R800:3cyc
+      |0004AC|05AC|  11 02 04
+------+------+----+----------------------------------
+   105|      |    |CALL EXTBIO
+      |      |    |  Z80:18cyc R800:5cyc
+      |0004AF|05AF|  CD CA FF
+------+------+----+----------------------------------
+   106|      |    |LD DE, MAPPER_JUMP_TABLE
+      |      |    |  Z80:11cyc R800:3cyc
+      |0004B2|05B2|  11 ED 05
+------+------+----+----------------------------------
+   107|      |    |LD BC, 16 * 3
+      |      |    |  Z80:11cyc R800:3cyc
+      |0004B5|05B5|  01 30 00
+------+------+----+----------------------------------
+   108|      |    |LDIR
+      |      |    |  Z80:23cyc/18cyc R800:7cyc
+      |0004B8|05B8|  ED B0
+------+------+----+----------------------------------
+   111|      |    |CALL MAPPER_GET_P1
+      |      |    |  Z80:18cyc R800:5cyc
+      |0004BA|05BA|  CD 0E 06
+------+------+----+----------------------------------
+   112|      |    |LD [ MAPPER_SEGMENT_P1 ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |0004BD|05BD|  32 EB 05
+------+------+----+----------------------------------
+   113|      |    |CALL MAPPER_GET_P2
+      |      |    |  Z80:18cyc R800:5cyc
+      |0004C0|05C0|  CD 14 06
+------+------+----+----------------------------------
+   114|      |    |LD [ MAPPER_SEGMENT_P2 ], A
+      |      |    |  Z80:14cyc R800:6cyc
+      |0004C3|05C3|  32 EC 05
+------+------+----+----------------------------------
+   116|      |    |XOR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0004C6|05C6|  AF
+------+------+----+----------------------------------
+   117|      |    |INC A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0004C7|05C7|  3C
+------+------+----+----------------------------------
+   118|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |0004C8|05C8|  C9
+------+------+----+----------------------------------
+   119|      |    |MMAP_ERROR_EXIT :
+      |      |    |  label [MMAP_INIT:MMAP_ERROR_EXIT] address: 0x0005c9
+------+------+----+----------------------------------
+   120|      |    |XOR A, A
+      |      |    |  Z80:5cyc R800:1cyc
+      |0004C9|05C9|  AF
+------+------+----+----------------------------------
+   121|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |0004CA|05CA|  C9
+------+------+----+----------------------------------
+   122|      |    |ENDSCOPE
+      |      |    |  Exit scope: MMAP_INIT:
+------+------+----+----------------------------------
+   127|      |    |SCOPE MMAP_CHANGE_TO_TPA
+      |      |    |  Enter scope: MMAP_CHANGE_TO_TPA:
+------+------+----+----------------------------------
+   128|      |    |MMAP_CHANGE_TO_TPA ::
+      |      |    |  global label [MMAP_CHANGE_TO_TPA] address: 0x0005cb
+------+------+----+----------------------------------
+   130|      |    |LD H, 0x40
+      |      |    |  Z80:8cyc R800:2cyc
+      |0004CB|05CB|  26 40
+------+------+----+----------------------------------
+   131|      |    |LD A, [ RAMAD1 ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |0004CD|05CD|  3A 42 F3
+------+------+----+----------------------------------
+   132|      |    |CALL ENASLT
+      |      |    |  Z80:18cyc R800:5cyc
+      |0004D0|05D0|  CD 24 00
+------+------+----+----------------------------------
+   135|      |    |LD H, 0x80
+      |      |    |  Z80:8cyc R800:2cyc
+      |0004D3|05D3|  26 80
+------+------+----+----------------------------------
+   136|      |    |LD A, [ RAMAD2 ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |0004D5|05D5|  3A 43 F3
+------+------+----+----------------------------------
+   137|      |    |CALL ENASLT
+      |      |    |  Z80:18cyc R800:5cyc
+      |0004D8|05D8|  CD 24 00
+------+------+----+----------------------------------
+   140|      |    |LD A, [ MAPPER_SEGMENT_P1 ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |0004DB|05DB|  3A EB 05
+------+------+----+----------------------------------
+   141|      |    |CALL MAPPER_PUT_P1
+      |      |    |  Z80:18cyc R800:5cyc
+      |0004DE|05DE|  CD 0B 06
+------+------+----+----------------------------------
+   144|      |    |LD A, [ MAPPER_SEGMENT_P2 ]
+      |      |    |  Z80:14cyc R800:6cyc
+      |0004E1|05E1|  3A EC 05
+------+------+----+----------------------------------
+   145|      |    |CALL MAPPER_PUT_P2
+      |      |    |  Z80:18cyc R800:5cyc
+      |0004E4|05E4|  CD 11 06
+------+------+----+----------------------------------
+   146|      |    |EI
+      |      |    |  Z80:5cyc R800:1cyc
+      |0004E7|05E7|  FB
+------+------+----+----------------------------------
+   147|      |    |RET
+      |      |    |  Z80:11cyc R800:5cyc
+      |0004E8|05E8|  C9
+------+------+----+----------------------------------
+   148|      |    |ENDSCOPE
+      |      |    |  Exit scope: MMAP_CHANGE_TO_TPA:
+------+------+----+----------------------------------
+   153|      |    |MMAP_TABLE_PTR ::
+      |      |    |  global label [MMAP_TABLE_PTR] address: 0x0005e9
+------+------+----+----------------------------------
+   154|      |    |DW 0
+      |0004E9|05E9|  00 00
+------+------+----+----------------------------------
+   155|      |    |MAPPER_SEGMENT_P1 :
+      |      |    |  label [MAPPER_SEGMENT_P1] address: 0x0005eb
+------+------+----+----------------------------------
+   156|      |    |DB 0
+      |0004EB|05EB|  00
+------+------+----+----------------------------------
+   157|      |    |MAPPER_SEGMENT_P2 :
+      |      |    |  label [MAPPER_SEGMENT_P2] address: 0x0005ec
+------+------+----+----------------------------------
+   158|      |    |DB 0
+      |0004EC|05EC|  00
+------+------+----+----------------------------------
+   160|      |    |MAPPER_JUMP_TABLE ::
+      |      |    |  global label [MAPPER_JUMP_TABLE] address: 0x0005ed
+------+------+----+----------------------------------
+   161|      |    |MAPPER_ALL_SEG ::
+      |      |    |  global label [MAPPER_ALL_SEG] address: 0x0005ed
+------+------+----+----------------------------------
+   162|      |    |DB 0xC9, 0xC9, 0xC9
+      |0004ED|05ED|  C9 C9 C9
+------+------+----+----------------------------------
+   163|      |    |MAPPER_FRE_SEG ::
+      |      |    |  global label [MAPPER_FRE_SEG] address: 0x0005f0
+------+------+----+----------------------------------
+   164|      |    |DB 0xC9, 0xC9, 0xC9
+      |0004F0|05F0|  C9 C9 C9
+------+------+----+----------------------------------
+   165|      |    |MAPPER_RD_SEG ::
+      |      |    |  global label [MAPPER_RD_SEG] address: 0x0005f3
+------+------+----+----------------------------------
+   166|      |    |DB 0xC9, 0xC9, 0xC9
+      |0004F3|05F3|  C9 C9 C9
+------+------+----+----------------------------------
+   167|      |    |MAPPER_WR_SEG ::
+      |      |    |  global label [MAPPER_WR_SEG] address: 0x0005f6
+------+------+----+----------------------------------
+   168|      |    |DB 0xC9, 0xC9, 0xC9
+      |0004F6|05F6|  C9 C9 C9
+------+------+----+----------------------------------
+   169|      |    |MAPPER_CAL_SEG ::
+      |      |    |  global label [MAPPER_CAL_SEG] address: 0x0005f9
+------+------+----+----------------------------------
+   170|      |    |DB 0xC9, 0xC9, 0xC9
+      |0004F9|05F9|  C9 C9 C9
+------+------+----+----------------------------------
+   171|      |    |MAPPER_CALLS ::
+      |      |    |  global label [MAPPER_CALLS] address: 0x0005fc
+------+------+----+----------------------------------
+   172|      |    |DB 0xC9, 0xC9, 0xC9
+      |0004FC|05FC|  C9 C9 C9
+------+------+----+----------------------------------
+   173|      |    |MAPPER_PUT_PH ::
+      |      |    |  global label [MAPPER_PUT_PH] address: 0x0005ff
+------+------+----+----------------------------------
+   174|      |    |DB 0xC9, 0xC9, 0xC9
+      |0004FF|05FF|  C9 C9 C9
+------+------+----+----------------------------------
+   175|      |    |MAPPER_GET_PH ::
+      |      |    |  global label [MAPPER_GET_PH] address: 0x000602
+------+------+----+----------------------------------
+   176|      |    |DB 0xC9, 0xC9, 0xC9
+      |000502|0602|  C9 C9 C9
+------+------+----+----------------------------------
+   177|      |    |MAPPER_PUT_P0 ::
+      |      |    |  global label [MAPPER_PUT_P0] address: 0x000605
+------+------+----+----------------------------------
+   178|      |    |DB 0xC9, 0xC9, 0xC9
+      |000505|0605|  C9 C9 C9
+------+------+----+----------------------------------
+   179|      |    |MAPPER_GET_P0 ::
+      |      |    |  global label [MAPPER_GET_P0] address: 0x000608
+------+------+----+----------------------------------
+   180|      |    |DB 0xC9, 0xC9, 0xC9
+      |000508|0608|  C9 C9 C9
+------+------+----+----------------------------------
+   181|      |    |MAPPER_PUT_P1 ::
+      |      |    |  global label [MAPPER_PUT_P1] address: 0x00060b
+------+------+----+----------------------------------
+   182|      |    |DB 0xC9, 0xC9, 0xC9
+      |00050B|060B|  C9 C9 C9
+------+------+----+----------------------------------
+   183|      |    |MAPPER_GET_P1 ::
+      |      |    |  global label [MAPPER_GET_P1] address: 0x00060e
+------+------+----+----------------------------------
+   184|      |    |DB 0xC9, 0xC9, 0xC9
+      |00050E|060E|  C9 C9 C9
+------+------+----+----------------------------------
+   185|      |    |MAPPER_PUT_P2 ::
+      |      |    |  global label [MAPPER_PUT_P2] address: 0x000611
+------+------+----+----------------------------------
+   186|      |    |DB 0xC9, 0xC9, 0xC9
+      |000511|0611|  C9 C9 C9
+------+------+----+----------------------------------
+   187|      |    |MAPPER_GET_P2 ::
+      |      |    |  global label [MAPPER_GET_P2] address: 0x000614
+------+------+----+----------------------------------
+   188|      |    |DB 0xC9, 0xC9, 0xC9
+      |000514|0614|  C9 C9 C9
+------+------+----+----------------------------------
+   189|      |    |MAPPER_PUT_P3 ::
+      |      |    |  global label [MAPPER_PUT_P3] address: 0x000617
+------+------+----+----------------------------------
+   190|      |    |DB 0xC9, 0xC9, 0xC9
+      |000517|0617|  C9 C9 C9
+------+------+----+----------------------------------
+   191|      |    |MAPPER_GET_P3 ::
+      |      |    |  global label [MAPPER_GET_P3] address: 0x00061a
+------+------+----+----------------------------------
+   192|      |    |DB 0xC9, 0xC9, 0xC9
+      |00051A|061A|  C9 C9 C9
+------+------+----+----------------------------------
+   465|      |    |INCLUDE "memmapper.asm" end
+<< label >>
+BDOS ............................. 5 ( 0x5 )
+BEEP ............................. 192 ( 0xc0 )
+BIGFIL ........................... 363 ( 0x16b )
+BOTTOM ........................... 64584 ( 0xfc48 )
+BREAKV ........................... 62245 ( 0xf325 )
+BREAKX ........................... 183 ( 0xb7 )
+CALATR ........................... 135 ( 0x87 )
+CALBAS ........................... 345 ( 0x159 )
+CALLF ............................ 48 ( 0x30 )
+CALPAT ........................... 132 ( 0x84 )
+CALSLT ........................... 28 ( 0x1c )
+CHECK_ADDRESS .................... 32768 ( 0x8000 )
+CHECK_ALL_SLOT ................... 278 ( 0x116 )
+CHECK_ROM ........................ 496 ( 0x1f0 )
+CHECK_ROM:EXIT ................... 508 ( 0x1fc )
+CHECK_SLOT ....................... 329 ( 0x149 )
+CHECK_SLOT:CHECK_LOOP ............ 464 ( 0x1d0 )
+CHECK_SLOT:IS_RAM ................ 378 ( 0x17a )
+CHECK_SLOT:ROM_SEGMENT ........... 418 ( 0x1a2 )
+CHECK_SLOT:SEGMENT_BACKUP_SKIP ... 420 ( 0x1a4 )
+CHECK_SLOT:SKIP_CHECK_LOOP ....... 470 ( 0x1d6 )
+CHGCAP ........................... 306 ( 0x132 )
+CHGCLR ........................... 98 ( 0x62 )
+CHGCPU ........................... 384 ( 0x180 )
+CHGET ............................ 159 ( 0x9f )
+CHGMOD ........................... 95 ( 0x5f )
+CHGSND ........................... 309 ( 0x135 )
+CHKRAM ........................... 0 ( 0x0 )
+CHPUT ............................ 162 ( 0xa2 )
+CHRGTR ........................... 16 ( 0x10 )
+CHSNS ............................ 156 ( 0x9c )
+CLIKSW ........................... 62427 ( 0xf3db )
+CLPRIM ........................... 62348 ( 0xf38c )
+CLRSPR ........................... 105 ( 0x69 )
+CLS .............................. 195 ( 0xc3 )
+CNSDFG ........................... 62430 ( 0xf3de )
+CNVCHR ........................... 171 ( 0xab )
+CSRX ............................. 62429 ( 0xf3dd )
+CSRY ............................. 62428 ( 0xf3dc )
+D1E_EOF .......................... 199 ( 0xc7 )
+D1F_ALLOC ........................ 27 ( 0x1b )
+D1F_AUXIN ........................ 3 ( 0x3 )
+D1F_AUXOUT ....................... 4 ( 0x4 )
+D1F_BUFIN ........................ 10 ( 0xa )
+D1F_CONIN ........................ 1 ( 0x1 )
+D1F_CONOUT ....................... 2 ( 0x2 )
+D1F_CONST ........................ 11 ( 0xb )
+D1F_CPMVER ....................... 12 ( 0xc )
+D1F_CURDRV ....................... 25 ( 0x19 )
+D1F_DIRIN ........................ 7 ( 0x7 )
+D1F_DIRIO ........................ 6 ( 0x6 )
+D1F_DPARM ........................ 49 ( 0x31 )
+D1F_DSKRST ....................... 13 ( 0xd )
+D1F_FCLOSE ....................... 16 ( 0x10 )
+D1F_FDEL ......................... 19 ( 0x13 )
+D1F_FMAKE ........................ 22 ( 0x16 )
+D1F_FOPEN ........................ 15 ( 0xf )
+D1F_FREN ......................... 23 ( 0x17 )
+D1F_FSIZE ........................ 35 ( 0x23 )
+D1F_GDATE ........................ 42 ( 0x2a )
+D1F_GTIME ........................ 44 ( 0x2c )
+D1F_INNOE ........................ 8 ( 0x8 )
+D1F_LOGIN ........................ 24 ( 0x18 )
+D1F_LSTOUT ....................... 5 ( 0x5 )
+D1F_RDABS ........................ 47 ( 0x2f )
+D1F_RDBLK ........................ 39 ( 0x27 )
+D1F_RDRND ........................ 33 ( 0x21 )
+D1F_RDSEQ ........................ 20 ( 0x14 )
+D1F_SDATE ........................ 43 ( 0x2b )
+D1F_SELDSK ....................... 14 ( 0xe )
+D1F_SETDTA ....................... 26 ( 0x1a )
+D1F_SETRND ....................... 36 ( 0x24 )
+D1F_SFIRST ....................... 17 ( 0x11 )
+D1F_SNEXT ........................ 18 ( 0x12 )
+D1F_STIME ........................ 45 ( 0x2d )
+D1F_STROUT ....................... 9 ( 0x9 )
+D1F_TERM0 ........................ 0 ( 0x0 )
+D1F_VERIFY ....................... 46 ( 0x2e )
+D1F_WRABS ........................ 48 ( 0x30 )
+D1F_WRBLK ........................ 38 ( 0x26 )
+D1F_WRRND ........................ 34 ( 0x22 )
+D1F_WRSEQ ........................ 21 ( 0x15 )
+D1F_WRZER ........................ 40 ( 0x28 )
+D2E_DATA ......................... 250 ( 0xfa )
+D2E_DISK ......................... 253 ( 0xfd )
+D2E_IFAT ......................... 242 ( 0xf2 )
+D2E_IFORM ........................ 240 ( 0xf0 )
+D2E_NCOMP ........................ 255 ( 0xff )
+D2E_NDOS ......................... 246 ( 0xf6 )
+D2E_NOUPB ........................ 241 ( 0xf1 )
+D2E_NRDY ......................... 252 ( 0xfc )
+D2E_RNF .......................... 249 ( 0xf9 )
+D2E_SEEK ......................... 243 ( 0xf3 )
+D2E_SUCCESS ...................... 0 ( 0x0 )
+D2E_UFORM ........................ 247 ( 0xf7 )
+D2E_VERFY ........................ 251 ( 0xfb )
+D2E_WDISK ........................ 245 ( 0xf5 )
+D2E_WFILE ........................ 244 ( 0xf4 )
+D2E_WPROT ........................ 248 ( 0xf8 )
+D2E_WRERR ........................ 254 ( 0xfe )
+D2F_ASSIGN ....................... 106 ( 0x6a )
+D2F_ATTR ......................... 80 ( 0x50 )
+D2F_BUFFER ....................... 105 ( 0x69 )
+D2F_CHDIR ........................ 90 ( 0x5a )
+D2F_CHKCHR ....................... 93 ( 0x5d )
+D2F_CLOSE ........................ 69 ( 0x45 )
+D2F_CREATE ....................... 68 ( 0x44 )
+D2F_DEFAB ........................ 99 ( 0x63 )
+D2F_DEFER ........................ 100 ( 0x64 )
+D2F_DELETE ....................... 77 ( 0x4d )
+D2F_DOSVER ....................... 111 ( 0x6f )
+D2F_DSKCHK ....................... 110 ( 0x6e )
+D2F_DUP .......................... 71 ( 0x47 )
+D2F_ENSURE ....................... 70 ( 0x46 )
+D2F_ERROR ........................ 101 ( 0x65 )
+D2F_EXPLAIN ...................... 102 ( 0x66 )
+D2F_FENV ......................... 109 ( 0x6d )
+D2F_FFIRST ....................... 64 ( 0x40 )
+D2F_FLUSH ........................ 95 ( 0x5f )
+D2F_FNEW ......................... 66 ( 0x42 )
+D2F_FNEXT ........................ 65 ( 0x41 )
+D2F_FORK ......................... 96 ( 0x60 )
+D2F_FORMAT ....................... 103 ( 0x67 )
+D2F_FTIME ........................ 81 ( 0x51 )
+D2F_GENV ......................... 107 ( 0x6b )
+D2F_GETCD ........................ 89 ( 0x59 )
+D2F_GETVFY ....................... 88 ( 0x58 )
+D2F_HATTR ........................ 85 ( 0x55 )
+D2F_HDELETE ...................... 82 ( 0x52 )
+D2F_HFTIME ....................... 86 ( 0x56 )
+D2F_HGETDTA ...................... 87 ( 0x57 )
+D2F_HMOVE ........................ 84 ( 0x54 )
+D2F_HRENAME ...................... 83 ( 0x53 )
+D2F_HTEST ........................ 76 ( 0x4c )
+D2F_IOCTL ........................ 75 ( 0x4b )
+D2F_JOIN ......................... 97 ( 0x61 )
+D2F_MOVE ......................... 79 ( 0x4f )
+D2F_OPEN ......................... 67 ( 0x43 )
+D2F_PARSE ........................ 91 ( 0x5b )
+D2F_PFILE ........................ 92 ( 0x5c )
+D2F_RAMD ......................... 104 ( 0x68 )
+D2F_READ ......................... 72 ( 0x48 )
+D2F_REDIR ........................ 112 ( 0x70 )
+D2F_RENAME ....................... 78 ( 0x4e )
+D2F_SEEK ......................... 74 ( 0x4a )
+D2F_SENV ......................... 108 ( 0x6c )
+D2F_TERM ......................... 98 ( 0x62 )
+D2F_WPATH ........................ 94 ( 0x5e )
+D2F_WRITE ........................ 73 ( 0x49 )
+DCOMPR ........................... 32 ( 0x20 )
+DEC2HEX .......................... 638 ( 0x27e )
+DEC2HEX:SKIP1 .................... 653 ( 0x28d )
+DEC2HEX:SKIP2 .................... 667 ( 0x29b )
+DEVICE ........................... 64921 ( 0xfd99 )
+DISKVE ........................... 62243 ( 0xf323 )
+DISSCR ........................... 65 ( 0x41 )
+DMA .............................. 128 ( 0x80 )
+DSPFNK ........................... 207 ( 0xcf )
+ENASCR ........................... 68 ( 0x44 )
+ENASLT ........................... 36 ( 0x24 )
+ENTRY ............................ 256 ( 0x100 )
+EOL .............................. 360 ( 0x168 )
+ERAFNK ........................... 204 ( 0xcc )
+EXBRSA ........................... 64248 ( 0xfaf8 )
+EXIT_TO_DOS ...................... 322 ( 0x142 )
+EXPAND ........................... 291 ( 0x123 )
+EXPTBL ........................... 64705 ( 0xfcc1 )
+EXTBIO ........................... 65482 ( 0xffca )
+EXTROM ........................... 351 ( 0x15f )
+FIB_ATTRIBUTE .................... 14 ( 0xe )
+FIB_ATTR_ARCHIVE ................. 32 ( 0x20 )
+FIB_ATTR_DEVICE .................. 128 ( 0x80 )
+FIB_ATTR_DIRECTORY ............... 16 ( 0x10 )
+FIB_ATTR_HIDDEN .................. 2 ( 0x2 )
+FIB_ATTR_READ_ONLY ............... 1 ( 0x1 )
+FIB_ATTR_RESERVED ................ 64 ( 0x40 )
+FIB_ATTR_SYSTEM .................. 4 ( 0x4 )
+FIB_ATTR_VOLUME .................. 8 ( 0x8 )
+FIB_CLUSTER ...................... 19 ( 0x13 )
+FIB_DRIVE ........................ 25 ( 0x19 )
+FIB_FILENAME ..................... 1 ( 0x1 )
+FIB_INTERNAL ..................... 26 ( 0x1a )
+FIB_SIGNATURE .................... 0 ( 0x0 )
+FIB_SIZE ......................... 21 ( 0x15 )
+FIB_UPDATE_DATE .................. 17 ( 0x11 )
+FIB_UPDATE_TIME .................. 15 ( 0xf )
+FILVRM ........................... 86 ( 0x56 )
+FNKSB ............................ 201 ( 0xc9 )
+FNKSTR ........................... 63615 ( 0xf87f )
+GETCPU ........................... 387 ( 0x183 )
+GETYPR ........................... 40 ( 0x28 )
+GET_DIGIT ........................ 571 ( 0x23b )
+GET_SLOT_NUM ..................... 510 ( 0x1fe )
+GICINI ........................... 144 ( 0x90 )
+GRPPRT ........................... 141 ( 0x8d )
+GSPSIZ ........................... 138 ( 0x8a )
+GTPAD ............................ 219 ( 0xdb )
+GTPDL ............................ 222 ( 0xde )
+GTSTCK ........................... 213 ( 0xd5 )
+GTTRIG ........................... 216 ( 0xd8 )
+HEX2BYTE ......................... 677 ( 0x2a5 )
+HIMEM ............................ 64586 ( 0xfc4a )
+HOKVLD ........................... 64288 ( 0xfb20 )
+H_PROMPT ......................... 62031 ( 0xf24f )
+H_TIMI ........................... 64927 ( 0xfd9f )
+INIFNK ........................... 62 ( 0x3e )
+INIGRP ........................... 114 ( 0x72 )
+INIMLT ........................... 117 ( 0x75 )
+INIT32 ........................... 111 ( 0x6f )
+INITIO ........................... 59 ( 0x3b )
+INITXT ........................... 108 ( 0x6c )
+INLIN ............................ 177 ( 0xb1 )
+ISFLIO ........................... 330 ( 0x14a )
+ISXDIGIT ......................... 550 ( 0x226 )
+KEYBUF ........................... 64496 ( 0xfbf0 )
+KEYINT ........................... 56 ( 0x38 )
+KILBUF ........................... 342 ( 0x156 )
+LDIRMV ........................... 89 ( 0x59 )
+LDIRVM ........................... 92 ( 0x5c )
+LINWRK ........................... 64536 ( 0xfc18 )
+LPTOUT ........................... 165 ( 0xa5 )
+LPTSTT ........................... 168 ( 0xa8 )
+MAPPER_ALL_SEG ................... 1517 ( 0x5ed )
+MAPPER_CALLS ..................... 1532 ( 0x5fc )
+MAPPER_CAL_SEG ................... 1529 ( 0x5f9 )
+MAPPER_FRE_SEG ................... 1520 ( 0x5f0 )
+MAPPER_GET_P0 .................... 1544 ( 0x608 )
+MAPPER_GET_P1 .................... 1550 ( 0x60e )
+MAPPER_GET_P2 .................... 1556 ( 0x614 )
+MAPPER_GET_P3 .................... 1562 ( 0x61a )
+MAPPER_GET_PH .................... 1538 ( 0x602 )
+MAPPER_JUMP_TABLE ................ 1517 ( 0x5ed )
+MAPPER_PUT_P0 .................... 1541 ( 0x605 )
+MAPPER_PUT_P1 .................... 1547 ( 0x60b )
+MAPPER_PUT_P2 .................... 1553 ( 0x611 )
+MAPPER_PUT_P3 .................... 1559 ( 0x617 )
+MAPPER_PUT_PH .................... 1535 ( 0x5ff )
+MAPPER_RD_SEG .................... 1523 ( 0x5f3 )
+MAPPER_SEGMENT_P1 ................ 1515 ( 0x5eb )
+MAPPER_SEGMENT_P2 ................ 1516 ( 0x5ec )
+MAPPER_WR_SEG .................... 1526 ( 0x5f6 )
+MASTERS .......................... 62280 ( 0xf348 )
+MMAP_CHANGE_TO_TPA ............... 1483 ( 0x5cb )
+MMAP_FREE_SEG .................... 2 ( 0x2 )
+MMAP_INIT ........................ 1419 ( 0x58b )
+MMAP_INIT:MMAP_ERROR_EXIT ........ 1481 ( 0x5c9 )
+MMAP_RESERVED .................... 5 ( 0x5 )
+MMAP_SLOT ........................ 0 ( 0x0 )
+MMAP_SYS_SEG ..................... 3 ( 0x3 )
+MMAP_TABLE_PTR ................... 1513 ( 0x5e9 )
+MMAP_TOTAL_SEG ................... 1 ( 0x1 )
+MMAP_USER_SEG .................... 4 ( 0x4 )
+MSG_CRLF ......................... 744 ( 0x2e8 )
+MSG_ENTRY ........................ 747 ( 0x2eb )
+MSG_IS_NOT_MAPPER ................ 839 ( 0x347 )
+MSG_KB ........................... 876 ( 0x36c )
+MSG_NO_MAPPER_RAM ................ 858 ( 0x35a )
+MSG_SLOT ......................... 829 ( 0x33d )
+MSG_SPACE ........................ 835 ( 0x343 )
+NEWKEY ........................... 64485 ( 0xfbe5 )
+NMI .............................. 102 ( 0x66 )
+NOT_EXPAND ....................... 308 ( 0x134 )
+NRDVRM ........................... 372 ( 0x174 )
+NSETRD ........................... 366 ( 0x16e )
+NSTWRT ........................... 369 ( 0x171 )
+NWRVRM ........................... 375 ( 0x177 )
+OLDKEY ........................... 64474 ( 0xfbda )
+OLDSCR ........................... 64688 ( 0xfcb0 )
+OUTDLP ........................... 333 ( 0x14d )
+OUTDO ............................ 24 ( 0x18 )
+PAGE2_SEGMENT .................... 891 ( 0x37b )
+PATWRK ........................... 64576 ( 0xfc40 )
+PCMPLY ........................... 390 ( 0x186 )
+PCMREC ........................... 393 ( 0x189 )
+PINLIN ........................... 174 ( 0xae )
+POSIT ............................ 198 ( 0xc6 )
+PROCNM ........................... 64905 ( 0xfd89 )
+PUTS ............................. 1405 ( 0x57d )
+PUTS_DIGIT ....................... 681 ( 0x2a9 )
+PUTS_DIGIT:PUTS_DIGIT_1 .......... 714 ( 0x2ca )
+PUTS_DIGIT:PUT_DIGIT_1_CHAR ...... 732 ( 0x2dc )
+PUTS_DIGIT:PUT_DIGIT_1_LOOP ...... 716 ( 0x2cc )
+PUTS_DIGIT:PUT_DIGIT_1_SKIP ...... 724 ( 0x2d4 )
+PUT_SLOT_NUM ..................... 581 ( 0x245 )
+PUT_SLOT_NUM:PUT_EXPAND_SLOT ..... 608 ( 0x260 )
+QINLIN ........................... 180 ( 0xb4 )
+RAMAD0 ........................... 62273 ( 0xf341 )
+RAMAD1 ........................... 62274 ( 0xf342 )
+RAMAD2 ........................... 62275 ( 0xf343 )
+RAMAD3 ........................... 62276 ( 0xf344 )
+RDPRIM ........................... 62336 ( 0xf380 )
+RDPSG ............................ 150 ( 0x96 )
+RDRES ............................ 378 ( 0x17a )
+RDSLT ............................ 12 ( 0xc )
+RDVDP ............................ 318 ( 0x13e )
+RDVRM ............................ 74 ( 0x4a )
+READ_BACK_AREA ................... 1149 ( 0x47d )
+READ_BACK_LOOP ................... 405 ( 0x195 )
+RG0SAV ........................... 62431 ( 0xf3df )
+RG1SAV ........................... 62432 ( 0xf3e0 )
+RG2SAV ........................... 62433 ( 0xf3e1 )
+RG3SAV ........................... 62434 ( 0xf3e2 )
+RG4SAV ........................... 62435 ( 0xf3e3 )
+RG5SAV ........................... 62436 ( 0xf3e4 )
+RG6SAV ........................... 62437 ( 0xf3e5 )
+RG7SAV ........................... 62438 ( 0xf3e6 )
+RG8SAV ........................... 65511 ( 0xffe7 )
+RG9SAV ........................... 65512 ( 0xffe8 )
+RSLREG ........................... 312 ( 0x138 )
+SCRMOD ........................... 64687 ( 0xfcaf )
+SEGMENT_BACKUP_AREA .............. 893 ( 0x37d )
+SEGMENT_BACKUP_LOOP .............. 383 ( 0x17f )
+SEGMENT_COUNT .................... 892 ( 0x37c )
+SEGMENT_RESTORE_LOOP ............. 430 ( 0x1ae )
+SETGRP ........................... 126 ( 0x7e )
+SETMLT ........................... 129 ( 0x81 )
+SETRD ............................ 80 ( 0x50 )
+SETT32 ........................... 123 ( 0x7b )
+SETTXT ........................... 120 ( 0x78 )
+SETWRT ........................... 83 ( 0x53 )
+SKIP_CHECK_ALL_SLOT .............. 315 ( 0x13b )
+SKIP_WHITE_SPACE ................. 513 ( 0x201 )
+SLOT_NUM ......................... 349 ( 0x15d )
+SLTATR ........................... 64713 ( 0xfcc9 )
+SLTTBL ........................... 64709 ( 0xfcc5 )
+SLTWRK ........................... 64777 ( 0xfd09 )
+SNSMAT ........................... 321 ( 0x141 )
+STATFL ........................... 62439 ( 0xf3e7 )
+STMOTR ........................... 243 ( 0xf3 )
+STRTMS ........................... 153 ( 0x99 )
+SUBROM ........................... 348 ( 0x15c )
+SUB_BEEP ......................... 381 ( 0x17d )
+SUB_CALATR ....................... 253 ( 0xfd )
+SUB_CALPAT ....................... 249 ( 0xf9 )
+SUB_CHGCLR ....................... 273 ( 0x111 )
+SUB_CHGMDP ....................... 437 ( 0x1b5 )
+SUB_CHGMOD ....................... 209 ( 0xd1 )
+SUB_CLRSPR ....................... 245 ( 0xf5 )
+SUB_CLSSUB ....................... 277 ( 0x115 )
+SUB_DSPFNK ....................... 285 ( 0x11d )
+SUB_GETPAT ....................... 261 ( 0x105 )
+SUB_GETPLT ....................... 329 ( 0x149 )
+SUB_GSPSIZ ....................... 257 ( 0x101 )
+SUB_GTPPRT ....................... 137 ( 0x89 )
+SUB_INIGRP ....................... 221 ( 0xdd )
+SUB_INIMLT ....................... 225 ( 0xe1 )
+SUB_INIPLT ....................... 321 ( 0x141 )
+SUB_INIT32 ....................... 217 ( 0xd9 )
+SUB_INITXT ....................... 213 ( 0xd5 )
+SUB_KNJPRT ....................... 445 ( 0x1bd )
+SUB_NEWPAD ....................... 429 ( 0x1ad )
+SUB_NVBXFL ....................... 205 ( 0xcd )
+SUB_NVBXLN ....................... 201 ( 0xc9 )
+SUB_PROMPT ....................... 385 ( 0x181 )
+SUB_RDVRM ........................ 269 ( 0x10d )
+SUB_REDCLK ....................... 501 ( 0x1f5 )
+SUB_RSTPLT ....................... 325 ( 0x145 )
+SUB_SETGRP ....................... 237 ( 0xed )
+SUB_SETMLT ....................... 241 ( 0xf1 )
+SUB_SETPAG ....................... 317 ( 0x13d )
+SUB_SETPLT ....................... 333 ( 0x14d )
+SUB_SETT32 ....................... 233 ( 0xe9 )
+SUB_SETTXT ....................... 229 ( 0xe5 )
+SUB_VDPSTA ....................... 305 ( 0x131 )
+SUB_WRTCLK ....................... 505 ( 0x1f9 )
+SUB_WRTVDP ....................... 301 ( 0x12d )
+SUB_WRTVRM ....................... 265 ( 0x109 )
+SYNCHR ........................... 8 ( 0x8 )
+TAPIN ............................ 228 ( 0xe4 )
+TAPIOF ........................... 231 ( 0xe7 )
+TAPION ........................... 225 ( 0xe1 )
+TAPOOF ........................... 240 ( 0xf0 )
+TAPOON ........................... 234 ( 0xea )
+TAPOUT ........................... 237 ( 0xed )
+TOTEXT ........................... 210 ( 0xd2 )
+TPA_BOTTOM ....................... 6 ( 0x6 )
+TRPTBL ........................... 64588 ( 0xfc4c )
+WRPRIM ........................... 62341 ( 0xf385 )
+WRRES ............................ 381 ( 0x17d )
+WRSLT ............................ 20 ( 0x14 )
+WRTPSG ........................... 147 ( 0x93 )
+WRTVDP ........................... 71 ( 0x47 )
+WRTVRM ........................... 77 ( 0x4d )
+WSLREG ........................... 315 ( 0x13b )

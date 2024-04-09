@@ -8,6 +8,13 @@
 		include		"msxdos1.asm"
 		include		"msxdos2.asm"
 
+		; チェックのために一時的に書き替えるアドレス (page2 4000h-BFFFh 範囲内)
+		;   このプログラム自身が置かれているセグメントや、BIOSワークエリアのセグメント
+		;   スタックポインタが指しているセグメントも対象となる場合があるため、
+		;   チェック時に破壊しても問題ないアドレスにしなければならない。
+		;
+check_address	:= 0x8000
+
 		org		0x100
 
 entry::
@@ -18,12 +25,60 @@ entry::
 		; スロット番号を取得する(コマンドライン引数)
 		call		get_slot_num
 		ld			[slot_num], a
-		call		dec2hex
-		ld			de, msg_crlf
+		or			a, a
+		jp			z, check_all_slot					; 引数に何も指定されていなければ全スロット調べる
+		; 指定のスロットを調べる場合
+		call		check_slot
+		jp			exit_to_dos
+		; 全スロットを調べる場合
+check_all_slot::
+		push		af
+		; 基本スロット A は拡張されているか？
+		ld			b, a
+		add			a, exptbl & 0x0FF
+		ld			l, a
+		ld			h, exptbl >> 8
+		ld			a, [hl]
+		and			a, 0x80
+		jr			z, not_expand
+		; 拡張されている場合
+		or			a, b
+expand:
+		ld			[slot_num], a
+		call		check_slot
+		ld			a, [slot_num]
+		add			a, 0x04
+		bit			4, a
+		jr			z, expand
+		jr			skip_check_all_slot
+not_expand:
+		; 拡張されていない場合
+		ld			a, b
+		ld			[slot_num], a
+		call		check_slot
+skip_check_all_slot::
+		pop			af
+		inc			a
+		bit			2, a
+		jp			z, check_all_slot
+exit_to_dos::
+		ld			b, 0
+		ld			c, D2F_TERM
+		jp			bdos
+
+; =============================================================================
+;	check_slot
+;	input)
+;		[slot_num] ..... target slot
+; =============================================================================
+		scope		check_slot
+		; slot_num のスロットを調べる
+check_slot::
+		ld			de, msg_slot
 		call		puts
+		call		put_slot_num
 
 		; 初期化
-		ld			sp, [TPA_BOTTOM]
 		call		mmap_init
 		ret			z
 
@@ -37,17 +92,32 @@ slot_num := $ + 1
 		ld			h, 0x80
 		call		enaslt
 
-		; 全セグメントの先頭番地の内容をバックアップしつつ、先頭番地をセグメント番号にする
+		; ROMかチェックする
+		di
+		call		check_rom
+		ei
+		jr			z, is_ram
+		ld			de, msg_is_not_mapper
+		call		puts
+		; ROMの場合、ここで戻る
+		ld			a, [ramad2]
+		ld			h, 0x80
+		call		enaslt
+		ei
+		ret
+is_ram:
+		; 全セグメントの check_address の内容をバックアップする
+		di
 		xor			a, a
 		ld			hl, segment_backup_area + 255
 segment_backup_loop::
 		dec			a
 		push		af
 		call		mapper_put_p2
-		ld			a, [0x8000]
+		ld			a, [check_address]
 		ld			[hl], a
 		pop			af
-		ld			[0x8000], a
+		ld			[check_address], a
 		dec			hl
 		or			a, a
 		jp			nz, segment_backup_loop
@@ -58,8 +128,14 @@ segment_backup_loop::
 read_back_loop::
 		push		af
 		call		mapper_put_p2
-		ld			a, [0x8000]
+		ld			a, [check_address]
 		ld			[hl], a
+		; ROM かどうか調べる
+		call		check_rom
+		jr			z, segment_backup_skip
+rom_segment:
+		ld			[hl], 0						; ROM なら read結果を強制的に 0 にする
+segment_backup_skip:
 		pop			af
 		inc			hl
 		inc			a
@@ -72,48 +148,74 @@ segment_restore_loop::
 		push		af
 		call		mapper_put_p2
 		ld			a, [hl]
-		ld			[0x8000], a
+		ld			[check_address], a
 		pop			af
 		inc			hl
 		inc			a
 		jp			nz, segment_restore_loop
 
+		; セグメントを元に戻す
+		ld			a, [page2_segment]
+		call		mapper_put_p2
+
 		; Page2 を元に戻して割り込み許可
 		ld			a, [ramad2]
 		ld			h, 0x80
 		call		enaslt
-
-		ld			a, [page2_segment]
-		call		mapper_put_p2
 		ei
 
-		; 読み出した値をダンプする
-		ld			b, 16
+		; 読みだした値の中で最も大きな値を調べる
 		ld			hl, read_back_area
-dump_loop_y::
-		push		bc
-		ld			b, 16
-dump_loop_x::
-		push		bc
-		ld			a, [hl]
+		xor			a, a
+		ld			b, a
+check_loop:
+		ld			c, [hl]
 		inc			hl
-		push		hl
-		call		dec2hex
-		pop			hl
-		pop			bc
-		djnz		dump_loop_x
+		cp			a, c
+		jr			nc, skip_check_loop
+		ld			a, c
+skip_check_loop:
+		djnz		check_loop
+		; 0 なら Mapper でない RAM
+		or			a, a
+		ld			de, msg_no_mapper_ram
+		jp			z, puts
+		; Mapper のサイズを計算する
+		ld			l, a
+		ld			h, 0
+		inc			hl
+		add			hl, hl
+		add			hl, hl
+		add			hl, hl
+		add			hl, hl
+		call		puts_digit
+		ld			de, msg_kb
+		jp			puts
+		endscope
 
+; =============================================================================
+;	check_rom
+;	input)
+;		Is 8000-BFFFh ROM?
+;	output)
+;		Zf = 0: ROM
+;		Zf = 1: 
+; =============================================================================
+		scope		check_rom
+check_rom::
 		push		hl
-		ld			hl, msg_crlf
-		call		puts
+		ld			hl, check_address
+		ld			a, [hl]
+		cpl
+		ld			[hl], a
+		cp			a, [hl]
+		jr			nz, exit
+		cpl
+		ld			[hl], a
+exit:
 		pop			hl
-		pop			bc
-		djnz		dump_loop_y
-
-exit_loop::
-		ld			b, 0
-		ld			c, D2F_TERM
-		jp			bdos
+		ret
+		endscope
 
 ; =============================================================================
 ;	Get slot number
@@ -124,11 +226,12 @@ get_slot_num::
 skip_white_space::
 		ld			a, [hl]
 		inc			hl
-		cp			a, ' ' + 1
-		jp			c, skip_white_space
 
 		or			a, a
 		ret			z
+
+		cp			a, ' ' + 1
+		jp			c, skip_white_space
 
 		call		isxdigit
 		jp			c, skip_white_space
@@ -200,6 +303,47 @@ get_digit::
 		endscope
 
 ; =============================================================================
+;	Dump A register value by slot number
+;	input)
+;		a ..... target number
+; =============================================================================
+		scope		put_slot_num
+put_slot_num::
+		; 基本スロット番号を表示
+		ld			a, [slot_num]
+		and			a, 0x03
+		add			a, '0'
+		ld			e, a
+		ld			c, D1F_CONOUT
+		call		bdos
+		; 拡張されているかチェック
+		ld			a, [slot_num]
+		or			a, a
+		jp			m, put_expand_slot
+		; 拡張されていないので "  :" を表示
+		ld			de, msg_space
+		call		puts
+		ret
+put_expand_slot:
+		; 拡張されているので "-N:" を表示
+		ld			e, '-'
+		ld			c, D1F_CONOUT
+		call		bdos
+		ld			a, [slot_num]
+		rrca
+		rrca
+		and			a, 0x03
+		add			a, '0'
+		ld			e, a
+		ld			c, D1F_CONOUT
+		call		bdos
+		ld			e, ':'
+		ld			c, D1F_CONOUT
+		call		bdos
+		ret
+		endscope
+
+; =============================================================================
 ;	Dump A register value by hex
 ;	input)
 ;		a ..... target number
@@ -235,6 +379,52 @@ hex2byte::
 		endscope
 
 ; =============================================================================
+;	Dump HL register value
+;	input)
+;		hl ..... target number
+; =============================================================================
+		scope		puts_digit
+puts_digit::
+		ld			b, 0
+		ld			de, 10000
+		call		puts_digit_1
+		ld			de, 1000
+		call		puts_digit_1
+		ld			de, 100
+		call		puts_digit_1
+		ld			de, 10
+		call		puts_digit_1
+		ld			de, 1
+		call		puts_digit_1
+		ret
+puts_digit_1:
+		ld			a, '0'
+put_digit_1_loop:
+		or			a, a
+		sbc			hl, de
+		jr			c, put_digit_1_skip
+		inc			a
+		jr			put_digit_1_loop
+put_digit_1_skip:
+		add			hl, de
+		cp			a, '0'
+		jr			nz, put_digit_1_char
+		inc			b
+		dec			b
+		ret			z
+put_digit_1_char:
+		inc			b
+		push		hl
+		push		bc
+		ld			e, a
+		ld			c, D1F_CONOUT
+		call		bdos
+		pop			bc
+		pop			hl
+		ret
+		endscope
+
+; =============================================================================
 ;	Data area
 ; =============================================================================
 msg_crlf::
@@ -243,11 +433,26 @@ msg_entry::
 		ds			"MemoryMapper Test Program\r\n"
 		ds			"================================\r\n"
 		ds			"Programmed by HRA!\r\n"
+		db			0
+msg_slot::
 		ds			"SLOT#"
 		db			0
-
+msg_space:
+		ds			"  :"
+		db			0
+msg_is_not_mapper:
+		ds			"Is not MapperRAM"
+		db			13, 10, 0
+msg_no_mapper_ram:
+		ds			"RAM (No Mapper)"
+		db			13, 10, 0
+msg_kb:
+		ds			"KB MapperRAM"
+		db			13, 10, 0
 page2_segment::
 		db			1
+segment_count::
+		db			0
 segment_backup_area:
 		space		256
 read_back_area:
