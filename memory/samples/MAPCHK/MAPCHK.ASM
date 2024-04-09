@@ -441,7 +441,7 @@ msg_space:
 		ds			"  :"
 		db			0
 msg_is_not_mapper:
-		ds			"Is not MapperRAM"
+		ds			"----"
 		db			13, 10, 0
 msg_no_mapper_ram:
 		ds			"RAM (No Mapper)"
