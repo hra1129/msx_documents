@@ -20,3 +20,4 @@ Makefile	text
 *.vsdx		binary
 *.xlsx		binary
 *.png		binary
+*.pdf		binary
