@@ -84,12 +84,13 @@ Written by Takayuki Hara (HRA!)
   - [9.2 Ports and Register Access](#92-ports-and-register-access)
   - [9.3 Immediate Mode](#93-immediate-mode)
   - [9.4 Phase 2 Engine](#94-phase-2-engine)
-  - [9.5 Face Fill and Shading](#95-face-fill-and-shading)
+  - [9.5 Filled Faces and Shading](#95-filled-faces-and-shading)
   - [9.6 Textures](#96-textures)
-  - [9.7 Extensions in v2.0](#97-extensions-in-v20)
+  - [9.7 The v2.0 Extensions](#97-the-v20-extensions)
   - [9.8 BASIC API (G3BASIC)](#98-basic-api-g3basic)
-  - [9.9 Sources for This Chapter](#99-sources-for-this-chapter)
-  - [9.10 Sample Program: The Official Demo ROM](#910-sample-program-the-official-demo-rom)
+  - [9.9 Sample Program: A Rotating Wireframe Cube](#99-sample-program-a-rotating-wireframe-cube)
+  - [9.10 About the Sources of This Chapter](#910-about-the-sources-of-this-chapter)
+  - [9.11 Sample Program: The Official Demo ROM](#911-sample-program-the-official-demo-rom)
 - [Chapter 10 Interrupts](#chapter-10-interrupts)
   - [10.1 Overview of the Interrupt Sources](#101-overview-of-the-interrupt-sources)
   - [10.2 Frame Interrupt](#102-frame-interrupt)
@@ -2456,7 +2457,7 @@ The second time, DIY of ARG is set to 1 and the string is drawn at (28, 144). Wi
 
 Geo3D is a 3D graphics support processor implemented in the FPGA of the V9968 cartridge. It executes the perspective projection computation of 3D coordinates and the drawing itself of wireframe / filled-face figures in hardware, so a program on the Z80 side can perform 3D drawing simply by "giving the model data and a camera".
 
-This chapter explains the specification of **Geo3D v2.0**, based on the Geo3D specification document (the documentation of the fork by alexmoncks) and the RTL. The formal version of Geo3D supplied with the V9968 is this v2.0. The differences from the previous version, v1.0.0, are summarized in Section 9.7.
+This chapter describes the specification of the formal version, **v1.0.0**. Features added in **v2.0** — a development version by alexmoncks that is not included in the official firmware at this time — are marked wherever they appear. A program can tell the two apart by reading the ID register (49h) (Section 9.7.1). The descriptions in this chapter have been checked against the RTL of the cartridge, and where a document and the RTL disagree, the RTL is taken as correct (Section 9.10).
 
 ## 9.1 Overview
 
@@ -2465,45 +2466,59 @@ Geo3D has two operating modes.
 - **Immediate mode**: as vertices are sent one at a time, the 2D coordinates obtained by rotation, translation, and perspective projection are returned. Drawing itself is not performed. It is used when you want to leave only the vertex computation of a wireframe to it.
 - **Phase-2 engine**: when the data of vertices, edges, and faces is passed together, it executes everything from projection through drawing in one batch. It drives the VDP command engine of the V9968 (Chapter 8) from inside, and performs wireframe drawing by LINE, face fill, and texture application.
 
-In both modes, the coordinate system and the drawing destination are the VRAM coordinate system of the V9968 (the coordinate system of Chapter 8) itself. Consider Geo3D not as an independent display device, but as something that takes over the drawing of the V9968 on its behalf.
+In both modes, the coordinate system and the drawing destination are the VRAM coordinate system of the V9968 (the coordinate system of Chapter 8) itself. Consider Geo3D not as an independent display device, but as something that takes over the drawing of the V9968 on its behalf. Internally, the phase-2 engine shares the transform core of the immediate mode.
 
 ## 9.2 Ports and Register Access
 
-The registers of Geo3D are accessed by an index / data method. With the DIP switch of the cartridge, the base of the ports is selected from the 88h family and the 98h family (to avoid I/O conflicts with other hardware).
+The registers of Geo3D are accessed by an index / data method. With the DIP switch of the cartridge, the base of the ports is selected from the 88h family and the 98h family (to avoid I/O conflicts with other hardware). Geo3D uses offsets 5 and 7 of the slot's 8-port block. Offset 6 (8Eh / 9Eh) is left free on purpose, because the MegaRAM uses it.
 
 | Base | Index / status port | Data port |
 |---|---|---|
 | 88h family | 8Dh | 8Fh |
 | 98h family | 9Dh | 9Fh |
 
-The access procedure is as follows.
+In this chapter, registers are written in the form "index 40h". The rules of access are as follows.
 
-- Write: write the register number to the index port, and write the value to the data port. For a register with a 16-bit value, write to consecutive indices in the order of the lower byte, then the upper byte.
-- Read: write the register number to the index port, and the value can be read from the data port.
-
-In this chapter, registers are written in the form "index 0x40".
+- **Write**: write the index to the index port, and write the value to the data port. Each write to the data port advances the index automatically (auto-increment). For a register with a 16-bit value, write in the order of the lower byte, then the upper byte. The lower byte is only held internally; the value takes effect when the upper byte is written.
+- **Range of the auto-increment**: indices 00h–3Fh simply advance by 1, except that after 29h the index returns to 24h (so that the vertex input of the immediate mode can be fed continuously). The ranges 40h–4Fh, 54h–57h, 58h–5Fh, 60h–67h, and 68h–6Fh each wrap around within their own block. At the streams (50h–53h) the index does not move.
+- **Writing the index resets the byte counters of the streams.** Do not rewrite the index while a stream is being fed. If you do, the vertex, edge, or face being assembled is discarded.
+- **Read**: reading the index port returns the status (with no side effects; Section 9.4.3). Reading the data port returns the value of the register that the current read pointer indicates. The read pointer is set to the value written to the index port, and advances automatically only within 30h–36h (the results of the immediate mode) and within 40h–4Fh (after 36h it returns to 30h). At other indices, every read returns the same register. Reading a write-only or unimplemented index returns FFh.
 
 ## 9.3 Immediate Mode
 
 ### 9.3.1 Registers
 
-| Index | Name | Content |
-|---|---|---|
-| 0x00–0x11 | M00–M22 | Rotation matrix 3×3 (each 16 bits, Q2.14 fixed point, little-endian) |
-| 0x12–0x17 | TX, TY, TZ | Translation (each 16-bit signed) |
-| 0x18–0x19 | F | Focal length (16-bit unsigned) |
-| 0x1A–0x1B | CX | Screen center X coordinate |
-| 0x1C–0x1D | CY | Screen center Y coordinate |
-| 0x1E–0x1F | ZNEAR | Z value of the near clipping plane |
-| 0x20–0x21 | W | Screen width (for overflow determination) |
-| 0x22–0x23 | H | Screen height (for overflow determination) |
-| 0x24–0x29 | VX, VY, VZ | Vertex input stream (each 16-bit signed). Writing to 0x29 starts the computation |
-| 0x30–0x31 | SX | X coordinate of the projection result (read) |
-| 0x32–0x33 | SY | Y coordinate of the projection result (read) |
-| 0x34–0x35 | Z | Z value in the camera coordinate system (read) |
-| 0x36 | FLAGS | Flags (read) |
+| Index | Name | Format | Reset value | Content |
+|---|---|---|---|---|
+| 00h–11h | M00–M22 | 16 bits × 9, Q2.14 | 0 | Rotation matrix 3×3 |
+| 12h–17h | TX, TY, TZ | 16-bit signed × 3 | 0 | Translation |
+| 18h–19h | F | 16-bit unsigned | 256 | Focal length (in pixels) |
+| 1Ah–1Bh | CX | 16-bit signed | 128 | Screen center X coordinate |
+| 1Ch–1Dh | CY | 16-bit signed | 106 | Screen center Y coordinate |
+| 1Eh–1Fh | ZNEAR | 16-bit signed | 16 | Z value of the near clipping plane (a positive value) |
+| 20h–21h | W | 16-bit signed | 256 | Screen width (for the outcodes) |
+| 22h–23h | H | 16-bit signed | 212 | Screen height (for the outcodes) |
+| 24h–29h | VX, VY, VZ | 16-bit signed × 3 | ― | Vertex input. Writing to 29h (the upper byte of VZ) starts the computation |
+| 30h–31h | SX | 16-bit signed (read) | ― | X coordinate of the projection result |
+| 32h–33h | SY | 16-bit signed (read) | ― | Y coordinate of the projection result |
+| 34h–35h | Z | 16-bit signed (read) | ― | Z value in the camera coordinate system |
+| 36h | FLAGS | 8 bits (read) | ― | Flags (9.3.4) |
 
-### 9.3.2 Conversion and Projection
+### 9.3.2 Q2.14 Fixed Point
+
+The elements of the matrix are expressed as signed 16-bit Q2.14 fixed-point numbers. The stored value is "the real number × 16384", and the representable range is −2.0 to +1.99994.
+
+| Real number | Stored value |
+|---|---|
+| 1.0 | 4000h |
+| 0.5 | 2000h |
+| −1.0 | C000h |
+| cos 45° ≒ 0.7071 | 2D41h |
+| sin 30° = 0.5 | 2000h |
+
+For the rotation matrix, prepare a table of cos / sin on the Z80 side, or prepare a table of matrices computed in advance (see the sample in 9.9). Scaling can also be expressed within the matrix (by making the elements larger or smaller than 1.0).
+
+### 9.3.3 Conversion and Projection
 
 A vertex (VX, VY, VZ) is first converted into the camera coordinate system by the rotation matrix M and the translation T.
 
@@ -2513,6 +2528,8 @@ Y = M10·VX + M11·VY + M12·VZ + TY
 Z = M20·VX + M21·VY + M22·VZ + TZ
 ```
 
+The coordinate system has X to the right, Y up, and Z away from the camera (positive Z is farther away). Internally, the products are accumulated, truncated at the Q2.14 position, the translation is added, and the result is saturated to ±131071.
+
 It is then converted into screen coordinates by perspective projection.
 
 ```
@@ -2520,24 +2537,47 @@ SX = CX + X·F / Z
 SY = CY − Y·F / Z
 ```
 
-When 6 bytes are written from index 0x24 in the order VX, VY, VZ, the computation starts, triggered by the writing of the last byte (0x29). Only one vertex can be processed at a time. The result is read out from 0x30. **Reading 0x30 first latches the result**, so read the 7 bytes 0x30–0x36 consecutively (on the Z80, the INIR instruction can be used. On the input side, 6 bytes are sent with OTIR).
+The division is performed on the absolute value and the sign is applied afterwards, so it truncates toward zero. When the quotient would be 32767 or more, it is clamped to 32767 and OVFX / OVFY of FLAGS is set.
 
-For a vertex whose Z is less than ZNEAR (or is 0), the NEAR bit of FLAGS is set. In this case SX / SY are also computed, but the values cannot be trusted, so skip drawing that uses that vertex.
+For a vertex whose **Z is less than ZNEAR (or is 0 or less)**, the NEAR bit of FLAGS is set and **SX and SY are 0** (the values are not leftovers of the computation). Skip drawing that uses that vertex. The value of Z itself can be read out.
+
+### 9.3.4 Reading the Result, and FLAGS
+
+When 6 bytes are written from index 24h in the order VX, VY, VZ, the computation starts, triggered by the writing of the last byte (29h). Only one vertex can be processed at a time. When the computation starts, **the read pointer moves to 30h automatically**. Read the result as 7 consecutive bytes (SX, SY, Z, FLAGS) from the data port. After reading up to 36h the read pointer returns to 30h, and the write side has also returned to 24h, so vertices can be processed continuously with OTIR / INIR without setting the index again.
+
+```
+xor a
+out [GEO_IDX], a; index 00h = M00
+ld hl, matrix
+ld b, 24
+ld c, GEO_DAT
+otir; M00-M22, TX, TY, TZ
+ld a, 0x24
+out [GEO_IDX], a; index 24h = VX
+ld hl, vertex
+ld b, 6
+otir; VX, VY, VZ (the upper byte of VZ starts it)
+ld hl, result; the read pointer is at 30h automatically
+ld b, 7
+inir; SX, SY, Z, FLAGS
+```
 
 The bit layout of FLAGS is as follows.
 
 | Bit | Name | Meaning |
 |---|---|---|
-| 0 | NEAR | Z < ZNEAR (too close to the camera) |
-| 1 | OVFX | SX is outside the range of the screen width |
-| 2 | OVFY | SY is outside the range of the screen height |
+| 0 | NEAR | Z < ZNEAR, or Z <= 0 (too close to the camera; SX / SY are 0) |
+| 1 | OVFX | The quotient of the X projection saturated to 32767 |
+| 2 | OVFY | The quotient of the Y projection saturated to 32767 |
 | 3 | BUSY | Computation in progress |
 | 4 | SX<0 | SX is negative |
 | 5 | SX>=W | SX is at least the screen width |
 | 6 | SY<0 | SY is negative |
 | 7 | SY>=H | SY is at least the height |
 
-The time taken by the computation is a maximum of 49 clocks per vertex (about 2.3 µs when operating at 21.477MHz). In theory, up to about 420,000 vertices per second can be processed, but in an actual program the transfer time of the OTIR / INIR on the Z80 side becomes dominant.
+Bits 4–7 are Cohen-Sutherland outcodes. If the AND of the outcodes of two vertices is not 0, the edge between them lies outside the screen and does not need to be drawn.
+
+The time taken by the computation is a maximum of 49 clocks per vertex (about 1.1 µs at the engine clock of 42.95 MHz). The transfer time of OTIR / INIR on the Z80 side is far longer, so the result can normally be read without waiting. To be certain, confirm that bit 3 of the status (read from the index port), or BUSY of FLAGS, is 0 before reading.
 
 ## 9.4 Phase 2 Engine
 
@@ -2545,126 +2585,186 @@ The phase-2 engine receives the data of the entire scene via the registers, and 
 
 ### 9.4.1 Registers
 
-| Index | Name | Content |
-|---|---|---|
-| 0x40 | VADDR | Storage destination of the vertex data (address in the internal RAM) |
-| 0x41 | EADDR | Storage destination of the edge data |
-| 0x42 | NVERT | Number of vertices |
-| 0x43 | NEDGE | Number of edges |
-| 0x44 | COLOR | Color of the wireframe |
-| 0x45 | LOP | Logical operation at drawing time (the same specification as in Chapter 8) |
-| 0x46–0x47 | YPAGE | Y offset of the drawing destination page (16 bits) |
-| 0x48 | CTRL/STATUS | Write: bit0 = RUN start, bit1 = face fill enable, bit2 = texture enable. Read: bit0 = busy |
-| 0x49 | ID | Version identification. Returns 0xFF in v1.0.0, 0x20 in v2.0 |
-| 0x4A–0x4B | SKIPPED | Number of edges skipped (16 bits, read) |
-| 0x4C–0x4D | DRAWN | Number of edges drawn (16 bits, read) |
-| 0x4E–0x4F | CULLED | Number of faces culled (16 bits, read) |
-| 0x50 | Vertex stream | Write-only (9.4.2) |
-| 0x51 | Edge stream | Write-only (9.4.2) |
-| 0x52 | Face stream | Write-only (9.5) |
-| 0x53 | Texture coordinate stream | Write-only (9.6) |
-| 0x58 | FADDR | Storage destination of the face data |
-| 0x59 | NFACE | Number of faces |
-| 0x5A–0x5F | LX, LY, LZ | Light source direction vector (each 16-bit signed) |
+| Index | Name | R/W | Reset value | Content |
+|---|---|---|---|---|
+| 40h | VADDR | R/W | 0 | Storage destination of the vertex data (address in the internal RAM) |
+| 41h | EADDR | R/W | 0 | Storage destination of the edge data |
+| 42h | NVERT | R/W | 0 | Number of vertices |
+| 43h | NEDGE | R/W | 0 | Number of edges |
+| 44h | COLOR | R/W | 15 | Color of the wireframe (passed on to R#44 of the VDP as-is) |
+| 45h | LOP | R/W | 0 | Logical operation at drawing time (the lower 4 bits; the same specification as in Chapter 8) |
+| 46h–47h | YPAGE | R/W | 0 | Y offset of the drawing destination page (11 bits) |
+| 48h | CTRL / STATUS | R/W | ― | Write: run control (9.4.3). Read: status |
+| 49h | ID | R | ― | Version identification. Returns FFh in v1.0.0, 20h in v2.0 |
+| 4Ah–4Bh | SKIPPED | R | 0 | Number skipped (16 bits) |
+| 4Ch–4Dh | DRAWN | R | 0 | Number drawn (16 bits) |
+| 4Eh–4Fh | CULLED | R | 0 | Number culled (16 bits) |
+| 50h | Vertex stream | W | ― | 9.4.2 |
+| 51h | Edge stream | W | ― | 9.4.2 |
+| 52h | Face stream | W | ― | 9.5 |
+| 53h | Texture coordinate stream | W | ― | 9.6 |
+| 58h | FADDR | R/W | 0 | Storage destination of the face data |
+| 59h | NFACE | R/W | 0 | Number of faces |
+| 5Ah–5Fh | LX, LY, LZ | W | 0, 0, C000h | Light direction vector (16 bits each, Q2.14; 9.5) |
 
 The registers added in v2.0 (VFIRST and so on) are summarized in Section 9.7.
 
 ### 9.4.2 Loading the Data
 
-A scene is loaded in three kinds of streams. In each case, first decide the storage destination with VADDR / EADDR / FADDR, and then write consecutively to the corresponding stream port. Each write automatically advances the internal address.
+A scene is loaded in streams. In each case, first decide the storage destination with VADDR / EADDR / FADDR (TADDR for the texture coordinates, 9.6), and then write consecutively to the corresponding stream. Each time one element has been written, the internal write pointer advances (in the v1.0.0 format only the lower byte of the pointer counts, and it returns to the same place after 256 elements). To place several models in the internal RAM, load them at shifted destinations (to switch between them by shifting the start of the transform, use VFIRST of v2.0; 9.7.2).
 
-- **Vertex stream (0x50)**: 5 bytes per vertex. X and Y are 16 bits (little-endian), and Z is the upper byte only (the lower 8 bits of Z are treated as 0)
-- **Edge stream (0x51)**: 2 bytes per edge. The vertex indices of the start point and the end point
+- **Vertex stream (50h)**: 6 bytes per vertex. X, Y, and Z are each 16-bit signed (little-endian), in the same format as the input of the immediate mode.
 
-The numbers of vertices and edges are set in NVERT and NEDGE (in v1.0.0, up to 255 each. For the extension in v2.0, see Section 9.7).
+| Byte | 0 | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|---|
+| Content | X low | X high | Y low | Y high | Z low | Z high |
 
-A scene with only vertices and edges is drawn as a wireframe. The drawing color is specified by the COLOR register, and the drawing destination page is selected by YPAGE.
+- **Edge stream (51h)**: 2 bytes per edge, the vertex indices of the start point and the end point. An index is the vertex address in the internal RAM itself (the first vertex stored at VADDR = 0 is number 0; if a model is placed at a shifted VADDR, use numbers shifted by that amount). The vertex indices of the face stream are the same.
+
+The numbers of vertices and edges are set in NVERT and NEDGE (up to 255 each in v1.0.0; the internal RAMs hold 256 entries. For the v2.0 extension, see 9.7).
+
+A scene of only vertices and edges is drawn as a wireframe. The drawing color is specified with the COLOR register, and the drawing destination page is selected with YPAGE. For example, in SCREEN 5 (212 lines, page height 256), set 256 in YPAGE to draw into the back page.
 
 ### 9.4.3 Execution and Waiting for Completion
 
-Writing the RUN bit (bit0) to CTRL (0x48) starts execution. During execution, busy (bit0 on reading) is 1.
+Writing to CTRL (48h) latches the value and controls execution.
 
-**Care is required when waiting for completion.** Geo3D draws using the VDP command engine, but between commands there are moments when the CE bit of S#2 becomes 0. "CE = 0" alone does not mean that the processing of Geo3D is complete. Always confirm **that Geo3D's busy is 0, and that CE is 0**.
+| Bit | Meaning when written |
+|---|---|
+| 0 | RUN (writing 1 starts execution) |
+| 1 | Mode selection. 0 = wireframe (draw the edges), 1 = filled faces (draw the faces) |
+| 2 | Texture enable (in face mode, faces whose BASE has bit 7 set become textured faces; 9.6) |
 
-Also, **while busy is 1, you must not write from the Z80 side to the VDP command registers (R#32–R#58) or to Geo3D's setting registers**. Geo3D itself is using them, so they would conflict.
+The status is obtained by reading the index port, or by reading 48h on the data port (the value is the same).
 
-The breakdown of the processing result can be checked with the counters SKIPPED (edges that were not drawn, for example because they were outside the screen), DRAWN (edges drawn), and CULLED (faces culled as back-facing).
+| Bit | Meaning when read |
+|---|---|
+| 0 | RUN busy (executing) |
+| 1 | Transform phase in progress |
+| 2 | Edge / face phase in progress |
+| 3 | Transform core computing |
+| 4 | SX<0 of the most recent immediate-mode vertex |
+| 5 | Same, SX>=W |
+| 6 | Same, SY<0 |
+| 7 | Same, SY>=H |
 
-### 9.4.4 Relationship with the VDP Command Engine
+**Care is needed when waiting for completion.** Geo3D draws using the VDP command engine, but between commands there are moments when the CE bit of S#2 is 0. "CE = 0" alone does not mean that the processing of Geo3D has completed. Always confirm that **the busy of Geo3D (bit 0) is 0 and CE is 0**. Conversely, even when busy is 0, CE remains 1 while the last command is still executing.
 
-Geo3D draws by issuing commands directly to the parameter registers of the VDP commands (the equivalent of R#36–R#46). Each edge of the wireframe is drawn by a LINE command, and texture application is drawn by an LRMM command (→ Section 8.14). The engine watches for a timing at which the VDP command is free (CE = 0) and feeds in the next command. Because of this mechanism, while Geo3D is executing, the Z80 also cannot use VDP commands directly (→ Section 9.4.3).
+Also, **while busy is 1, the Z80 must not write the VDP command registers (R#32–R#50) or the configuration registers and model RAM of Geo3D**. Geo3D itself is using them, so they would conflict.
 
-## 9.5 Face Fill and Shading
+Clearing the back page (HMMV) and flipping the displayed page (R#2) stay with the Z80. The procedure for one frame is: (1) confirm CE = 0 and clear the back page with HMMV; (2) set YPAGE and the matrix, and issue RUN; (3) wait for busy = 0 and CE = 0; (4) flip the page with R#2 during the vertical blanking interval (see the sample in 9.9).
 
-Setting bit1 of CTRL enables face fill drawing using face data.
+The breakdown of the processing can be checked with the counters. All counters return to 0 when a RUN starts. Their meaning differs by mode.
 
-11 bytes per face are written to the face stream (0x52).
+| Counter | Wireframe | Filled faces |
+|---|---|---|
+| SKIPPED | Edges having a vertex, at either end, in front of the near plane or with a saturated projection | Faces having a vertex in front of the near plane or with a saturated projection |
+| DRAWN | Number of LINE commands issued | Number of faces drawn |
+| CULLED | Edges trivially outside, with both ends on the same side outside the screen | Back-facing faces |
+
+### 9.4.4 Relation to the VDP Command Engine
+
+Geo3D draws by issuing commands directly into the parameter registers of the VDP commands. Each edge of a wireframe and each row of a face is a LINE command (R#36–R#46; the color is COLOR, the logical operation is LOP, and YPAGE is added to DY), and each row of a texture is an LRMM command (R#32–R#50). The engine watches for a moment when the VDP command engine is free (CE = 0), issues the next command, and prepares the next edge or face in parallel with the issue. Because of this mechanism, the Z80 cannot use the VDP commands directly while Geo3D is executing, either (9.4.3).
+
+When drawing an edge, the engine first looks at the FLAGS of both ends and discards edges that contain a vertex in front of the near plane or with a saturated projection. Edges whose two ends are outside on the same side of the screen are also discarded. A remaining edge is clipped to the screen range [0, W) × [0, H) by midpoint bisection (at most 16 iterations) and then drawn with LINE. An edge crossing the near plane is not clipped; it is discarded whole (no 3D near clipping is performed).
+
+## 9.5 Filled Faces and Shading
+
+Setting bit 1 of CTRL to 1 selects drawing with the face data (the edges are not drawn in this mode).
+
+Into the face stream (52h), write 11 bytes per face.
 
 | Byte | Content |
 |---|---|
-| 0–2 | Vertex indices A, B, C |
-| 3 | BASE color (bit7 is the flag of a texture face, 9.6) |
-| 4–9 | Face normal vector (NX, NY, NZ, each 16-bit signed) |
-| 10 | strict flag |
+| 0–3 | Vertex indices I0, I1, I2, I3 |
+| 4–9 | Face normal vector (NX, NY, NZ; each 16-bit signed, Q2.14, little-endian) |
+| 10 | BASE color (bit 7 is the flag of a textured face; 9.6) |
 
-The shading is determined from the dot product of the face normal N and the light source direction L (the LX, LY, LZ registers). The brightness stage, level, is 7 stages from 0 to 6, and the drawing color becomes BASE + level. The way to use it is to prepare in advance, on the palette, a gradient (ramp) of 7 colors starting from BASE. A face whose dot product is negative (a face that the light does not strike) becomes the darkest stage.
+A face is a convex quadrilateral as a rule. For a triangle, repeat one vertex to make four (for example, write the same number as I2 into I3). The winding of the vertices decides the front and back. The engine draws only the faces for which the signed area of I0, I1, I2 after projection is positive, as front-facing, and culls the faces where it is negative (back-facing). As a guide, if I0, I1, I2 are arranged clockwise as seen from outside in the model coordinates (X right, Y up), the face is front-facing, and the direction of (I1−I0)×(I2−I0) then agrees with the direction of the outward normal. Give the normal in this outward direction, with a length of 1.0 (4000h in Q2.14).
 
-The drawing order is the painter's method. Faces are drawn in order from those with the larger average Z value (those further back), so of overlapping faces the one in front is drawn on top. The edges of the wireframe have no such reordering, and are drawn in the order in which they were registered in the scene.
+The shading is decided from the inner product of the face normal N and the light direction L. The light registers LX, LY, LZ give, in **camera space**, the direction "from the face towards the light source" in Q2.14 (the reset value is (0, 0, −1.0), which represents a light source on the camera side). When a RUN starts, the engine first converts L into model space with the transpose of the rotation matrix (LM = R^T·L), and computes, for each face, level = min(6, 7 × max(0, LM·N)). The drawing color is **BASE + level**. The way to use this is to prepare a gradient (ramp) of 7 colors starting at BASE in the palette. A face whose inner product is 0 or less becomes the darkest step (level 0). Because bit 7 of BASE is the texture flag, for faces that do not use a texture, keep the ramp within the range where bit 7 does not become set (BASE + 6 <= 7Fh).
+
+The drawing order is the painter's method. Faces are drawn in order from the one whose sum of the camera-coordinate Z of the 4 vertices is largest (farthest away), so of overlapping faces the nearer one is drawn on top. Between faces with the same sum, the one with the smaller face number is drawn first. Each face is filled as a horizontal section (span) for each row. For an opaque span in SCREEN 8, the V9968 may fill it at high speed through its HMMV write path.
 
 ## 9.6 Textures
 
-Setting bit2 of CTRL enables texture application to faces. A face for which bit7 of the BASE color in the face stream is set is treated as a texture face.
+Setting bit 2 of CTRL to 1 allows textures to be applied to faces. A face whose BASE color in the face stream has bit 7 set is treated as a textured face (when bit 2 is 0, such a face is filled normally, with a color that includes bit 7).
 
-Texture coordinates are loaded into the texture coordinate stream (0x53), in accordance with the order of the faces, at 2 bytes per corner (U, V). The arrangement of the texture image is specified by the following registers.
+The texture coordinates are fed into the texture coordinate stream (53h), 8 bytes per face. The storage destination is specified with TADDR (65h), and the entries correspond by the same numbers as the storage positions of the face data (feed them in the same order as the faces were placed at FADDR).
+
+| Byte | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|---|
+| Content | U0 | V0 | U1 | V1 | U2 | V2 | U3 | V3 |
+
+U and V are each 8-bit unsigned, in texel units with the upper left of the texture image as the origin. Ik corresponds to the vertex Ik of the face.
+
+The placement of the texture image is specified with the following registers (all write-only).
+
+| Index | Name | Reset value | Content |
+|---|---|---|---|
+| 60h–61h | TEXX | 0 | X coordinate of the texture origin (9 bits) |
+| 62h–63h | TEXY | 512 | Y coordinate of the texture origin (13 bits) |
+| 64h | TSTRIDE | 0 | Interval of the pre-shaded copies (in rows; see below) |
+| 65h | TADDR | 0 | Storage destination of the texture coordinate data (can also be read back) |
+
+A texture is applied with an affine transformation. The engine decomposes a face into strips of one row, and draws each row by transferring from VRAM to VRAM with an LRMM command. The source coordinate at the left end of a row is decided by SX = TEXX + U and SY = TEXY + V + level × TSTRIDE. In other words, if 7 copies of the texture image, shaded in advance, are arranged vertically and their interval (the height of one copy) is set in TSTRIDE in rows, the copy for the shading level of the face is selected automatically. If pre-shaded copies are not needed, set 0 in TSTRIDE and the same image is used regardless of the level. The texture coordinates are interpolated in 8.8 fixed point, and the source X is truncated to a whole texel (because the SX of LRMM has no fraction).
+
+Note that LRMM is an extended command of the V9968. To use textures, put the VDP into the extended mode (V58 = 0) and enable the extended commands in advance (the LockExtReg must be released; see Chapters 3 and 8).
+
+## 9.7 The v2.0 Extensions
+
+v2.0 is a development version by alexmoncks. The scale of the scenes it can handle and the ways a scene can be reused are extended. **It is not included in the official firmware at this time**, so a program must determine the version with the ID register and must not use the added features on v1.0.0. At the indices added in v2.0, a read returns FFh and a write is ignored on v1.0.0.
+
+### 9.7.1 Determining the Version, and the 1024-Entry Support
+
+Reading the ID register (49h) returns FFh on v1.0.0 and 20h on v2.0.
+
+```
+ld a, 0x49
+out [GEO_IDX], a
+in a, [GEO_DAT]
+cp 0x20; 20h = v2.0, FFh = v1.0.0
+jr z, is_v2
+```
+
+In v2.0, the internal RAMs hold 1024 entries each, and the counts and pointers are 10 bits wide. The upper bits are in the following registers (all can be read back).
 
 | Index | Name | Content |
 |---|---|---|
-| 0x60–0x61 | TEXX | X coordinate of the texture origin |
-| 0x62–0x63 | TEXY | Y coordinate of the texture origin |
-| 0x64 | TSTRIDE | Number of bytes per row of the texture |
-| 0x65 | TADDR | Base of the texture (page offset. It is added to the Y coordinate of the texture) |
+| 54h–55h | VFIRST | First vertex of the transform phase (10 bits) |
+| 56h–57h | FFIRST | First face of the face phase (10 bits) |
+| 66h–67h | EFIRST | First edge of the edge phase (10 bits) |
+| 68h | VADDR_H | Bits 9–8 of VADDR |
+| 69h | EADDR_H | Bits 9–8 of EADDR |
+| 6Ah | NVERT_H | Bits 9–8 of NVERT |
+| 6Bh | NEDGE_H | Bits 9–8 of NEDGE |
+| 6Ch | FADDR_H | Bits 9–8 of FADDR |
+| 6Dh | NFACE_H | Bits 9–8 of NFACE |
+| 6Eh | TADDR_H | Bits 9–8 of TADDR |
+| 6Fh | XCTRL | Bit 0: extended mode. Read bits 7–4: the address width of the internal RAMs (10 = 1024 entries) |
 
-The texture is applied by an affine transformation. The engine decomposes a face into strips row by row, and draws each strip by transferring it from VRAM to VRAM with an LRMM command.
+The counts, the pointers, and the start positions are handled as 10 bits even when the extended mode is off. What the extended mode (bit 0 of XCTRL = 1) changes is only (1) how the stream write pointers count (they advance on their 10 bits, and return from 1023 to 0) and (2) the width of the indices inside the edge and face streams. When the extended mode is off, a write pointer counts only on its lower byte and wraps at 256 (the upper bits remain as written, so the storage destination can still be switched in blocks of 256 entries).
 
-## 9.7 Extensions in v2.0
+In the extended mode, the stream formats change as follows. The vertex stream (6 bytes) and the texture coordinate stream (8 bytes) do not change.
 
-In v2.0, the scale of the scenes that can be handled and the way scenes are reused have been extended. From a program, the ID register (0x49) is read, and if 0x20 is returned it can be judged to be v2.0 (in v1.0.0, 0xFF is returned).
+- **Edge stream**: 3 bytes per edge. The low byte of A, the low byte of B, and one byte packing the upper bits (bits 1–0 = bits 9–8 of A, bits 3–2 = bits 9–8 of B).
+- **Face stream**: 12 bytes per face. The low bytes of I0, I1, I2, I3, one byte packing the upper bits (bits 1–0 = I0, bits 3–2 = I1, bits 5–4 = I2, bits 7–6 = I3, each holding bits 9–8), followed by NX, NY, NZ, and BASE as before.
 
-### 9.7.1 1024-Entry Support and Extended Mode
+### 9.7.2 Resident Scenes and Partial RUNs
 
-Setting bit0 of the XCTRL register (0x6F) selects the extended mode, in which up to a maximum of **1023** vertices, edges, and faces can be handled (in the v1.0.0-compatible format, up to 255). Registers for the upper bits have been added to the registers that count the numbers.
+VFIRST, EFIRST, and FFIRST specify the position where each phase starts processing. Each data array is treated as a ring, and when the end of the RAM (1023) is reached it wraps around to 0. This makes it possible to draw with changed ranges while the data stays resident in the internal RAM, without resending the scene every time. For example, several models can be kept resident in a row, and VFIRST and NVERT can be switched to transform and draw one model at a time. A face keeps its number within its data array regardless of where its phase starts (the number is used for the tie-breaking of the drawing order and for the correspondence with the texture coordinates).
 
-| Index | Name | Content |
-|---|---|---|
-| 0x54–0x55 | VFIRST | Start position of the vertex ring (16 bits) |
-| 0x56–0x57 | FFIRST | Start position of the face ring (16 bits) |
-| 0x66–0x67 | EFIRST | Start position of the edge ring (16 bits) |
-| 0x68 | VADDR_H | Upper bits of VADDR |
-| 0x69 | EADDR_H | Upper bits of EADDR |
-| 0x6A | NVERT_H | Upper bits of NVERT |
-| 0x6B | NEDGE_H | Upper bits of NEDGE |
-| 0x6C | FADDR_H | Upper bits of FADDR |
-| 0x6D | NFACE_H | Upper bits of NFACE |
-| 0x6E | TADDR_H | Upper bits of TADDR |
-| 0x6F | XCTRL | bit0: extended mode. Bits 7–4: address width (AW). 10 for 1024 entries |
+Furthermore, the projection results are kept across RUNs. To simply draw the same scene again without recomputing the vertices, execute a RUN with NVERT = 0: the transform phase is omitted and the scene is redrawn (repainted) using the projection results of the previous RUN (this behavior is the same on v1.0.0). When only the camera moves, the matrix changes, so the vertices must be transformed again.
 
-In extended mode, the stream formats also change.
+### 9.7.3 Other Improvements
 
-- Vertex stream: 6 bytes per vertex (Z can also be specified with the full 16 bits)
-- Edge stream: 3 bytes per edge (A lower, a byte packing the upper bits of A / B, B lower)
-- Face stream: 12 bytes per face (to the conventional 11 bytes, a byte packing the upper bits of the index and the BASE color is added)
-
-### 9.7.2 Resident Scenes and the Ring Buffer
-
-VFIRST, FFIRST, and EFIRST specify the start position of the data on the internal RAM. Each data sequence is treated as a ring, and when it reaches the end of the RAM it wraps around to the beginning. By this means, drawing can be done with the data kept resident in the internal RAM, without sending the scene again each time.
-
-Furthermore, the projection results are retained across RUNs. If it is only a matter of drawing the same scene again without recalculating the vertices, executing RUN with NVERT = 0 allows redrawing (repainting) using the projection result of the previous time. When moving only the camera, the vertices must be loaded again.
+In v2.0, a heap is used to decide the drawing order of the faces, which shortens the processing time when there are many faces (the drawing result and the order are the same as in v1.0.0). The behavior visible to a v1.0.0 program — how a RUN is started, the meaning of the counters, and so on — does not change.
 
 ## 9.8 BASIC API (G3BASIC)
 
-For Geo3D, an extension library for use from BASIC, "G3BASIC", is provided. It is a group of extended instructions called by CALL statements of MSX-BASIC, and without directly hitting the registers, the loop of model definition, placement, camera, and drawing can be written as a BASIC program. The main instructions are as follows.
+Geo3D is provided with an extension library "G3BASIC" for use from BASIC. It is a set of extended statements called with the CALL statement of MSX-BASIC, and a loop of model definition, placement, camera, and drawing can be written as a BASIC program without accessing the registers directly. The principal statements are as follows.
 
-| Category | Instruction | Role |
+| Class | Statement | Role |
 |---|---|---|
 | Session | G3INIT, G3END | Initialization and termination of Geo3D |
 | Data | G3DATA | Loading of model data (from DATA statements) |
@@ -2672,55 +2772,343 @@ For Geo3D, an extension library for use from BASIC, "G3BASIC", is provided. It i
 | Placement | G3OBJ | Assignment of an object to a slot |
 | Placement | G3POS | Setting of the position |
 | Placement | G3ROT, G3SPIN | Setting of the rotation angle, continuous rotation |
-| Placement | G3SIZE | Enlargement / reduction (scaling) |
-| Placement | G3COLOR, G3STYLE | Color and drawing style (wireframe / face fill, etc.) |
-| Camera | G3CAM | Setting of the camera position and orientation |
-| Drawing | G3FRAME | Execution of drawing for one frame |
+| Placement | G3SIZE | Enlargement / reduction |
+| Placement | G3COLOR, G3STYLE | Color and drawing style (wireframe / filled faces, etc.) |
+| Camera | G3CAM | Setting of the camera position and direction |
+| Drawing | G3FRAME | Execution of the drawing of one frame |
 
-In addition to these, there are extended instructions such as center-of-gravity calculation (G3CENT), inertia (G3INERT), looking at a target (G3LOOK / G3AIM), the light source (G3LIGHT), fog (G3FOG), texture specification (G3TEX), and display control (G3SHOW / G3HIDE, and others).
+Besides these, there are extended statements for the center of gravity (G3CENT), inertia (G3INERT), looking at a target (G3LOOK / G3AIM), the light source (G3LIGHT), fog (G3FOG), texture specification (G3TEX), display control (G3SHOW / G3HIDE, etc.).
 
-As models, built-in models such as polyhedra and alphabetic characters (numbers 0–15) are provided, and by giving the data of vertices, edges, and faces in DATA statements, models of your own making (numbers 16–31) can also be defined.
+As models, built-in models such as polyhedra and letters (numbers 0–15) are provided, and original models (numbers 16–31) can also be defined by giving the data of vertices, edges, and faces with DATA statements.
 
-As a guide to performance, on a 3.58MHz Z80 an object of 255 faces can be drawn at about 20 fps (according to the G3BASIC documentation).
+As a measure of the performance, it is stated that an object of 255 faces can be drawn at about 20 fps on a 3.58 MHz Z80 (according to the G3BASIC documentation).
 
-## 9.9 Sources for This Chapter
+## 9.9 Sample Program: A Rotating Wireframe Cube
 
-This chapter was written by collating the Geo3D documents by alexmoncks (the README, the BASIC API specification, and the v2.0 specification notes) with the RTL on the V9968 cartridge side. If there is a point where the documents and the RTL disagree, the RTL is taken as correct. The formal version of Geo3D supplied with the V9968 is v2.0, and this chapter describes v2.0 as the formal specification.
+A minimal program that uses the phase-2 engine is shown. It is a.COM program for MSX-DOS: the model of a cube is loaded only once at the beginning, and afterwards only a rotation matrix (24 bytes) and RUN are sent for each frame. Clearing the back page (HMMV) and flipping the page (R#2) are done on the Z80 side. The ports assume the DIP switch at the 88h setting (the VDP at 88h–8Bh, Geo3D at 8Dh / 8Fh); at the 98h setting, add 10h to each port. A key press ends the program. The complete source is in samples/v9968/geo3d_cube.asm and can be assembled with zma (it is based on geo3d_demo.asm by Alex Moncks, minimized for this manual).
 
-## 9.10 Sample Program: The Official Demo ROM
+![Execution result of the sample program](images/sample_geo3d_cube.png)
 
-The official demo ROM of Geo3D is contained in `geo3d/rom/` of alexmoncks's V9968_Cartridge fork (branch `geo3d-v2.0`). It is a ROM that plays six kinds of demos in a loop, and Figure 9.1 and Figure 9.2 show the results of generating the version that places the V9968 at port 98h with the build script (`build_rom.py --base 0x98`) (GEO3D_98.ROM) and running it on an openMSX with Geo3D emulation (machine C-BIOS_V9968_JP, extension geo3d). Selecting "1" (English) in the language menu immediately after starting starts the demo, and the space key advances to the next demo.
+Figure 9.1 Execution result of the sample program (a rotating cube, SCREEN 5)
+
+```
+; -----------------------------------------------------------------------------
+; geo3d_cube.asm -- Geo3D sample: rotating wireframe cube
+; (V9968 MSX-VIDEO TECHNICAL DATA BOOK, Chapter 9)
+;
+; MSX-DOS.COM program. The model (a cube) is uploaded to Geo3D once;
+; every frame the Z80 only sends one rotation matrix (24 bytes) and
+; RUN. Geo3D transforms the vertices, clips the edges and issues the
+; LINE commands into the V9968 command engine by itself.
+;
+; Ports assume the cartridge DIP switch at 88h (VDP at 88h-8Bh,
+; Geo3D at 8Dh/8Fh). For the 98h setting, add 0x10 to every port.
+; Press any key to quit.
+;
+; Based on geo3d_demo.asm by Alex Moncks (MIT), minimized for the
+; manual. Assemble with zma: zma geo3d_cube.asm -> geo3d_cube.com
+; -----------------------------------------------------------------------------
+
+VDP_DATA equ 0x88; VRAM data
+VDP_CTRL equ 0x89; register write / status read
+VDP_PAL equ 0x8a; palette data
+VDP_IND equ 0x8b; indirect register access (R#17)
+GEO_IDX equ 0x8d; Geo3D index write / status read
+GEO_DAT equ 0x8f; Geo3D data
+
+BDOS equ 0x0005
+NVERT equ 8
+NEDGE equ 12
+NFRAMES equ 32
+
+org 0x0100
+
+start:
+di
+call screen5
+call upload_model
+xor a
+ld [page], a
+ld [frame], a
+
+main_loop:
+call wait_ce
+; ---- clear the back page (HMMV) ----
+ld a, [page]
+xor 1
+ld [back], a
+ld [hmmv_dy + 1], a; DY high byte = page
+ld hl, hmmv_cmd
+call vdp_cmd11
+call wait_ce
+
+; ---- YPAGE = back * 256 ----
+ld a, 0x46
+out [GEO_IDX], a
+xor a
+out [GEO_DAT], a; YPAGE low byte
+ld a, [back]
+out [GEO_DAT], a; YPAGE high byte
+
+; ---- matrix of this frame (24 bytes) + RUN ----
+ld a, [frame]
+ld l, a
+ld h, 0
+add hl, hl; *2
+add hl, hl; *4
+add hl, hl; *8
+ld d, h
+ld e, l
+add hl, hl; *16
+add hl, de; *24
+ld de, matrix_table
+add hl, de
+xor a
+out [GEO_IDX], a; index 0x00 = M00
+ld b, 24
+ld c, GEO_DAT
+otir
+ld a, 0x48
+out [GEO_IDX], a
+ld a, 1
+out [GEO_DAT], a; CTRL: RUN (wireframe)
+
+; ---- wait: Geo3D busy = 0 and VDP CE = 0 ----
+geo_wait:
+in a, [GEO_IDX]; status, bit0 = RUN busy
+rrca
+jr c, geo_wait
+call wait_ce
+
+; ---- flip the displayed page (R#2) at vblank ----
+call wait_vblank
+ld a, [back]
+ld [page], a
+rrca
+rrca
+rrca; page * 32
+or 0x1f
+ld b, 2
+call vdp_wreg
+
+ld a, [frame]
+inc a
+and NFRAMES - 1
+ld [frame], a
+
+; ---- any key quits ----
+ei
+ld c, 0x0b; console status
+call BDOS
+di
+or a
+jp z, main_loop
+ld c, 0x08; consume the key
+call BDOS
+ret
+
+; -----------------------------------------------------------------------------
+; upload_model: configuration, vertices and edges (once)
+; -----------------------------------------------------------------------------
+upload_model:
+ld a, 0x18; F, CX, CY, ZNEAR, W, H
+out [GEO_IDX], a
+ld hl, cfg_words
+ld b, 12
+ld c, GEO_DAT
+otir
+ld a, 0x40; VADDR, EADDR, NVERT, NEDGE, COLOR, LOP
+out [GEO_IDX], a
+ld hl, model_regs
+ld b, 6
+ld c, GEO_DAT
+otir
+ld a, 0x50; vertex stream (6 bytes each)
+out [GEO_IDX], a
+ld hl, model_vertices
+ld b, NVERT * 6
+ld c, GEO_DAT
+otir
+ld a, 0x51; edge stream (2 bytes each)
+out [GEO_IDX], a
+ld hl, model_edges
+ld b, NEDGE * 2
+ld c, GEO_DAT
+otir
+ret
+
+; -----------------------------------------------------------------------------
+; VDP helpers (the VDP of the cartridge, ports 88h-8Bh)
+; -----------------------------------------------------------------------------
+vdp_wreg:; A = value, B = register number
+out [VDP_CTRL], a
+ld a, b
+or 0x80
+out [VDP_CTRL], a
+ret
+
+vdp_cmd11:; HL = 11 bytes for R#36..R#46
+ld a, 36
+ld b, 17
+call vdp_wreg; R#17 = 36, auto-increment
+ld b, 11
+ld c, VDP_IND
+otir
+ret
+
+read_s2:; A = S#2
+ld a, 2
+ld b, 15
+call vdp_wreg
+in a, [VDP_CTRL]
+push af
+xor a
+ld b, 15
+call vdp_wreg
+pop af
+ret
+
+wait_ce:
+call read_s2
+rrca
+jr c, wait_ce; bit0 = CE
+ret
+
+wait_vblank:
+call read_s2
+and 0x40
+jr nz, wait_vblank; leave the current blank first
+wv1:
+call read_s2
+and 0x40
+jr z, wv1; then wait for the next one
+ret
+
+screen5:; GRAPHIC4 256x212, sprites off
+ld hl, s5_regs
+s5_loop:
+ld a, [hl]
+cp 0xff
+jr z, s5_pal
+ld b, a
+inc hl
+ld a, [hl]
+inc hl
+call vdp_wreg
+jr s5_loop
+s5_pal:
+xor a
+ld b, 16
+call vdp_wreg; palette pointer = 0
+ld hl, palette
+ld b, 32
+ld c, VDP_PAL
+otir
+ret
+
+; -----------------------------------------------------------------------------
+; data
+; -----------------------------------------------------------------------------
+s5_regs:
+db 0, 0x06; R#0: GRAPHIC4
+db 1, 0x40; R#1: display on
+db 2, 0x1f; R#2: page 0
+db 7, 0x00; R#7: border colour 0
+db 8, 0x0a; R#8: 64K VRAM, sprites off
+db 9, 0x80; R#9: 212 lines
+db 0xff
+
+palette:; 0 black, 1..14 grey ramp, 15 white
+db 0x00,0x00, 0x11,0x01, 0x11,0x01, 0x22,0x02
+db 0x22,0x02, 0x33,0x03, 0x33,0x03, 0x44,0x04
+db 0x44,0x04, 0x55,0x05, 0x55,0x05, 0x66,0x06
+db 0x66,0x06, 0x77,0x07, 0x77,0x07, 0x77,0x07
+
+cfg_words:
+dw 256, 128, 106, 16, 256, 212; F, CX, CY, ZNEAR, W, H
+
+model_regs:
+db 0, 0, NVERT, NEDGE, 0x0f, 0; VADDR, EADDR, NVERT, NEDGE, COLOR, LOP
+
+model_vertices:; cube, half size 150 (X, Y, Z per vertex)
+dw -150, -150, -150
+dw -150, -150, 150
+dw -150, 150, -150
+dw -150, 150, 150
+dw 150, -150, -150
+dw 150, -150, 150
+dw 150, 150, -150
+dw 150, 150, 150
+
+model_edges:; pairs of vertex numbers
+db 0,1, 0,2, 0,4, 1,3, 1,5, 2,3
+db 2,6, 3,7, 4,5, 4,6, 5,7, 6,7
+
+hmmv_cmd:
+dw 0; DX
+hmmv_dy:
+dw 0; DY (high byte patched with the page)
+dw 256, 212; NX, NY
+db 0x00, 0x00, 0xc0; CLR, ARG, HMMV
+
+page: db 0
+back: db 0
+frame: db 0
+
+; rotation matrices, 32 frames of one turn (M00..M22 in Q2.14, TX, TY, TZ)
+; (frame 0 and frame 8 only; the full table is in the sample file)
+matrix_table:
+dw 0x4000,0x0000,0x0000,0x0000,0x3c24,0xea1c,0x0000,0x15e4,0x3c24,0x0000,0x0000,0x0384
+;... (abridged: 32 frames in total)
+dw 0x0000,0x0000,0x4000,0x15e4,0x3c24,0x0000,0xc3dc,0x15e4,0x0000,0x0000,0x0000,0x0384
+;... (abridged)
+```
+
+The points to note are the following.
+
+- The model is loaded only once, at startup. cfg_words sets the projection parameters (F = 256, center (128, 106), ZNEAR = 16, screen 256×212), model_regs sets the destinations, the counts, and the color (15 = white), and the vertex stream and the edge stream are sent. Thanks to the auto-increment of the index, consecutive registers can be written together with OTIR without setting the index again.
+- What is sent for each frame is only the 24 bytes of the matrix (M00–M22 and TX, TY, TZ; TZ = 900 moves the cube away from the camera) and the 2 bytes of RUN. The matrices are a table computed in advance in Q2.14 for one full turn.
+- The wait for completion looks at both bit 0 of the Geo3D status (read from the index port) and the CE of the VDP (9.4.3).
+- The drawing destination is directed to the back page with YPAGE, and after drawing, the displayed page is flipped with R#2 during the vertical blanking interval — a so-called double buffer.
+
+## 9.10 About the Sources of This Chapter
+
+This chapter was written by checking the Geo3D documents by alexmoncks (the README, the BASIC API specification, and the v2.0 specification memo) against the RTL on the V9968 cartridge side (geo3d_engine.v, geo3d_core.v, and others). Where a document and the RTL disagree, the RTL is taken as correct. For example, the vertex stream is described as both 5 bytes and 6 bytes in different documents, but the receiving circuit of the RTL settles it as 16 bits each for X, Y, and Z (6 bytes). The byte order of the face stream (four vertex indices, the normal, then the BASE color) and the meanings of TADDR and TSTRIDE have also been made to follow the RTL. As for v2.0, an implementation is included in the RTL, but its inclusion in the official firmware has not been confirmed at this time, so it is described separately as a development version.
+
+## 9.11 Sample Program: The Official Demo ROM
+
+The official Geo3D demo ROM is included in the V9968_Cartridge fork by alexmoncks (branch `geo3d-v2.0`), in `geo3d/rom/`. It is a ROM that plays 6 kinds of demos in a loop. A version that places the V9968 at port 98h (GEO3D_98.ROM) was generated with the build script (`build_rom.py --base 0x98`), and Figures 9.2 and 9.3 show the result of executing it on openMSX with Geo3D emulation (machine C-BIOS_V9968_JP, extension geo3d). When "1" (English) is selected in the language menu right after startup, the demos begin, and the space key advances to the next demo.
 
 ![Execution result of the official demo ROM (wireframe)](images/sample_geo3d_wire.png)
 
-Figure 9.1 Execution result of the official demo ROM (wireframe: cube and octahedron)
+Figure 9.2 Execution result of the official demo ROM (wireframe: a cube and an octahedron)
 
-Figure 9.1 is the wireframe demo, in which a cube and an octahedron (together, 14 vertices and 24 edges) rotate. The work on the host (Z80) side is only the loading of the model, once at the beginning; after that it only sends about 30 bytes per frame. Erasure of the back page (HMMV) and switching of the display page (R#2) are normal VDP operations, and to Geo3D it sends the drawing destination page (YPAGE), a precomputed 24-byte matrix, and RUN. The frame loop of the MSX-DOS program from which this demo originates (`geo3d/z80/geo3d_demo.asm`; the demo ROM contains the port output stream obtained by executing this group of programs) is as follows (the port numbers are for the case of the cartridge's DIP switch set to 88h; in the 98h version, 10h is added to each port).
+Figure 9.2 is the wireframe demo, in which a cube and an octahedron (14 vertices and 24 edges in total) rotate. The work of the host (Z80) side is only the loading of the model once at the beginning; afterwards it sends only about 30 bytes per frame. Clearing the back page (HMMV) and flipping the displayed page (R#2) are ordinary VDP operations, and to Geo3D it sends the drawing destination page (YPAGE), a matrix of 24 bytes computed in advance, and RUN. The frame loop of the MSX-DOS program that is the original of this demo (`geo3d/z80/geo3d_demo.asm`; the demo ROM contains the streams of port output obtained by executing this group of programs) is as follows (the port numbers are for the DIP switch of the cartridge at the 88h setting; in the 98h version, 10h is added to each port).
 
 ```
-        ; ---- matrix for this frame + RUN ----
-        xor a
-        out (GEO_IDX), a            ; index 0x00 = M00
-        ld bc, 24 * 256 + GEO_DAT   ; B = 24 bytes, C = port
-        otir
-        ld a, 0x48
-        out (GEO_IDX), a
-        ld a, 1
-        out (GEO_DAT), a            ; RUN
+; ---- matrix for this frame + RUN ----
+xor a
+out (GEO_IDX), a; index 0x00 = M00
+ld bc, 24 * 256 + GEO_DAT; B = 24 bytes, C = port
+otir
+ld a, 0x48
+out (GEO_IDX), a
+ld a, 1
+out (GEO_DAT), a; RUN
 
 geo_wait:
-        in a, (GEO_IDX)
-        rrca
-        jr c, geo_wait              ; bit0 = RUN busy
+in a, (GEO_IDX)
+rrca
+jr c, geo_wait; bit0 = RUN busy
 ```
 
-The matrix is prepared as a table for one revolution, and the Z80 performs no coordinate calculation at all. The conversion of the vertices, the clipping of the edges, and the generation of the LINE command sequence are all done by Geo3D. Without Geo3D, the Z80 would have to write about 312 VDP command register values per frame, in addition to the vertex calculation (according to the demo documentation).
+The matrices are prepared as a table for one full turn, and the Z80 performs no coordinate computation at all. The transformation of the vertices, the clipping of the edges, and the generation of the series of LINE commands are all performed by Geo3D. Without Geo3D, the Z80 would have to write about 312 VDP command register values per frame, in addition to the vertex computation (according to the documentation of the demo).
 
-![Execution result of the official demo ROM (face fill)](images/sample_geo3d_faces.png)
+![Execution result of the official demo ROM (filled faces)](images/sample_geo3d_faces.png)
 
-Figure 9.2 Execution result of the official demo ROM (face fill: the three-dimensional letters "GEO3D")
+Figure 9.3 Execution result of the official demo ROM (filled faces: the three-dimensional letters "GEO3D")
 
-Figure 9.2 is the face-fill demo. Removal of back faces, shading by the light source direction, sorting of the drawing order from the far faces, and filling of the faces by horizontal LINEs are handled by Geo3D, and the amount transmitted from the host side is unchanged from the wireframe case, at about 30 bytes per frame. After this, demos of face fill with textures, pan / zoom, and a fly-in follow.
+Figure 9.3 is the filled-face demo. Geo3D is in charge of the removal of back faces, the shading by the light direction, the sorting of the drawing order from the far faces, and the filling of the faces with horizontal LINEs, and the amount sent by the host side is unchanged at about 30 bytes per frame, the same as for the wireframe. After this, demos of filled faces with textures, panning / zooming, and flying in follow.
 
 # Chapter 10 Interrupts
 
@@ -3476,6 +3864,74 @@ Figure A.54 Bit layout of R#57 Window End Y (L)
 
 Figure A.55 Bit layout of R#58 Window End Y (H)
 
+### A.5 Geo3D Register Summary
+
+The registers of Geo3D are in an index space separate from the R# registers of the VDP, and are accessed through two ports, index and data (8Dh / 8Fh in the 88h family, 9Dh / 9Fh in the 98h family; see Chapter 9). A 16-bit register occupies 2 bytes starting at the index of its lower byte, in little-endian. The mark 【v2.0】 after a name indicates a register added in v2.0 (on v1.0.0, a read returns FFh and a write is ignored).
+
+#### Immediate Mode
+
+| Index | Name | R/W | Reset value | Main content |
+|---|---|---|---|---|
+| 00h–11h | M00–M22 | W | 0 | Rotation matrix 3×3 (16 bits each, Q2.14) |
+| 12h–17h | TX, TY, TZ | W | 0 | Translation (16-bit signed each) |
+| 18h–19h | F | W | 256 | Focal length (16-bit unsigned) |
+| 1Ah–1Bh | CX | W | 128 | Screen center X coordinate |
+| 1Ch–1Dh | CY | W | 106 | Screen center Y coordinate |
+| 1Eh–1Fh | ZNEAR | W | 16 | Z value of the near clipping plane |
+| 20h–21h | W | W | 256 | Screen width (for the outcodes) |
+| 22h–23h | H | W | 212 | Screen height (for the outcodes) |
+| 24h–29h | VX, VY, VZ | W | ― | Vertex input (16-bit signed each). Writing to 29h starts the computation |
+| 30h–31h | SX | R | ― | X coordinate of the projection result |
+| 32h–33h | SY | R | ― | Y coordinate of the projection result |
+| 34h–35h | Z | R | ― | Z value in the camera coordinate system |
+| 36h | FLAGS | R | ― | bit0: NEAR / bit1: OVFX / bit2: OVFY / bit3: BUSY / bit4: SX<0 / bit5: SX>=W / bit6: SY<0 / bit7: SY>=H |
+
+#### Phase-2 Engine / Textures
+
+| Index | Name | R/W | Reset value | Main content |
+|---|---|---|---|---|
+| 40h | VADDR | R/W | 0 | Storage destination of the vertex data |
+| 41h | EADDR | R/W | 0 | Storage destination of the edge data |
+| 42h | NVERT | R/W | 0 | Number of vertices |
+| 43h | NEDGE | R/W | 0 | Number of edges |
+| 44h | COLOR | R/W | 15 | Color of the wireframe (equivalent to R#44) |
+| 45h | LOP | R/W | 0 | Logical operation (the lower 4 bits) |
+| 46h–47h | YPAGE | R/W | 0 | Y offset of the drawing destination page (11 bits) |
+| 48h | CTRL / STATUS | R/W | ― | Write bit0: RUN / bit1: filled-face selection / bit2: texture enable. Read bit0: RUN busy / bit1: transform phase / bit2: edge/face phase / bit3: core computing / bits 7–4: outcodes of the most recent immediate-mode vertex |
+| 49h | ID 【v2.0】 | R | ― | Version identification. FFh on v1.0.0, 20h on v2.0 |
+| 4Ah–4Bh | SKIPPED | R | 0 | Number skipped (16 bits; returns to 0 when a RUN starts) |
+| 4Ch–4Dh | DRAWN | R | 0 | Number drawn (16 bits; same) |
+| 4Eh–4Fh | CULLED | R | 0 | Number culled (16 bits; same) |
+| 50h | Vertex stream | W | ― | 6 bytes per vertex (X, Y, Z; 16 bits each) |
+| 51h | Edge stream | W | ― | 2 bytes per edge (vertex index × 2) 【3 bytes in the v2.0 extended mode】 |
+| 52h | Face stream | W | ― | 11 bytes per face (I0, I1, I2, I3, NX, NY, NZ, BASE) 【12 bytes in the v2.0 extended mode】 |
+| 53h | Texture coordinate stream | W | ― | 8 bytes per face (U0, V0, U1, V1, U2, V2, U3, V3) |
+| 58h | FADDR | R/W | 0 | Storage destination of the face data |
+| 59h | NFACE | R/W | 0 | Number of faces |
+| 5Ah–5Fh | LX, LY, LZ | W | 0, 0, C000h | Light direction (camera space; 16 bits each, Q2.14) |
+| 60h–61h | TEXX | W | 0 | Texture origin X (9 bits) |
+| 62h–63h | TEXY | W | 512 | Texture origin Y (13 bits) |
+| 64h | TSTRIDE | W | 0 | Interval of the pre-shaded copies (in rows) |
+| 65h | TADDR | R/W | 0 | Storage destination of the texture coordinate data |
+
+Reading the index port returns the status (the same value as reading 48h) and has no side effects.
+
+#### Registers Added in v2.0 【v2.0】
+
+| Index | Name | R/W | Reset value | Main content |
+|---|---|---|---|---|
+| 54h–55h | VFIRST | R/W | 0 | First vertex of the transform phase (10 bits) |
+| 56h–57h | FFIRST | R/W | 0 | First face of the face phase (10 bits) |
+| 66h–67h | EFIRST | R/W | 0 | First edge of the edge phase (10 bits) |
+| 68h | VADDR_H | R/W | 0 | Bits 9–8 of VADDR |
+| 69h | EADDR_H | R/W | 0 | Bits 9–8 of EADDR |
+| 6Ah | NVERT_H | R/W | 0 | Bits 9–8 of NVERT |
+| 6Bh | NEDGE_H | R/W | 0 | Bits 9–8 of NEDGE |
+| 6Ch | FADDR_H | R/W | 0 | Bits 9–8 of FADDR |
+| 6Dh | NFACE_H | R/W | 0 | Bits 9–8 of NFACE |
+| 6Eh | TADDR_H | R/W | 0 | Bits 9–8 of TADDR |
+| 6Fh | XCTRL | R/W | 0 | Write bit0: extended mode. Read bits 7–4: the address width of the internal RAMs (10 = 1024 entries) |
+
 ## Appendix B Status Register Summary
 
 All are read-only. Specify the number with R#15 and read Port#1 (see Chapters 2 and 4).
@@ -3833,7 +4289,7 @@ An index of the important terms used in this manual and the sections that mainly
 | R#25 | [R#25 Mode4](#r25-mode4) |
 | R#45 | [R#45 Argument](#r45-argument) |
 | R#46 | [R#46 Command](#r46-command) |
-| Ring buffer | [9.7.2 Resident Scenes and the Ring Buffer](#972-resident-scenes-and-the-ring-buffer) |
+| Ring buffer | [9.7.2 Resident Scenes and Partial RUNs](#972-resident-scenes-and-partial-runs) |
 | Rotation vector (R#47–R#50) | [R#47 Rotation Vector X](#r47-rotation-vector-x-l--r48-rotation-vector-x-h-new-in-v9968) |
 | S16 | [R#20 Mode5](#r20-mode5-new-in-v9968), [6.7 Other Extension Bits](#67-other-extension-bits) |
 | Scaling | [6.5.3 How Scaling Looks](#653-how-scaling-looks) |
@@ -3848,8 +4304,10 @@ An index of the important terms used in this manual and the sections that mainly
 | SVNS | [R#20 Mode5](#r20-mode5-new-in-v9968) |
 | Texture | [9.6 Textures](#96-textures) |
 | V58 | [R#21 Mode6](#r21-mode6-new-in-v9968) |
+| VFIRST | [A.5 Geo3D Register Summary](#a5-geo3d-register-summary) |
 | VRAM | [11.1 VRAM Organization](#111-vram-organization) |
 | Window registers (R#51–R#58) | [R#51 Window Start X](#r51-window-start-x-l--r52-window-start-x-h-new-in-v9968) |
+| XCTRL | [A.5 Geo3D Register Summary](#a5-geo3d-register-summary) |
 | XHR | [R#45 Argument](#r45-argument) |
 | YAE | [5.13 Graphic7-YAE Mode (SCREEN 10/11)](#513-graphic7-yae-mode-screen-1011), [7.4.6 YAE Mode (YAE = 1 in R#25)](#746-yae-mode-yae--1-in-r25) |
 | YJK | [5.14 Graphic7-YJK Mode (SCREEN 12)](#514-graphic7-yjk-mode-screen-12), [7.4.5 YJK Mode (YJK = 1 in R#25)](#745-yjk-mode-yjk--1-in-r25) |
