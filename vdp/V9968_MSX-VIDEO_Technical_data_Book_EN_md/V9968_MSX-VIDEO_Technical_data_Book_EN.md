@@ -152,7 +152,7 @@ At the same time, the V9968 also provides extended functions that the earlier VD
 The V9968 has a **V58 bit** (bit0 of R#21) that switches the operating mode.
 
 - **Compatible mode (V58 = 1)**: The state at reset. In this mode, operation is equivalent to that of the V9958. In this mode, A17 of the table base addresses is treated as 0, and the new VDP commands (Section 1.5) cannot be used.
-- **Extended mode (V58 = 0)**: The mode in which the extended functions of the V9968 are enabled. VRAM of 256KB (18-bit address) becomes available, and the new commands, the extended palette, and other features are enabled.
+- **Extended mode (V58 = 0)**: The mode in which the extended functions of the V9968 are enabled. Addressing widens to 18 bits (256KB per bank), and together with the bank registers (R#28–R#30) the full 4MB of VRAM becomes usable; the new commands, the extended palette, and other features are also enabled.
 
 R#21, which contains the V58 bit, and R#20, another extended register, are protected by a lock mechanism (LockExtReg) to prevent erroneous operation, and writes are ignored immediately after reset. The method for releasing the lock is described in Chapter 2.
 
@@ -188,7 +188,7 @@ In addition to the vertical sync interrupt (frame interrupt) and the line interr
 
 ### VRAM
 
-In extended mode, VRAM can be accessed up to 256KB (18 bits, address A17–A0). In compatible mode, operation is within the conventionally compatible address range. The access method is described in Chapter 2, and the timing and restrictions of access are described in Chapter 11.
+VRAM totals 4MB, made up of 16 banks of 256KB (18 bits, address A17–A0). In extended mode, the bank registers (R#28–R#30) select a bank for each path, giving access to the full 4MB. In compatible mode, all banks are fixed at 0, and operation is within the conventionally compatible address range. The access method is described in Chapter 2, the bank registers in Chapter 3, and the timing and restrictions of access in Chapter 11.
 
 # Chapter 2 I/O Ports and Access Methods
 
@@ -346,14 +346,14 @@ To use the extended functions, release the lock by the following procedure, and 
 
 # Chapter 3 Control Registers in Detail
 
-This chapter describes the V9968 control registers R#0–R#27 and the VDP command registers R#32–R#58 in detail, one register at a time.
+This chapter describes the V9968 control registers R#0–R#30 and the VDP command registers R#32–R#58 in detail, one register at a time.
 
 All control registers are **write-only**. There is no way to read them back (reading Port#1 reads a status register, as described in the next chapter). For how to access each register (direct specification / indirect specification), see Chapter 2.
 
 Two prerequisites run through this chapter and are important throughout:
 
 - **The V58 bit (R#21 bit0)**: At reset this is 1, and this state is the **V9958 compatible mode**. Setting it to 0 selects the **extended mode**, which enables the new commands (LRMM / LFMC / LFMM) and also puts VRAM into 256KB mode. In this chapter, the two states are referred to as "compatible mode (V58=1)" and "extended mode (V58=0)".
-- **LockExtReg (Port#4 bit7)**: At reset this is 1, and while it is 1, **writes to R#20 and R#21 are ignored**. To change R#20 / R#21, first set LockExtReg to 0 via Port#4 to release the lock (see Chapter 2 for Port#4).
+- **LockExtReg (Port#4 bit7)**: At reset this is 1, and while it is 1, **writes to R#20, R#21, and R#28–R#30 are ignored**. To change these registers, first set LockExtReg to 0 via Port#4 to release the lock (see Chapter 2 for Port#4).
 
 In each register heading, in addition to the name, the access attribute and the reset value are shown. Bits described as "unused" are not retained in the register when a value is written, and do not affect operation.
 
@@ -621,9 +621,62 @@ As a side effect, writing to R#16 returns the phase of the palette write (which 
 
 This is the pointer used for indirect writes via Port#3. Note that this register itself can be set only by direct specification via Port#1. Even if the pointer points to R#17 via Port#3, that written value is ignored (but when AII=0, the pointer alone is incremented).
 
-### Unimplemented Registers (R#22, R#24, R#28–R#31)
+### VRAM Banks (R#28–R#30) [New in V9968]
 
-R#22 and R#24 have no number assigned to them in the first place, and R#28–R#31 are also not implemented. Writes to these numbers are ignored.
+The V9968 has 4MB of VRAM. It is organized as 16 copies of the conventional 256KB address space (banks), and the bank number — the upper 4 bits of the address — can be selected independently for each access path. All 16 banks are always present; there is no configuration in which only some of the banks are fitted. Bank numbers 0–15 are therefore always valid. Addressing within a bank is exactly as before, and the address layouts described throughout this book hold as they are within each bank. The interleave that operates in SCREEN 7 and above (see Chapter 11) is likewise a rearrangement within the 18 bits of a bank only, and never crosses a bank boundary.
+
+Three registers, R#28–R#30, specify the bank numbers, and there are five paths:
+
+| Path | Where its bank is specified |
+|---|---|
+| CPU VRAM access | R#28 bit3–0 |
+| Background display | R#29 bit3–0 |
+| Sprite display | R#29 bit7–4 |
+| VDP command source | R#30 bit3–0 |
+| VDP command destination | R#30 bit7–4 |
+
+All three registers are write-only, and all reset to 0. With every bank at 0, operation is identical to using only the conventional 256KB range.
+
+These registers are extended registers: while LockExtReg = 1, writes to them are ignored (see Chapter 10). They also cannot be written in compatible mode (V58 = 1), and their values return to 0 while V58 = 1. In compatible mode, therefore, the banks of all paths are fixed at 0.
+
+### R#28 CPU Access Bank [New in V9968]
+
+![Bit layout of R#28](images/reg_r28.png)
+
+- Access: Write-only (writes are ignored while LockExtReg=1, and in compatible mode (V58=1))
+- Reset value: 0
+
+This is the bank number used when the CPU accesses VRAM via Port#0. The bank number is placed above the 18-bit address assembled through R#14 and the like, and together they determine the actual VRAM address.
+
+This register is not latched: a value written to it is used in CPU access address generation from that moment on. However, data that has already been prefetched when a read address was set is not fetched again when R#28 is changed. If you change R#28 after setting a read address, the first read from Port#0 returns the data prefetched from the previous bank. This is the same treatment as when the upper address bits are changed with R#14. To read from a different bank, change R#28 first and then set the read address again.
+
+Bit7–4 are reserved. Write 0 to them.
+
+### R#29 Display Bank [New in V9968]
+
+![Bit layout of R#29](images/reg_r29.png)
+
+- Access: Write-only (writes are ignored while LockExtReg=1, and in compatible mode (V58=1))
+- Reset value: 0
+
+This register collects the bank numbers of the display paths. Bit3–0 is the background display bank, applied to reads of the pattern name / color / pattern generator tables and of the bitmap screens. Bit7–4 is the sprite display bank, applied to reads of the sprite attribute table and the sprite pattern generator. Each bank number is placed above the address assembled from the base address of its tables (R#2–R#6, R#10, R#11).
+
+This register is not latched: a value written to it is used in display reads from that moment on.
+
+### R#30 Command Bank [New in V9968]
+
+![Bit layout of R#30](images/reg_r30.png)
+
+- Access: Write-only (writes are ignored while LockExtReg=1, and in compatible mode (V58=1))
+- Reset value: 0
+
+These are the bank numbers used when a VDP command accesses VRAM. Bit3–0 is the source bank and bit7–4 is the destination bank; each is placed above the address assembled from the source coordinates (SX, SY) or the destination coordinates (DX, DY) (see Chapter 8). The font data of LFMM is treated as a source, so the source bank applies to it.
+
+This register is not latched: a value written to it is used in command address generation from that moment on.
+
+### Unimplemented Registers (R#22, R#24, R#31)
+
+R#22 and R#24 have no number assigned to them in the first place, and R#31 is also not implemented. Writes to these numbers are ignored.
 
 ## 3.5 Command Registers
 
@@ -949,7 +1002,7 @@ In addition, the following settings are used in combination with the modes. For 
 
 - Number of display lines: Bit 7 (LN) of R#9 switches the vertical display of the bitmap modes between 192 lines (LN=0) and 212 lines (LN=1), and the number of rows of Text2 between 24 rows and 26.5 rows. Unless otherwise noted, the memory sizes in this chapter are for 212 lines (24 rows for Text2).
 - Display position adjustment: The horizontal scroll (R#26, R#27) and the display start line (R#23) change the display position of the screen; the table layout in VRAM does not change.
-- V58 bit (bit 0 of R#21): Immediately after reset this is 1, and the chip operates in V9958 compatible mode. Setting it to 0 selects the extended mode, in which the full 256KB of VRAM can be used. The table layouts themselves in this chapter are common to both modes, but the bits that can be used for the base addresses change (Section 5.15).
+- V58 bit (bit 0 of R#21): Immediately after reset this is 1, and the chip operates in V9958 compatible mode. Setting it to 0 selects the extended mode, in which the full 256KB within a bank can be used (for the extension to 4MB by banks, see Chapter 3). The table layouts themselves in this chapter are common to both modes, but the bits that can be used for the base addresses change (Section 5.15).
 
 ### Table Base Address Registers
 
@@ -1907,6 +1960,8 @@ The foreground color used by LFMC/LFMM is set in R#44, and the background color 
 
 Coordinates do not distinguish pages; the whole of VRAM is treated as a single large coordinate system. The X coordinate ranges from 0 to 511, and the Y coordinate from 0 to 1023. In commands that specify a rectangle, (SX, SY) or (DX, DY) is the base point, and NX and NY specify the number of dots along each side.
 
+The VRAM bank a command accesses is specified by R#30 (see Chapter 3). The source bank (R#30 bit3–0) is placed, as the upper 4 bits, above the address assembled from the source coordinates, and the destination bank (R#30 bit7–4) above the address assembled from the destination coordinates. Both start at 0, and with 0 the command operates within bank 0, exactly as before.
+
 Each bit of the argument register R#45 has the following meaning.
 
 | Bit | Name | Meaning |
@@ -2220,6 +2275,8 @@ This command reads font data present in VRAM, expands it, and draws it into anot
 
 In LFMM, SX and SY are used not as coordinates but to specify the address of the font data. Set A7–A0 in R#32, A15–A8 in R#33, and A17–A16 in R#34, and specify the starting address of the font data within the 256KB space as a 3-byte little-endian value. Because R#35 is not used, write 0 to it.
 
+Because the font data is treated as a source, the source bank of R#30 applies to the font address (see Chapter 3).
+
 The font data consists of a pattern of 8 dots wide × NY lines per character, with one line being 1 byte (8 dots, consumed from the MSB side). NX specifies not a number of dots but a **number of characters**. Drawing proceeds character by character: after the NY lines of one character have been drawn, it moves on to the next character. At the destination, NX characters of 8×NY dots are laid out. To draw the full-width characters of a kanji ROM, set NY=16 and NX=2, and execute the command once for each character, specifying the address each time. DIX and DIY of ARG are also effective.
 
 This is suited to uses such as displaying character strings, in which a font in VRAM is drawn repeatedly.
@@ -2457,7 +2514,7 @@ The second time, DIY of ARG is set to 1 and the string is drawn at (28, 144). Wi
 
 Geo3D is a 3D graphics support processor implemented in the FPGA of the V9968 cartridge. It executes the perspective projection computation of 3D coordinates and the drawing itself of wireframe / filled-face figures in hardware, so a program on the Z80 side can perform 3D drawing simply by "giving the model data and a camera".
 
-This chapter describes the specification of the formal version, **v1.0.0**. Features added in **v2.0** — a development version by alexmoncks that is not included in the official firmware at this time — are marked wherever they appear. A program can tell the two apart by reading the ID register (49h) (Section 9.7.1). The descriptions in this chapter have been checked against the RTL of the cartridge, and where a document and the RTL disagree, the RTL is taken as correct (Section 9.10).
+This chapter describes the specification of the current version of Geo3D, **v2.0**, which is released in the V9968 cartridge repository. Features added since the initial version, v1.0.0, are marked 【v2.0】 wherever they appear. A program can tell the two apart by reading the ID register (49h) (Section 9.7.1). The descriptions in this chapter have been checked against the RTL of the cartridge, and where a document and the RTL disagree, the RTL is taken as correct (Section 9.10).
 
 ## 9.1 Overview
 
@@ -2713,7 +2770,7 @@ Note that LRMM is an extended command of the V9968. To use textures, put the VDP
 
 ## 9.7 The v2.0 Extensions
 
-v2.0 is a development version by alexmoncks. The scale of the scenes it can handle and the ways a scene can be reused are extended. **It is not included in the official firmware at this time**, so a program must determine the version with the ID register and must not use the added features on v1.0.0. At the indices added in v2.0, a read returns FFh and a write is ignored on v1.0.0.
+v2.0 is the current version of Geo3D, extended by alexmoncks and released in the V9968 cartridge repository. The scale of the scenes it can handle and the ways a scene can be reused are extended. Programs written for v1.0.0 run unchanged, but a program that uses the added features must determine the version with the ID register and must not use the added features on v1.0.0. At the indices added in v2.0, a read returns FFh and a write is ignored on v1.0.0.
 
 ### 9.7.1 Determining the Version, and the 1024-Entry Support
 
@@ -3073,7 +3130,7 @@ The points to note are the following.
 
 ## 9.10 About the Sources of This Chapter
 
-This chapter was written by checking the Geo3D documents by alexmoncks (the README, the BASIC API specification, and the v2.0 specification memo) against the RTL on the V9968 cartridge side (geo3d_engine.v, geo3d_core.v, and others). Where a document and the RTL disagree, the RTL is taken as correct. For example, the vertex stream is described as both 5 bytes and 6 bytes in different documents, but the receiving circuit of the RTL settles it as 16 bits each for X, Y, and Z (6 bytes). The byte order of the face stream (four vertex indices, the normal, then the BASE color) and the meanings of TADDR and TSTRIDE have also been made to follow the RTL. As for v2.0, an implementation is included in the RTL, but its inclusion in the official firmware has not been confirmed at this time, so it is described separately as a development version.
+This chapter was written by checking the Geo3D documents by alexmoncks (the README, the BASIC API specification, and the v2.0 specification memo) against the RTL on the V9968 cartridge side (geo3d_engine.v, geo3d_core.v, and others). Where a document and the RTL disagree, the RTL is taken as correct. For example, the vertex stream is described as both 5 bytes and 6 bytes in different documents, but the receiving circuit of the RTL settles it as 16 bits each for X, Y, and Z (6 bytes). The byte order of the face stream (four vertex indices, the normal, then the BASE color) and the meanings of TADDR and TSTRIDE have also been made to follow the RTL. As for v2.0, the repository's geo3d/readme.md states v2.0.0 and an implementation is included in the RTL (ID = 20h in geo3d_engine.v), so it is described here as the current released version.
 
 ## 9.11 Sample Program: The Official Demo ROM
 
@@ -3287,12 +3344,12 @@ What this chapter describes is limited to the access model visible to the progra
 
 ## 11.1 VRAM Organization
 
-The VRAM address space of the V9968 is 18 bits (A17–A0), for a maximum of 256KB. The range that can actually be used changes with the operating mode.
+The V9968 has 4MB of VRAM, organized as 16 banks of 256KB (18 bits, A17–A0). Each path addresses memory with the 18 bits within a bank, and the bank is selected by the bank registers (R#28–R#30) (see Chapter 3). The range that can actually be used within a bank changes with the operating mode.
 
 | Mode | Usable VRAM | Treatment of addresses |
 |---|---|---|
 | V9958 compatible mode (V58 = 1) | Equivalent to 128KB | A17 is masked in various places and treated as 0 |
-| Extended mode (V58 = 0) | 256KB | The full range of A17–A0 is valid |
+| Extended mode (V58 = 0) | 256KB × 16 banks (4MB) | Within a bank, the full range of A17–A0 is valid; the bank is selected per path by R#28–R#30 |
 
 The places where A17 is masked in compatible mode are as follows (see Chapter 3).
 
@@ -3304,7 +3361,7 @@ The same applies in connection with sprites and commands: in compatible mode, th
 
 ### Physical Layout of VRAM (DRAM Mapping)
 
-Physically, VRAM consists of two DRAMs (DRAM0 and DRAM1, 128KB each), and which DRAM a logical address (the VRAM address seen by the program) is placed in switches according to the screen mode.
+Within each bank, a logical address (the VRAM address seen by the program) is placed in one of two DRAMs (DRAM0 and DRAM1, 128KB each), and which DRAM it is placed in switches according to the screen mode.
 
 | Mapping | Conditions of application | Logical address → DRAM |
 |---|---|---|
@@ -3314,6 +3371,8 @@ Physically, VRAM consists of two DRAMs (DRAM0 and DRAM1, 128KB each), and which 
 In SCREEN 7 and above, the interleave is used both to preserve compatibility with earlier chips and to distribute accesses between the two DRAMs in order to secure bandwidth.
 
 In sprite mode 3 (SP3, R#20 bit3), on the other hand, the pattern data must be read out as a contiguous address range, so the layout returns to flat even in SCREEN 7 and above.
+
+This rearrangement (the interleave) takes place entirely within the 18-bit address of a bank. The bank number (A21–A18 of the address) is not subject to the rearrangement, so the physical layout is independent for each bank, and the arrangement within every bank is the same as in the conventional 256KB case.
 
 > **Note:**
 > In a screen mode of SCREEN 7 or above, switching SP3 changes the physical arrangement of the VRAM data. The logical addresses handled by the program do not themselves change, but data written under one mapping before the switch appears in a different arrangement after the switch. For example, if you switch to sprite mode 3 after placing a bitmap or patterns in SCREEN 8 (or do the reverse), place the required data again to suit the layout after the switch. This behavior is the same in the FPGA version.
@@ -3376,7 +3435,7 @@ The operating mode of the V9968 is switched by the V58 bit (bit0) of R#21 (see C
 - **Immediately after a reset, V58 = 1 (compatible mode).** Right after power-on, the V9968 behaves as the equivalent of a V9958, and existing software operates as it is.
 - Switching to extended mode (V58 = 0) requires an explicit procedure: release the LockExtReg lock, then write to R#21 (see Chapter 10). Existing software never enters extended mode by mistake.
 - The elements that become valid in extended mode are mainly the following.
-- The 256KB VRAM address space (Chapter 11)
+- The 4MB VRAM address space (256KB × 16 banks) (Chapters 3 and 11)
 - The new VDP commands LRMM / LFMC / LFMM (Chapter 8)
 - Bits that are stored only in extended mode, such as FG4 of R#45 (Chapter 3)
 - Writing of SPS (R#25 bit7) (see Section 12.3)
@@ -3410,7 +3469,7 @@ The items listed next are points where, even in compatible mode, the operation d
 
 ### Treatment of Not-Implemented Registers
 
-- R#22, R#24, R#28–R#31, and the command registers R#59–R#63 are not implemented, and writes to them are ignored (see Chapter 3). Initialization code written on the premise of writing to undefined registers has no effect on the V9968.
+- R#22, R#24, R#31, and the command registers R#59–R#63 are not implemented, and writes to them are ignored (see Chapter 3). Initialization code written on the premise of writing to undefined registers has no effect on the V9968.
 
 ### Protection of the Extended Bits
 
@@ -3421,6 +3480,7 @@ The items listed next are points where, even in compatible mode, the operation d
 
 - In the family in which the screen mode {M5, M4} is 00 (Graphic1 / Text1 / Multicolor / Graphic2), the address of CPU access wraps at 14 bits. This is a specification intentionally retained for compatibility with machines equipped with the TMS9918, and is not a defect (see Chapter 11).
 - In compatible mode, A17 is masked and VRAM is treated as the equivalent of 128KB. The earlier address layout can be used as it is (see Chapter 11).
+- The bank registers (R#28–R#30) cannot be written in compatible mode (V58 = 1), and their values also return to 0. In compatible mode, therefore, the banks of all paths are 0, and VRAM operates within the pre-expansion 256KB range, exactly as before (see Chapter 3).
 - In SCREEN 7 and above, the physical layout of VRAM becomes the interleave compatible with earlier chips (even addresses in DRAM0, odd addresses in DRAM1). However, enabling sprite mode 3 returns the layout to flat, and the physical arrangement of the data changes with the switching (see Section 11.1).
 
 ### Differences Relating to VDP Commands
@@ -3447,9 +3507,9 @@ This appendix collects quick references for the material described in Chapters 3
 
 ## Appendix A Control Register Summary
 
-### A.1 Display and Access Registers (R#0–R#27)
+### A.1 Display and Access Registers (R#0–R#31)
 
-All are write-only. Writes to R#20 / R#21 are ignored while LockExtReg = 1 (see Chapter 10). "V9968 extended" indicates registers (bits) added or extended in the V9968.
+All are write-only. Writes to R#20 / R#21 and R#28–R#30 are ignored while LockExtReg = 1 (see Chapter 10). "V9968 extended" indicates registers (bits) added or extended in the V9968.
 
 | R# | Name | Reset Value | Description |
 |---|---|---|---|
@@ -3481,7 +3541,10 @@ All are write-only. Writes to R#20 / R#21 are ignored while LockExtReg = 1 (see 
 | R#25 | Mode4 | All 0 | bit7: SPS (Note 2) / bit6: CMD / bit5: VDS (Note 3) / bit4: YAE / bit3: YJK / bit2: WTE (Note 3) / bit1: MSK / bit0: SP2 |
 | R#26 | Horizontal Offset (By Character) | 0 | HO8–HO3 (horizontal scroll, in character units) |
 | R#27 | Horizontal Offset (By Dot) | 0 | HO2–HO0 (horizontal scroll, in dot units) |
-| R#28–R#31 | ― | ― | Not implemented (writes are ignored) |
+| R#28 | CPU Access Bank | 0 | bit3–0: CPU access bank (the upper 4 bits of the address) / bit7–4: reserved (write 0) |
+| R#29 | Display Bank | 0 | bit3–0: background bank / bit7–4: sprite bank (each the upper 4 bits of the address) |
+| R#30 | Command Bank | 0 | bit3–0: source bank / bit7–4: destination bank (each the upper 4 bits of the address) |
+| R#31 | ― | ― | Not implemented (writes are ignored) |
 
 - Note 1: SVNS is a bit that makes sprites unaffected by vertical scrolling (R#23); the sprites are displayed at fixed, screen-anchored positions, with Y=0 at the very top of the screen (see Chapters 3 and 6). ILNS is a bit that makes the line number for the line interrupt (R#19) unaffected by vertical scrolling (R#23), using an absolute position referenced to the top of the screen (see Chapters 3 and 10). FIL is flat interlace, a mode in which, during interlace, page 0 and page 1 are joined vertically in VRAM for display (see Chapter 3).
 - Note 2: SPS is a bit newly added in the V9968. It can be written only in extended mode (V58 = 0).
@@ -3526,9 +3589,9 @@ All are write-only. Writing to R#46 starts a command.
 
 Note that writing to R#32 / R#33 / R#34 also simultaneously affects bits [7:0] / [15:8] / [17:16] of the font address (18 bits) for LFMC / LFMM (see Chapter 8).
 
-### A.3 Bit Layout Diagrams by Register (R#0–R#27)
+### A.3 Bit Layout Diagrams by Register (R#0–R#30)
 
-The bit layout of each register is shown in numerical order. The diagrams are read in the same way as in Chapter 3: the left side is the MSB and the right side is the LSB. The bracket below each field explains that field, and for flags it shows the meanings of 0 and 1. "・" denotes an unused bit, and a gray cell denotes a fixed value, or a bit that is not stored in the V9968. For the unimplemented R#22 and R#24, the diagrams show all bits as unused. R#28–R#31 have no individual diagrams, because they are summarized as a range in the table in A.1.
+The bit layout of each register is shown in numerical order. The diagrams are read in the same way as in Chapter 3: the left side is the MSB and the right side is the LSB. The bracket below each field explains that field, and for flags it shows the meanings of 0 and 1. "・" denotes an unused bit, and a gray cell denotes a fixed value, or a bit that is not stored in the V9968. For the unimplemented R#22 and R#24, the diagrams show all bits as unused. R#31 is not implemented, so it has no diagram.
 
 #### R#0 Mode0
 
@@ -3698,6 +3761,24 @@ Figure A.27 Bit layout of R#26 Horizontal Offset (By Character)
 
 Figure A.28 Bit layout of R#27 Horizontal Offset (By Dot)
 
+#### R#28 CPU Access Bank
+
+![Bit layout diagram of R#28](images/rega_r28.png)
+
+Figure A.29 Bit layout of R#28 CPU Access Bank
+
+#### R#29 Display Bank
+
+![Bit layout diagram of R#29](images/rega_r29.png)
+
+Figure A.30 Bit layout of R#29 Display Bank
+
+#### R#30 Command Bank
+
+![Bit layout diagram of R#30](images/rega_r30.png)
+
+Figure A.31 Bit layout of R#30 Command Bank
+
 ### A.4 Bit Layout Diagrams by Register (R#32–R#58)
 
 The bit layouts of the command-related registers are shown in numerical order. The diagrams are read in the same way as in A.3. For details of their use in each command, see Chapter 8. R#59–R#63 are not implemented, so they have no diagrams.
@@ -3706,167 +3787,167 @@ The bit layouts of the command-related registers are shown in numerical order. T
 
 ![Bit layout diagram of R#32](images/rega_r32.png)
 
-Figure A.29 Bit layout of R#32 Source X (L)
+Figure A.32 Bit layout of R#32 Source X (L)
 
 #### R#33 Source X (H)
 
 ![Bit layout diagram of R#33](images/rega_r33.png)
 
-Figure A.30 Bit layout of R#33 Source X (H)
+Figure A.33 Bit layout of R#33 Source X (H)
 
 #### R#34 Source Y (L)
 
 ![Bit layout diagram of R#34](images/rega_r34.png)
 
-Figure A.31 Bit layout of R#34 Source Y (L)
+Figure A.34 Bit layout of R#34 Source Y (L)
 
 #### R#35 Source Y (H)
 
 ![Bit layout diagram of R#35](images/rega_r35.png)
 
-Figure A.32 Bit layout of R#35 Source Y (H)
+Figure A.35 Bit layout of R#35 Source Y (H)
 
 #### R#36 Destination X (L)
 
 ![Bit layout diagram of R#36](images/rega_r36.png)
 
-Figure A.33 Bit layout of R#36 Destination X (L)
+Figure A.36 Bit layout of R#36 Destination X (L)
 
 #### R#37 Destination X (H)
 
 ![Bit layout diagram of R#37](images/rega_r37.png)
 
-Figure A.34 Bit layout of R#37 Destination X (H)
+Figure A.37 Bit layout of R#37 Destination X (H)
 
 #### R#38 Destination Y (L)
 
 ![Bit layout diagram of R#38](images/rega_r38.png)
 
-Figure A.35 Bit layout of R#38 Destination Y (L)
+Figure A.38 Bit layout of R#38 Destination Y (L)
 
 #### R#39 Destination Y (H)
 
 ![Bit layout diagram of R#39](images/rega_r39.png)
 
-Figure A.36 Bit layout of R#39 Destination Y (H)
+Figure A.39 Bit layout of R#39 Destination Y (H)
 
 #### R#40 Number Of Dots X (L)
 
 ![Bit layout diagram of R#40](images/rega_r40.png)
 
-Figure A.37 Bit layout of R#40 Number Of Dots X (L)
+Figure A.40 Bit layout of R#40 Number Of Dots X (L)
 
 #### R#41 Number Of Dots X (H)
 
 ![Bit layout diagram of R#41](images/rega_r41.png)
 
-Figure A.38 Bit layout of R#41 Number Of Dots X (H)
+Figure A.41 Bit layout of R#41 Number Of Dots X (H)
 
 #### R#42 Number Of Dots Y (L)
 
 ![Bit layout diagram of R#42](images/rega_r42.png)
 
-Figure A.39 Bit layout of R#42 Number Of Dots Y (L)
+Figure A.42 Bit layout of R#42 Number Of Dots Y (L)
 
 #### R#43 Number Of Dots Y (H)
 
 ![Bit layout diagram of R#43](images/rega_r43.png)
 
-Figure A.40 Bit layout of R#43 Number Of Dots Y (H)
+Figure A.43 Bit layout of R#43 Number Of Dots Y (H)
 
 #### R#44 Color
 
 ![Bit layout diagram of R#44](images/rega_r44.png)
 
-Figure A.41 Bit layout of R#44 Color
+Figure A.44 Bit layout of R#44 Color
 
 #### R#45 Argument
 
 ![Bit layout diagram of R#45](images/rega_r45.png)
 
-Figure A.42 Bit layout of R#45 Argument
+Figure A.45 Bit layout of R#45 Argument
 
 #### R#46 Command
 
 ![Bit layout diagram of R#46](images/rega_r46.png)
 
-Figure A.43 Bit layout of R#46 Command
+Figure A.46 Bit layout of R#46 Command
 
 #### R#47 Rotation Vector X (L)
 
 ![Bit layout diagram of R#47](images/rega_r47.png)
 
-Figure A.44 Bit layout of R#47 Rotation Vector X (L)
+Figure A.47 Bit layout of R#47 Rotation Vector X (L)
 
 #### R#48 Rotation Vector X (H)
 
 ![Bit layout diagram of R#48](images/rega_r48.png)
 
-Figure A.45 Bit layout of R#48 Rotation Vector X (H)
+Figure A.48 Bit layout of R#48 Rotation Vector X (H)
 
 #### R#49 Rotation Vector Y (L)
 
 ![Bit layout diagram of R#49](images/rega_r49.png)
 
-Figure A.46 Bit layout of R#49 Rotation Vector Y (L)
+Figure A.49 Bit layout of R#49 Rotation Vector Y (L)
 
 #### R#50 Rotation Vector Y (H)
 
 ![Bit layout diagram of R#50](images/rega_r50.png)
 
-Figure A.47 Bit layout of R#50 Rotation Vector Y (H)
+Figure A.50 Bit layout of R#50 Rotation Vector Y (H)
 
 #### R#51 Window Start X (L)
 
 ![Bit layout diagram of R#51](images/rega_r51.png)
 
-Figure A.48 Bit layout of R#51 Window Start X (L)
+Figure A.51 Bit layout of R#51 Window Start X (L)
 
 #### R#52 Window Start X (H)
 
 ![Bit layout diagram of R#52](images/rega_r52.png)
 
-Figure A.49 Bit layout of R#52 Window Start X (H)
+Figure A.52 Bit layout of R#52 Window Start X (H)
 
 #### R#53 Window Start Y (L)
 
 ![Bit layout diagram of R#53](images/rega_r53.png)
 
-Figure A.50 Bit layout of R#53 Window Start Y (L)
+Figure A.53 Bit layout of R#53 Window Start Y (L)
 
 #### R#54 Window Start Y (H)
 
 ![Bit layout diagram of R#54](images/rega_r54.png)
 
-Figure A.51 Bit layout of R#54 Window Start Y (H)
+Figure A.54 Bit layout of R#54 Window Start Y (H)
 
 #### R#55 Window End X (L)
 
 ![Bit layout diagram of R#55](images/rega_r55.png)
 
-Figure A.52 Bit layout of R#55 Window End X (L)
+Figure A.55 Bit layout of R#55 Window End X (L)
 
 #### R#56 Window End X (H)
 
 ![Bit layout diagram of R#56](images/rega_r56.png)
 
-Figure A.53 Bit layout of R#56 Window End X (H)
+Figure A.56 Bit layout of R#56 Window End X (H)
 
 #### R#57 Window End Y (L)
 
 ![Bit layout diagram of R#57](images/rega_r57.png)
 
-Figure A.54 Bit layout of R#57 Window End Y (L)
+Figure A.57 Bit layout of R#57 Window End Y (L)
 
 #### R#58 Window End Y (H)
 
 ![Bit layout diagram of R#58](images/rega_r58.png)
 
-Figure A.55 Bit layout of R#58 Window End Y (H)
+Figure A.58 Bit layout of R#58 Window End Y (H)
 
 ### A.5 Geo3D Register Summary
 
-The registers of Geo3D are in an index space separate from the R# registers of the VDP, and are accessed through two ports, index and data (8Dh / 8Fh in the 88h family, 9Dh / 9Fh in the 98h family; see Chapter 9). A 16-bit register occupies 2 bytes starting at the index of its lower byte, in little-endian. The mark 【v2.0】 after a name indicates a register added in v2.0 (on v1.0.0, a read returns FFh and a write is ignored).
+The registers of Geo3D are in an index space separate from the R# registers of the VDP, and are accessed through two ports, index and data (8Dh / 8Fh in the 88h family, 9Dh / 9Fh in the 98h family; see Chapter 9). A 16-bit register occupies 2 bytes starting at the index of its lower byte, in little-endian. The mark 【v2.0】 after a name indicates a register added in v2.0 (on v1.0.0, a read returns FFh and a write is ignored). The current version of Geo3D is v2.0, and this summary is based on v2.0.
 
 #### Immediate Mode
 
@@ -4038,7 +4119,7 @@ The Sprites column shows the correspondence in the conventional modes, except wh
 
 Below, for each mode, the standard VRAM layout (VRAM map) and the register settings for that layout are shown. The standard layout here means the layout when MSX-BASIC initializes each mode with a SCREEN statement, and it matches the VRAM maps in the appendix of the MSX2 Technical Handbook. The register values were derived from the base addresses of each table in accordance with the bit layouts in Chapter 3, and have also been confirmed to match the values measured after MSX-BASIC initialization.
 
-The heights of the bands in the diagrams are approximate and do not represent area ratios. All addresses are logical addresses. Note that the palette save area in the Technical Handbook VRAM maps is an area that MSX-BASIC uses to save palette values, and is not a table whose position is determined by a VDP register, so it is not included in the diagrams in this appendix. In extended mode (V58 = 0), the region 20000h–3FFFFh can also be used, but the standard layouts fit within the 128KB range in every mode.
+The heights of the bands in the diagrams are approximate and do not represent area ratios. All addresses are logical addresses. Note that the palette save area in the Technical Handbook VRAM maps is an area that MSX-BASIC uses to save palette values, and is not a table whose position is determined by a VDP register, so it is not included in the diagrams in this appendix. In extended mode (V58 = 0), the region 20000h–3FFFFh can also be used, but the standard layouts fit within the 128KB range in every mode. When the bank registers (R#28–R#30, see Chapter 3) are used to switch banks, these maps still hold as they are, as the layout within a single bank (256KB).
 
 Notes on how to read each table are collected below.
 
@@ -4245,10 +4326,14 @@ An index of the important terms used in this manual and the sections that mainly
 |---|---|
 | 5S / 5TH | [6.6.2 Display-Limit Notification (5S and 5TH)](#662-display-limit-notification-5s-and-5th) |
 | 9958 Compatible | [12.2 Behavior Formalized as "9958 Compatible"](#122-behavior-formalized-as-9958-compatible) |
+| Background bank | [R#29 Display Bank](#r29-display-bank-new-in-v9968) |
+| Bank registers | [VRAM Banks (R#28–R#30)](#vram-banks-r28r30-new-in-v9968) |
 | CEIE | [10.4 Command Completion Interrupt](#104-command-completion-interrupt), [R#20 Mode5](#r20-mode5-new-in-v9968) |
 | Collision detection | [6.6.1 Sprite-on-Sprite Collision](#661-sprite-on-sprite-collision) |
 | Command completion interrupt | [10.4 Command Completion Interrupt](#104-command-completion-interrupt) |
 | Compatible mode | [12.1 Compatible Mode and Extended Mode](#121-compatible-mode-and-extended-mode) |
+| CPU access bank | [R#28 CPU Access Bank](#r28-cpu-access-bank-new-in-v9968) |
+| Destination bank | [R#30 Command Bank](#r30-command-bank-new-in-v9968) |
 | EPAL | [7.2.2 EPAL = 1 (Extended Format)](#722-epal--1-extended-format), [R#20 Mode5](#r20-mode5-new-in-v9968) |
 | Extended mode | [12.1 Compatible Mode and Extended Mode](#121-compatible-mode-and-extended-mode) |
 | FG4 | [R#45 Argument](#r45-argument) |
@@ -4287,13 +4372,18 @@ An index of the important terms used in this manual and the sections that mainly
 | R#20 | [R#20 Mode5](#r20-mode5-new-in-v9968) |
 | R#21 | [R#21 Mode6](#r21-mode6-new-in-v9968) |
 | R#25 | [R#25 Mode4](#r25-mode4) |
+| R#28 | [R#28 CPU Access Bank](#r28-cpu-access-bank-new-in-v9968) |
+| R#29 | [R#29 Display Bank](#r29-display-bank-new-in-v9968) |
+| R#30 | [R#30 Command Bank](#r30-command-bank-new-in-v9968) |
 | R#45 | [R#45 Argument](#r45-argument) |
 | R#46 | [R#46 Command](#r46-command) |
 | Ring buffer | [9.7.2 Resident Scenes and Partial RUNs](#972-resident-scenes-and-partial-runs) |
 | Rotation vector (R#47–R#50) | [R#47 Rotation Vector X](#r47-rotation-vector-x-l--r48-rotation-vector-x-h-new-in-v9968) |
 | S16 | [R#20 Mode5](#r20-mode5-new-in-v9968), [6.7 Other Extension Bits](#67-other-extension-bits) |
 | Scaling | [6.5.3 How Scaling Looks](#653-how-scaling-looks) |
+| Source bank | [R#30 Command Bank](#r30-command-bank-new-in-v9968) |
 | SP3 | [6.1 Overview of the Sprite Modes](#61-overview-of-the-sprite-modes), [R#20 Mode5](#r20-mode5-new-in-v9968) |
+| Sprite bank | [R#29 Display Bank](#r29-display-bank-new-in-v9968) |
 | Sprite mode 1 | [6.3 Sprite Mode 1](#63-sprite-mode-1) |
 | Sprite mode 2 | [6.4 Sprite Mode 2](#64-sprite-mode-2) |
 | Sprite mode 3 | [6.5 Sprite Mode 3 (New Mode in V9968)](#65-sprite-mode-3-new-mode-in-v9968) |
@@ -4306,6 +4396,7 @@ An index of the important terms used in this manual and the sections that mainly
 | V58 | [R#21 Mode6](#r21-mode6-new-in-v9968) |
 | VFIRST | [A.5 Geo3D Register Summary](#a5-geo3d-register-summary) |
 | VRAM | [11.1 VRAM Organization](#111-vram-organization) |
+| VRAM banks | [VRAM Banks (R#28–R#30)](#vram-banks-r28r30-new-in-v9968) |
 | Window registers (R#51–R#58) | [R#51 Window Start X](#r51-window-start-x-l--r52-window-start-x-h-new-in-v9968) |
 | XCTRL | [A.5 Geo3D Register Summary](#a5-geo3d-register-summary) |
 | XHR | [R#45 Argument](#r45-argument) |
