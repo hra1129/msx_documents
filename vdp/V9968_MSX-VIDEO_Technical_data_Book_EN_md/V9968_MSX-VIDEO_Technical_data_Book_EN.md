@@ -1,124 +1,33 @@
-# V9968 MSX-VIDEO TECHNICAL DATA BOOK
+<div class="cover">
+<h1 class="cover-chip" style="margin-top:50pt;">V9968</h1>
+<p class="cover-line2">MSX-VIDEO</p>
+<p class="cover-bar" style="background-color:#10164A;">TECHNICAL DATA BOOK</p>
+<p class="cover-catalog" style="margin-left:366pt; margin-top:253pt;">V9968 TECHNICAL DATA BOOK<br/>2026.10</p>
+</div>
 
-October 31, 2026
+<h1>Contents</h1>
+<table>
+<tr><th>Item</th><th>Page</th></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 1 Introduction</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch01">3</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 2 I/O Ports and Access Methods</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch02">7</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 3 Control Registers</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch03">13</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 4 Status Registers</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch04">38</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 5 Screen Modes</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch05">43</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 6 Sprites</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch06">61</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 7 Color Palette and Color Representation</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch07">77</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 8 VDP Commands</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch08">85</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 9 Geo3D</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch09">122</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 10 Interrupts</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch10">151</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 11 VRAM Access and Timing</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch11">159</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Chapter 12 Compatibility and Migration Notes</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch12">164</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Appendix A Control Register Summary</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appa">169</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Appendix B Status Register Summary</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appb">199</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Appendix C Screen Mode Summary</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appc">203</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Appendix D VDP Command Code Summary</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appd">220</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Appendix E I/O Port Summary</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appe">221</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">Index</td><td style="padding:2px 8px; line-height:1.3;"><a href="#index">223</a></td></tr>
+</table>
 
-Written by Takayuki Hara (HRA!)
-
-# Contents
-
-- [Chapter 1 Introduction](#chapter-1-introduction)
-  - [1.1 About This Manual](#11-about-this-manual)
-  - [1.2 Notation](#12-notation)
-  - [1.3 Overview of the V9968](#13-overview-of-the-v9968)
-  - [1.4 Compatibility and the "9958 Compatible" Mode](#14-compatibility-and-the-9958-compatible-mode)
-  - [1.5 Functional Overview](#15-functional-overview)
-- [Chapter 2 I/O Ports and Access Methods](#chapter-2-io-ports-and-access-methods)
-  - [2.1 Port Assignments](#21-port-assignments)
-  - [2.2 Accessing VRAM](#22-accessing-vram)
-  - [2.3 The Port#1 Two-Byte Pair Protocol](#23-the-port1-two-byte-pair-protocol)
-  - [2.4 Writing to the Control Registers](#24-writing-to-the-control-registers)
-  - [2.5 Accessing the Palette](#25-accessing-the-palette)
-  - [2.6 Reading the Status Registers](#26-reading-the-status-registers)
-  - [2.7 Interrupt Control Port (Port#4)](#27-interrupt-control-port-port4)
-- [Chapter 3 Control Registers](#chapter-3-control-registers-in-detail)
-  - [3.1 Mode Setting Registers](#31-mode-setting-registers)
-  - [3.2 Table Address Registers](#32-table-address-registers)
-  - [3.3 Color and Display Control Registers](#33-color-and-display-control-registers)
-  - [3.4 Access Control Registers](#34-access-control-registers)
-  - [3.5 Command Registers](#35-command-registers)
-- [Chapter 4 Status Registers](#chapter-4-status-registers-in-detail)
-  - [Relationship to the Interrupt Output](#relationship-to-the-interrupt-output)
-- [Chapter 5 Screen Modes](#chapter-5-screen-modes)
-  - [5.1 About the Screen Modes](#51-about-the-screen-modes)
-  - [5.2 Selecting a Mode](#52-selecting-a-mode)
-  - [5.3 Text1 Mode](#53-text1-mode)
-  - [5.4 Text2 Mode](#54-text2-mode)
-  - [5.5 Multicolor Mode](#55-multicolor-mode)
-  - [5.6 Graphic1 Mode](#56-graphic1-mode)
-  - [5.7 Graphic2 Mode](#57-graphic2-mode)
-  - [5.8 Graphic3 Mode](#58-graphic3-mode)
-  - [5.9 Graphic4 Mode](#59-graphic4-mode)
-  - [5.10 Graphic5 Mode](#510-graphic5-mode)
-  - [5.11 Graphic6 Mode](#511-graphic6-mode)
-  - [5.12 Graphic7 Mode](#512-graphic7-mode)
-  - [5.13 Graphic7-YAE Mode (SCREEN 10/11)](#513-graphic7-yae-mode-screen-1011)
-  - [5.14 Graphic7-YJK Mode (SCREEN 12)](#514-graphic7-yjk-mode-screen-12)
-  - [5.15 Extensions and Differences in the V9968](#515-extensions-and-differences-in-the-v9968)
-- [Chapter 6 Sprites](#chapter-6-sprites)
-  - [6.1 Overview of the Sprite Modes](#61-overview-of-the-sprite-modes)
-  - [6.2 Common Conventions](#62-common-conventions)
-  - [6.3 Sprite Mode 1](#63-sprite-mode-1)
-  - [6.4 Sprite Mode 2](#64-sprite-mode-2)
-  - [6.5 Sprite Mode 3 (New Mode in V9968)](#65-sprite-mode-3-new-mode-in-v9968)
-  - [6.6 Collision Detection and Notification of the Display Limit](#66-collision-detection-and-notification-of-the-display-limit)
-  - [6.7 Other Extension Bits](#67-other-extension-bits)
-- [Chapter 7 Color Palette and Color Representation](#chapter-7-color-palette-and-color-representation)
-  - [7.1 Structure of the Palette RAM](#71-structure-of-the-palette-ram)
-  - [7.2 Writing to the Palette](#72-writing-to-the-palette)
-  - [7.3 The Palette at Reset](#73-the-palette-at-reset)
-  - [7.4 Color Representation by Screen Mode](#74-color-representation-by-screen-mode)
-  - [7.5 Sample Program: Rewriting the Palette and Color Bars](#75-sample-program-rewriting-the-palette-and-color-bars)
-- [Chapter 8 VDP Commands](#chapter-8-vdp-commands)
-  - [8.1 Command Execution Model](#81-command-execution-model)
-  - [8.2 HMMC (High-Speed CPU → VRAM Transfer)](#82-hmmc-high-speed-cpu--vram-transfer)
-  - [8.3 YMMM (High-Speed VRAM → VRAM Transfer in the Y Direction)](#83-ymmm-high-speed-vram--vram-transfer-in-the-y-direction)
-  - [8.4 HMMM (High-Speed VRAM → VRAM Transfer)](#84-hmmm-high-speed-vram--vram-transfer)
-  - [8.5 HMMV (High-Speed Rectangular Fill)](#85-hmmv-high-speed-rectangular-fill)
-  - [8.6 LMMC (Logical CPU → VRAM Transfer)](#86-lmmc-logical-cpu--vram-transfer)
-  - [8.7 LMCM (Logical VRAM → CPU Transfer)](#87-lmcm-logical-vram--cpu-transfer)
-  - [8.8 LMMM (Logical VRAM → VRAM Transfer)](#88-lmmm-logical-vram--vram-transfer)
-  - [8.9 LMMV (Logical Rectangular Fill)](#89-lmmv-logical-rectangular-fill)
-  - [8.10 LINE (Line Drawing)](#810-line-line-drawing)
-  - [8.11 SRCH (Color Search)](#811-srch-color-search)
-  - [8.12 PSET (Plot a Dot)](#812-pset-plot-a-dot)
-  - [8.13 POINT (Read a Color)](#813-point-read-a-color)
-  - [8.14 LRMM (Logical Transfer with Rotation and Scaling)](#814-lrmm-logical-transfer-with-rotation-and-scaling)
-  - [8.15 LFMC (CPU → VRAM Font Drawing)](#815-lfmc-cpu--vram-font-drawing)
-  - [8.16 LFMM (VRAM → VRAM Font Drawing)](#816-lfmm-vram--vram-font-drawing)
-  - [8.17 STOP (Stop Command)](#817-stop-stop-command)
-  - [8.18 Sample Program: Drawing and Copying Figures](#818-sample-program-drawing-and-copying-figures)
-  - [8.19 Sample Program: Rotated Copy with LRMM](#819-sample-program-rotated-copy-with-lrmm)
-  - [8.20 Sample Program: Drawing a Character String with LFMM](#820-sample-program-drawing-a-character-string-with-lfmm)
-- [Chapter 9 Geo3D](#chapter-9-geo3d)
-  - [9.1 Overview](#91-overview)
-  - [9.2 Ports and Register Access](#92-ports-and-register-access)
-  - [9.3 Immediate Mode](#93-immediate-mode)
-  - [9.4 Phase 2 Engine](#94-phase-2-engine)
-  - [9.5 Filled Faces and Shading](#95-filled-faces-and-shading)
-  - [9.6 Textures](#96-textures)
-  - [9.7 The v2.0 Extensions](#97-the-v20-extensions)
-  - [9.8 BASIC API (G3BASIC)](#98-basic-api-g3basic)
-  - [9.9 Sample Program: A Rotating Wireframe Cube](#99-sample-program-a-rotating-wireframe-cube)
-  - [9.10 About the Sources of This Chapter](#910-about-the-sources-of-this-chapter)
-  - [9.11 Sample Program: The Official Demo ROM](#911-sample-program-the-official-demo-rom)
-- [Chapter 10 Interrupts](#chapter-10-interrupts)
-  - [10.1 Overview of the Interrupt Sources](#101-overview-of-the-interrupt-sources)
-  - [10.2 Frame Interrupt](#102-frame-interrupt)
-  - [10.3 Line Interrupt](#103-line-interrupt)
-  - [10.4 Command Completion Interrupt](#104-command-completion-interrupt)
-  - [10.5 Checking and Clearing Sources with Port#4](#105-checking-and-clearing-sources-with-port4)
-  - [10.6 Flow of Using Interrupts](#106-flow-of-using-interrupts)
-  - [10.7 Sample Program: Screen Split Using a Line Interrupt](#107-sample-program-screen-split-using-a-line-interrupt)
-  - [10.8 Notes for Environments with Two VDPs](#108-notes-for-environments-with-two-vdps)
-- [Chapter 11 VRAM Access and Timing](#chapter-11-vram-access-and-timing)
-  - [11.1 VRAM Organization](#111-vram-organization)
-  - [11.2 Address Model and Wraparound](#112-address-model-and-wraparound)
-  - [11.3 Notes on the CPU Access Procedure](#113-notes-on-the-cpu-access-procedure)
-  - [11.4 Access While a VDP Command Is Executing](#114-access-while-a-vdp-command-is-executing)
-  - [11.5 Access During the Display Period](#115-access-during-the-display-period)
-  - [11.6 About High-Speed Mode](#116-about-high-speed-mode)
-- [Chapter 12 Compatibility and Migration Notes](#chapter-12-compatibility-and-migration-notes)
-  - [12.1 Compatible Mode and Extended Mode](#121-compatible-mode-and-extended-mode)
-  - [12.2 Behavior Formalized as "9958 Compatible"](#122-behavior-formalized-as-9958-compatible)
-  - [12.3 Known Differences in Operation from Earlier Chips](#123-known-differences-in-operation-from-earlier-chips)
-  - [12.4 Summary of Notes for Migration and Extension](#124-summary-of-notes-for-migration-and-extension)
-- [Appendix A Control Register Summary](#appendix-a-control-register-summary)
-- [Appendix B Status Register Summary](#appendix-b-status-register-summary)
-- [Appendix C Screen Mode Summary](#appendix-c-screen-mode-summary)
-- [Appendix D VDP Command Code Summary](#appendix-d-vdp-command-code-summary)
-- [Appendix E I/O Port Summary](#appendix-e-io-port-summary)
-  - [Revision History](#revision-history)
-- [Index](#index)
 
 # Chapter 1 Introduction
 
@@ -189,6 +98,8 @@ In addition to the vertical sync interrupt (frame interrupt) and the line interr
 ### VRAM
 
 VRAM totals 4MB, made up of 16 banks of 256KB (18 bits, address A17–A0). In extended mode, the bank registers (R#28–R#30) select a bank for each path, giving access to the full 4MB. In compatible mode, all banks are fixed at 0, and operation is within the conventionally compatible address range. The access method is described in Chapter 2, the bank registers in Chapter 3, and the timing and restrictions of access in Chapter 11.
+
+
 
 # Chapter 2 I/O Ports and Access Methods
 
@@ -344,6 +255,8 @@ To use the extended functions, release the lock by the following procedure, and 
 1. Write a value with bit7 = 0 to Port#4 (LockExtReg becomes 0, and the lock is released).
 2. Set R#20 / R#21, for example by setting the V58 bit of R#21 to 0 to switch to extended mode.
 
+
+
 # Chapter 3 Control Registers in Detail
 
 This chapter describes the V9968 control registers R#0–R#30 and the VDP command registers R#32–R#58 in detail, one register at a time.
@@ -361,7 +274,7 @@ In each register heading, in addition to the name, the access attribute and the 
 
 ### R#0 Mode0
 
-![Bit layout of R#0](images/reg_r00.png)
+![Bit layout of R#0](figures/reg_r00.png)
 
 - Access: Write-only
 - Reset value: M5=M4=M3=0, IE1=0
@@ -372,7 +285,7 @@ As a side effect, writing to R#0 clears the line interrupt flag.
 
 ### R#1 Mode1
 
-![Bit layout of R#1](images/reg_r01.png)
+![Bit layout of R#1](figures/reg_r01.png)
 
 - Access: Write-only
 - Reset value: BL=0, IE0=0, SI=0, MAG=0
@@ -394,7 +307,7 @@ The correspondence between the screen mode selection bits {M5, M4, M3, M2, M1} a
 
 ### R#8 Mode2
 
-![Bit layout of R#8](images/reg_r08.png)
+![Bit layout of R#8](figures/reg_r08.png)
 
 - Access: Write-only
 - Reset value: TP=0, VR=1, SPD=0
@@ -403,14 +316,14 @@ VR concerns VRAM access. When VR=0, the upper bits (A17–A14) of the VRAM addre
 
 ### R#9 Mode3
 
-![Bit layout of R#9](images/reg_r09.png)
+![Bit layout of R#9](figures/reg_r09.png)
 
 - Access: Write-only
 - Reset value: All 0
 
 ### R#18 Display Adjust
 
-![Bit layout of R#18](images/reg_r18.png)
+![Bit layout of R#18](figures/reg_r18.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -419,7 +332,7 @@ This fine-adjusts the display position of the entire screen. The interpretation 
 
 ### R#19 Interrupt Line
 
-![Bit layout of R#19](images/reg_r19.png)
+![Bit layout of R#19](figures/reg_r19.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -432,7 +345,7 @@ Note that the line number in R#19 is normally affected by the vertical scroll of
 
 ### R#20 Mode5 [New in V9968]
 
-![Bit layout of R#20](images/reg_r20.png)
+![Bit layout of R#20](figures/reg_r20.png)
 
 - Access: Write-only (but writes are ignored while LockExtReg=1)
 - Reset value: All 0
@@ -451,7 +364,7 @@ SVNS switches the relationship between the sprite display position and the verti
 
 ### R#21 Mode6 [New in V9968]
 
-![Bit layout of R#21](images/reg_r21.png)
+![Bit layout of R#21](figures/reg_r21.png)
 
 - Access: Write-only (but writes are ignored while LockExtReg=1)
 - Reset value: V58=1
@@ -469,7 +382,7 @@ Note that some older materials refer to "V58 in R#20" in places, but V58 is bit0
 
 ### R#25 Mode4
 
-![Bit layout of R#25](images/reg_r25.png)
+![Bit layout of R#25](figures/reg_r25.png)
 
 - Access: Write-only
 - Reset value: All 0
@@ -489,23 +402,23 @@ The following registers specify the base address of each table in VRAM. All are 
 
 ### R#2 Pattern Name Table Address
 
-![Bit layout of R#2](images/reg_r02.png)
+![Bit layout of R#2](figures/reg_r02.png)
 
 In the bitmap modes (Graphic4 to Graphic7), the lower bits of R#2 act as a mask on the line address. Set bits 4 to 0 to 1 in normal use, and bits 5 to 0 to 1 when FIL (Flat Interlace) is used. Clearing any of them makes the screen repeat in the vertical direction. See Section 5.2 for details.
 
 ### R#3 Color Table Address (L)
 
-![Bit layout of R#3](images/reg_r03.png)
+![Bit layout of R#3](figures/reg_r03.png)
 
 The base address of the color table is composed of this register (lower) and R#10 (upper).
 
 ### R#4 Pattern Generator Table Address
 
-![Bit layout of R#4](images/reg_r04.png)
+![Bit layout of R#4](figures/reg_r04.png)
 
 ### R#5 Sprite Attribute Table Address (L)
 
-![Bit layout of R#5](images/reg_r05.png)
+![Bit layout of R#5](figures/reg_r05.png)
 
 The base address of the sprite attribute table is composed of this register (lower) and R#11 (upper).
 
@@ -513,21 +426,21 @@ Bit1 / bit0 of this register (bits [8:7] of the base address) are also used as a
 
 ### R#6 Sprite Pattern Generator Table Address
 
-![Bit layout of R#6](images/reg_r06.png)
+![Bit layout of R#6](figures/reg_r06.png)
 
 ### R#10 Color Table Address (H)
 
-![Bit layout of R#10](images/reg_r10.png)
+![Bit layout of R#10](figures/reg_r10.png)
 
 ### R#11 Sprite Attribute Table Address (H)
 
-![Bit layout of R#11](images/reg_r11.png)
+![Bit layout of R#11](figures/reg_r11.png)
 
 ## 3.3 Color and Display Control Registers
 
 ### R#7 Background Color
 
-![Bit layout of R#7](images/reg_r07.png)
+![Bit layout of R#7](figures/reg_r07.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -536,7 +449,7 @@ The entire byte written is retained in the register. The interpretation on the d
 
 ### R#12 Text Color / Back Color
 
-![Bit layout of R#12](images/reg_r12.png)
+![Bit layout of R#12](figures/reg_r12.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -547,7 +460,7 @@ During the blink display period, the color of this register is used instead of R
 
 ### R#13 Blinking Period
 
-![Bit layout of R#13](images/reg_r13.png)
+![Bit layout of R#13](figures/reg_r13.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -556,7 +469,7 @@ This sets the length of the period during which the color of R#12 is displayed (
 
 ### R#23 Display Offset
 
-![Bit layout of R#23](images/reg_r23.png)
+![Bit layout of R#23](figures/reg_r23.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -565,7 +478,7 @@ This shifts the display start position of the screen in line units (vertical scr
 
 ### R#26 Horizontal Offset (By Character)
 
-![Bit layout of R#26](images/reg_r26.png)
+![Bit layout of R#26](figures/reg_r26.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -574,7 +487,7 @@ The amount of horizontal scroll is specified by 9 bits combining this register (
 
 ### R#27 Horizontal Offset (By Dot)
 
-![Bit layout of R#27](images/reg_r27.png)
+![Bit layout of R#27](figures/reg_r27.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -583,7 +496,7 @@ The amount of horizontal scroll is specified by 9 bits combining this register (
 
 ### R#14 VRAM Access Base Address
 
-![Bit layout of R#14](images/reg_r14.png)
+![Bit layout of R#14](figures/reg_r14.png)
 
 - Access: Write-only
 - Reset value: 0 (0 for the VRAM address as a whole)
@@ -594,7 +507,7 @@ When the VR bit of R#8 is 0, A17–A14 are fixed at 0. Also, in compatible mode 
 
 ### R#15 Status Register Pointer
 
-![Bit layout of R#15](images/reg_r15.png)
+![Bit layout of R#15](figures/reg_r15.png)
 
 - Access: Write-only
 - Reset value: 0
@@ -603,7 +516,7 @@ Reading Port#1 returns the value of the status register specified by this regist
 
 ### R#16 Color Palette Pointer
 
-![Bit layout of R#16](images/reg_r16.png)
+![Bit layout of R#16](figures/reg_r16.png)
 
 - Access: Write-only
 - Reset value: Palette address 0
@@ -614,7 +527,7 @@ As a side effect, writing to R#16 returns the phase of the palette write (which 
 
 ### R#17 Control Register Pointer
 
-![Bit layout of R#17](images/reg_r17.png)
+![Bit layout of R#17](figures/reg_r17.png)
 
 - Access: Write-only
 - Reset value: Pointer 0, AII=0
@@ -641,7 +554,7 @@ These registers are extended registers: while LockExtReg = 1, writes to them are
 
 ### R#28 CPU Access Bank [New in V9968]
 
-![Bit layout of R#28](images/reg_r28.png)
+![Bit layout of R#28](figures/reg_r28.png)
 
 - Access: Write-only (writes are ignored while LockExtReg=1, and in compatible mode (V58=1))
 - Reset value: 0
@@ -654,7 +567,7 @@ Bit7–4 are reserved. Write 0 to them.
 
 ### R#29 Display Bank [New in V9968]
 
-![Bit layout of R#29](images/reg_r29.png)
+![Bit layout of R#29](figures/reg_r29.png)
 
 - Access: Write-only (writes are ignored while LockExtReg=1, and in compatible mode (V58=1))
 - Reset value: 0
@@ -665,7 +578,7 @@ This register is not latched: a value written to it is used in display reads fro
 
 ### R#30 Command Bank [New in V9968]
 
-![Bit layout of R#30](images/reg_r30.png)
+![Bit layout of R#30](figures/reg_r30.png)
 
 - Access: Write-only (writes are ignored while LockExtReg=1, and in compatible mode (V58=1))
 - Reset value: 0
@@ -686,9 +599,9 @@ Coordinates and dot counts are composed as multi-bit values spanning multiple re
 
 ### R#32 Source X (L) / R#33 Source X (H)
 
-![Bit layout of R#32](images/reg_r32.png)
+![Bit layout of R#32](figures/reg_r32.png)
 
-![Bit layout of R#33](images/reg_r33.png)
+![Bit layout of R#33](figures/reg_r33.png)
 
 - Reset value: 0
 
@@ -698,9 +611,9 @@ As a side effect, writes to R#32 / R#33 are also written simultaneously to [7:0]
 
 ### R#34 Source Y (L) / R#35 Source Y (H)
 
-![Bit layout of R#34](images/reg_r34.png)
+![Bit layout of R#34](figures/reg_r34.png)
 
-![Bit layout of R#35](images/reg_r35.png)
+![Bit layout of R#35](figures/reg_r35.png)
 
 - Reset value: 0
 
@@ -710,17 +623,17 @@ As a side effect, a write to R#34 is also written simultaneously to [17:16] of t
 
 ### R#36 Destination X (L) / R#37 Destination X (H)
 
-![Bit layout of R#36](images/reg_r36.png)
+![Bit layout of R#36](figures/reg_r36.png)
 
-![Bit layout of R#37](images/reg_r37.png)
+![Bit layout of R#37](figures/reg_r37.png)
 
 - Reset value: 0
 
 ### R#38 Destination Y (L) / R#39 Destination Y (H)
 
-![Bit layout of R#38](images/reg_r38.png)
+![Bit layout of R#38](figures/reg_r38.png)
 
-![Bit layout of R#39](images/reg_r39.png)
+![Bit layout of R#39](figures/reg_r39.png)
 
 - Reset value: 0
 
@@ -728,9 +641,9 @@ The valid bits of R#39 differ depending on the mode. In 256KB mode, the 3 bits b
 
 ### R#40 Number Of Dots X (L) / R#41 Number Of Dots X (H)
 
-![Bit layout of R#40](images/reg_r40.png)
+![Bit layout of R#40](figures/reg_r40.png)
 
-![Bit layout of R#41](images/reg_r41.png)
+![Bit layout of R#41](figures/reg_r41.png)
 
 - Reset value: 0
 
@@ -738,9 +651,9 @@ NX retains 11 bits, but in commands other than LRMM, NX[10:9] is cleared to 0 at
 
 ### R#42 Number Of Dots Y (L) / R#43 Number Of Dots Y (H)
 
-![Bit layout of R#42](images/reg_r42.png)
+![Bit layout of R#42](figures/reg_r42.png)
 
-![Bit layout of R#43](images/reg_r43.png)
+![Bit layout of R#43](figures/reg_r43.png)
 
 - Reset value: 0
 
@@ -748,7 +661,7 @@ The valid bits of R#43 are mode-dependent, as with R#39 (3 bits in 256KB mode; t
 
 ### R#44 Color
 
-![Bit layout of R#44](images/reg_r44.png)
+![Bit layout of R#44](figures/reg_r44.png)
 
 - Reset value: 0
 
@@ -756,7 +669,7 @@ In HMMV / LMMV / PSET and similar commands, this is used as the drawing color. I
 
 ### R#45 Argument
 
-![Bit layout of R#45](images/reg_r45.png)
+![Bit layout of R#45](figures/reg_r45.png)
 
 - Reset value: All 0
 
@@ -783,7 +696,7 @@ FG4 has meaning only in extended mode. When FG4=1, VDP commands operate as Graph
 
 ### R#46 Command
 
-![Bit layout of R#46](images/reg_r46.png)
+![Bit layout of R#46](figures/reg_r46.png)
 
 - Reset value: Command code 0 (STOP), logical operation 0
 
@@ -806,9 +719,9 @@ Note that some older materials describe an "ECOM bit" as the condition for enabl
 
 ### R#47 Rotation Vector X (L) / R#48 Rotation Vector X (H) [New in V9968]
 
-![Bit layout of R#47](images/reg_r47.png)
+![Bit layout of R#47](figures/reg_r47.png)
 
-![Bit layout of R#48](images/reg_r48.png)
+![Bit layout of R#48](figures/reg_r48.png)
 
 - Reset value: 0
 
@@ -816,9 +729,9 @@ This is the X component of the rotation vector used by the LRMM command. VX is a
 
 ### R#49 Rotation Vector Y (L) / R#50 Rotation Vector Y (H) [New in V9968]
 
-![Bit layout of R#49](images/reg_r49.png)
+![Bit layout of R#49](figures/reg_r49.png)
 
-![Bit layout of R#50](images/reg_r50.png)
+![Bit layout of R#50](figures/reg_r50.png)
 
 - Reset value: 0
 
@@ -826,33 +739,33 @@ This is the Y component of the rotation vector. The format is the same as VX.
 
 ### R#51 Window Start X (L) / R#52 Window Start X (H) [New in V9968]
 
-![Bit layout of R#51](images/reg_r51.png)
+![Bit layout of R#51](figures/reg_r51.png)
 
-![Bit layout of R#52](images/reg_r52.png)
+![Bit layout of R#52](figures/reg_r52.png)
 
 - Reset value: 0
 
 ### R#53 Window Start Y (L) / R#54 Window Start Y (H) [New in V9968]
 
-![Bit layout of R#53](images/reg_r53.png)
+![Bit layout of R#53](figures/reg_r53.png)
 
-![Bit layout of R#54](images/reg_r54.png)
+![Bit layout of R#54](figures/reg_r54.png)
 
 - Reset value: 0
 
 ### R#55 Window End X (L) / R#56 Window End X (H) [New in V9968]
 
-![Bit layout of R#55](images/reg_r55.png)
+![Bit layout of R#55](figures/reg_r55.png)
 
-![Bit layout of R#56](images/reg_r56.png)
+![Bit layout of R#56](figures/reg_r56.png)
 
 - Reset value: 1FFh for WEX as a whole
 
 ### R#57 Window End Y (L) / R#58 Window End Y (H) [New in V9968]
 
-![Bit layout of R#57](images/reg_r57.png)
+![Bit layout of R#57](figures/reg_r57.png)
 
-![Bit layout of R#58](images/reg_r58.png)
+![Bit layout of R#58](figures/reg_r58.png)
 
 - Reset value: 7FFh for WEY as a whole
 
@@ -861,6 +774,8 @@ The window registers (R#51–R#58) specify the start point and end point of the 
 ### Unimplemented Registers (R#59–R#63)
 
 R#59–R#63 are not implemented. Writes to these numbers are ignored.
+
+
 
 # Chapter 4 Status Registers in Detail
 
@@ -874,7 +789,7 @@ If S#10–S#15 is specified and read, FFh is always returned (see the final sect
 
 ### S#0
 
-![Bit layout of S#0](images/reg_s00.png)
+![Bit layout of S#0](figures/reg_s00.png)
 
 Side effect on read: **F, C, and 5S are cleared** (the value of 5TH is retained).
 
@@ -892,7 +807,7 @@ Note that if S#0 is read while F is 1 (while a frame interrupt is pending), 5S i
 
 ### S#1
 
-![Bit layout of S#1](images/reg_s01.png)
+![Bit layout of S#1](figures/reg_s01.png)
 
 The value of ID is `00010` in compatible mode (V58=1) and `00011` in extended mode (V58=0). This provides a means of determining whether the software is operating as the equivalent of a V9958, or in the extended mode of the V9968.
 
@@ -900,7 +815,7 @@ Side effect on read: **FH is cleared**.
 
 ### S#2
 
-![Bit layout of S#2](images/reg_s02.png)
+![Bit layout of S#2](figures/reg_s02.png)
 
 Side effect on read: None.
 
@@ -910,17 +825,17 @@ Bit3 and bit2 are always read as 1. Earlier documents did not describe these two
 
 ### S#3
 
-![Bit layout of S#3](images/reg_s03.png)
+![Bit layout of S#3](figures/reg_s03.png)
 
 This is the lower 8 bits of the X coordinate of the position where sprites collided with each other. The upper bits are in S#4. For the clearing of the coordinates, see the section on S#5.
 
 ### S#4
 
-![Bit layout of S#4](images/reg_s04.png)
+![Bit layout of S#4](figures/reg_s04.png)
 
 ### S#5
 
-![Bit layout of S#5](images/reg_s05.png)
+![Bit layout of S#5](figures/reg_s05.png)
 
 This is the lower 8 bits of the Y coordinate of the position where sprites collided with each other. The upper bits are in S#6.
 
@@ -928,11 +843,11 @@ Side effect on read: **The collision coordinates (both X and Y) are cleared**. W
 
 ### S#6
 
-![Bit layout of S#6](images/reg_s06.png)
+![Bit layout of S#6](figures/reg_s06.png)
 
 ### S#7
 
-![Bit layout of S#7](images/reg_s07.png)
+![Bit layout of S#7](figures/reg_s07.png)
 
 A pixel value read by a POINT command or an LMCM command is stored in R#44, and is then read via this register, S#7.
 
@@ -940,13 +855,13 @@ Reading this register is used as the "read complete" signal for the transfer con
 
 ### S#8
 
-![Bit layout of S#8](images/reg_s08.png)
+![Bit layout of S#8](figures/reg_s08.png)
 
 The upper bits are in S#9. For the clearing of the BD flag, see the section on S#9.
 
 ### S#9
 
-![Bit layout of S#9](images/reg_s09.png)
+![Bit layout of S#9](figures/reg_s09.png)
 
 Side effect on read: **BD (S#2 bit4) is cleared**.
 
@@ -963,6 +878,8 @@ Finally, the relationship between the status flags and the interrupt output is s
 - A command completion interrupt source is present, and CEIE of R#20 is 1
 
 The occurrence state of each source can also be checked by reading Port#4 (see Chapter 2). To use the command completion interrupt, because CEIE is in R#20, LockExtReg must be released at Port#4 before R#20 is set.
+
+
 
 # Chapter 5 Screen Modes
 
@@ -1270,7 +1187,7 @@ Note that, because Graphic7 is a mode of SCREEN 7 and above, the physical layout
 
 The sample program `g7_demo.asm` is an example that displays all 256 colors of Graphic7. By dividing the screen into 8×8 blocks, varying green (G) with the block column, red (R) with the block row, and blue (B) with the four stripes within a block, all 256 color combinations can be viewed at a glance. Figure 5.1 shows the execution result.
 
-![Execution result of g7_demo.asm](images/sample_g7_demo.png)
+![Execution result of g7_demo.asm](figures/sample_g7_demo.png)
 
 Figure 5.1 Execution result of g7_demo.asm (the 256 colors of Graphic7)
 
@@ -1372,6 +1289,8 @@ Finally, the position of the V9968 with respect to the screen modes is summarize
 - RTL verification notes (v9968_registers.md): the mode selection bits and the M3 don't-care, the bit assignments of the base address registers, and the operation of the A17 mask.
 - MSX2 Technical Handbook (Technical Handbook wiki, "Chapter 3: MSX2 Screen Modes"): the specifications of the earlier modes (Text1 to Graphic7), the table layouts, and the formulas for obtaining an address from coordinates.
 - For the YJK encoding format, content that agrees among the earlier materials (Grauw, "The YJK screen modes", and published materials of the MSX2+ generation) was adopted.
+
+
 
 # Chapter 6 Sprites
 
@@ -1518,7 +1437,7 @@ Note that in Graphic7 (SCREEN 8) with EPAL = 0, the sprite colors are a fixed se
 
 The sample program `spr_demo.asm` is an example that displays four 16×16-dot balls in SCREEN 5 (Graphic 4, Sprite Mode 2). Figure 6.1 shows the execution result.
 
-![Execution result of spr_demo.asm](images/sample_spr_demo.png)
+![Execution result of spr_demo.asm](figures/sample_spr_demo.png)
 
 Figure 6.1 Execution result of spr_demo.asm (Sprite Mode 2)
 
@@ -1654,7 +1573,7 @@ When MGx = 0 is specified, the pattern is displayed enlarged to the maximum of 2
 
 The sample program `spr3_demo.asm` is an example in SCREEN 5 (Graphic 4, Sprite Mode 3) that uses two kinds of tiles, a 16×16-dot arrow and a ball, and sets a different display magnification, flip, and transparency for each plane. Figure 6.2 shows the execution result. The upper row shows the arrow displayed at ×1, ×2, and ×3; the lower left is a horizontal flip (RVX), the lower middle is a vertical flip (RVY), and on the right a ball is overlapped with TP = 2 (50% blend) on a magenta rectangle.
 
-![Execution result of spr3_demo.asm](images/sample_spr3_demo.png)
+![Execution result of spr3_demo.asm](figures/sample_spr3_demo.png)
 
 Figure 6.2 Execution result of spr3_demo.asm (Sprite Mode 3)
 
@@ -1724,6 +1643,8 @@ The S16 bit of R#20 is a sprite extension bit newly established in the V9968 (re
 ---
 
 The descriptions of the earlier modes (Mode 1 / 2) in this chapter were checked against Chapter 5 of the MSX2 Technical Handbook (TechHan wiki version). The Mode 3 and V9968 extension parts are based on the RTL (vdp_sprite_select_visible_planes.v, vdp_sprite_info_collect.v, vdp_sprite_makeup_pixel.v, vdp_timing_control_sprite.v, vdp_sprite_divide_table.v) and the verified register notes.
+
+
 
 # Chapter 7 Color Palette and Color Representation
 
@@ -1864,7 +1785,7 @@ However, in the Graphic7 RGB mode (EPAL = 0, YJK = 0), the palette is not used r
 
 The sample program `pal_demo.asm` is an example that rewrites all 16 entries of the palette with an original sequence of colors (a ramp) and draws 16 vertical bars on the screen, displaying the color of each entry as-is. The execution result is shown in Figure 7.1. Because the flow of colors is completely different from the initial palette, it can be seen that the palette rewrite is taking effect.
 
-![Execution result of pal_demo.asm](images/sample_pal_demo.png)
+![Execution result of pal_demo.asm](figures/sample_pal_demo.png)
 
 Figure 7.1 Execution result of pal_demo.asm (color bars using the rewritten palette)
 
@@ -1900,6 +1821,8 @@ HMMV is used to draw the bars, filling bar i with color i (see the source file f
 ---
 
 The palette write formats and RAM structure in this chapter are based on the verified register notes and the RTL (vdp_cpu_interface.v, vdp_color_palette.v, vdp_color_palette_ram.v). The table of initial colors was checked against the initial palette table of the MSX2 Technical Handbook (Technical Handbook wiki edition). The initialization range at reset (only the first 16 entries; entries 16–255 are undefined) is based on items confirmed by the author.
+
+
 
 # Chapter 8 VDP Commands
 
@@ -2027,7 +1950,94 @@ The high-speed transfer commands HMMC, YMMM, HMMM, and HMMV handle data in byte 
 
 ### 8.1.6 Register State at Command Completion
 
-As a command executes, the parameter registers such as SX, SY, DX, DY, NX, and NY are updated in step with the internal progress. The values at the time of completion reflect how far processing has proceeded, and the values that were set do not necessarily remain as-is (for example, NY is the number of remaining lines, and SY/DY point to the coordinate following the final line). For the next command, set the required parameters again each time. For the detailed update rules, see Table 4.7 in Chapter 6 of the *MSX2 Technical Handbook*.
+As a command executes, the values of the parameter registers are updated in step with the internal progress. The values at the time of completion reflect how far processing has proceeded, and the values that were set do not necessarily remain as-is. In the V9968, the state of the registers at command completion is defined for every command, as shown in Table 8.1 and Table 8.2. As a rule, set the required parameters again for each command; LFMM and LFMC, however, retain the values needed to draw consecutive characters (see below).
+
+The symbols in the tables have the following meanings.
+
+- "–": Not changed by the command processing (the value is retained)
+- "*": Updated to the coordinate at completion, or to the color that was read
+- "#": The NY register, holding the number of remaining lines. It is 0 when the command completes normally, and holds the remaining line count when the command was cut off at a screen edge
+- "(T)": The command itself does not change the value, but the last value the CPU transferred to R#44 remains
+- "F+": The internal font address of LFMM advances
+
+The values SY*, DY*, and NYB are computed as follows, where N is the number of dots executed in the Y direction (the number of lines processed) and SY0, DY0, and NY0 are the values at the start.
+
+- SY* = SY0 + N, DY* = DY0 + N … when the DIY bit is 0
+- SY* = SY0 − N, DY* = DY0 − N … when the DIY bit is 1
+- NYB = NY0 − N
+
+For LINE, N is the amount advanced in the Y direction (when the MAJ bit is 0, N = N − 1). Coordinates and counters wrap around at the bit width of each register.
+
+| Command | Code | SX | SY | DX | DY | NX | NY | CLR | CMR H | CMR L | ARG |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| HMMC | F0h | – | – | – | * | – | # | – (T) | Fh | – | – |
+| YMMM | E0h | – | * | – | * | – | # | – | Eh | – | – |
+| HMMM | D0h | – | * | – | * | – | # | – | Dh | – | – |
+| HMMV | C0h | – | – | – | * | – | # | – | Ch | – | – |
+| LMMC | B0h + LOP | – | – | – | * | – | # | – (T) | Bh | – | – |
+| LMCM | A0h | – | * | – | – | – | # | * | Ah | – | – |
+| LMMM | 90h + LOP | – | * | – | * | – | # | – | 9h | – | – |
+| LMMV | 80h + LOP | – | – | – | * | – | # | – | 8h | – | – |
+| LINE | 70h + LOP | – | – | – | * | – | – | – | 7h | – | – |
+| SRCH | 60h | – | – | – | – | – | – | – | 6h | – | – |
+| PSET | 50h + LOP | – | – | – | – | – | – | – | 5h | – | – |
+| POINT | 40h | – | – | – | – | – | – | * | 4h | – | – |
+| LRMM | 30h + LOP | – | – | – | * | – | # | – | 3h | – | – |
+| LFMC | 20h + LOP | – | – | * | – | – | – | – (T) | 2h | – | – |
+| LFMM | 10h + LOP | – | – | * | – | – | – | – | 1h | – | – |
+| STOP | 00h | – | – | – | – | – | – | – | 0 | – | – |
+
+Table 8.1 Register state at command completion (parameter registers)
+
+| Command | F | VX/VY | WSX–WEY |
+|---|---|---|---|
+| HMMC | – | – | – |
+| YMMM | – | – | – |
+| HMMM | – | – | – |
+| HMMV | – | – | – |
+| LMMC | – | – | – |
+| LMCM | – | – | – |
+| LMMM | – | – | – |
+| LMMV | – | – | – |
+| LINE | – | – | – |
+| SRCH | – | – | – |
+| PSET | – | – | – |
+| POINT | – | – | – |
+| LRMM | – | – | – |
+| LFMC | – | – | – |
+| LFMM | F+ | – | – |
+| STOP | – | – | – |
+
+Table 8.2 Register state at command completion (internal font address, rotation vectors, window coordinates)
+
+CMR H (the upper nibble of R#46) retains the upper nibble of the executed command code after completion (STOP leaves 0). CMR L (the logical operation) and ARG are not changed by command processing. The details of each item are as follows.
+
+**NY holds the number of remaining lines.** For the rectangular commands, NY is loaded with NY0 at the start, and the remaining count, decremented by one at each line end including the final line, is written back. When the specified number of lines has been processed, NY is 0. When NY0 = 0, 1024 lines (2048 lines in 256KB mode) are processed and NY becomes 0. When the command is cut off at a screen edge, NYB = NY0 − N remains (example: with HMMV, DY0 = 1, NY0 = 4, and DIY = 1, drawing ends after two lines, leaving NY = 2 and DY = 1023 (2047 in 256KB mode)). In 128KB mode with DIY = 0, DY wraps from 1023 to 0 and drawing continues, so the command is not cut off at the bottom edge of Y. POINT, PSET, SRCH, and LINE do not change NY.
+
+**In LMCM, SY advances on the final line as well.** Because the line counter and SY advance after the last line has been transferred, SY = SY0 ± N and NY = 0. The last color read remains in both CLR and S#7.
+
+**In POINT, the color read also remains in CLR.** At completion, the same read color as in S#7 is also placed in CLR (R#44). If a POINT starts outside the screen and ends without performing a read, both S#7 and CLR are retained. The X coordinate of the SRCH search result is obtained in S#8 and S#9.
+
+**CMR H does not return to 0.** At completion, the internal command code is not reset to 0, and the upper nibble of the executed command remains in CMR H. This behavior is intentionally retained so as not to break the Geo3D horizontal LINE optimization (which restores the internal code to LINE at completion). The CE flag, which indicates that a command is executing, always returns to 0, so a command is never executed twice. R#46 cannot be read back by the CPU, so this value cannot be observed from outside.
+
+**In LRMM, SY is retained.** SX and SY represent the reference start point, and the reference position of each line is computed from SX, SY and VX, VY, so the set values are retained after completion. DY and NY are updated to the completion coordinate and the remaining line count, as in LMMM. Internally, the reference Y advances as a fixed-point value, but at completion it returns to the SY value at the start (the same applies when XHR = 1 doubles the internal scale). VX, VY, and the window coordinates (WSX–WEY) are changed only by CPU writes. Note that when LRMM is interrupted by STOP, SY is not restored to its start value, so set SY again before re-executing LRMM. If the CPU writes R#34 or R#35 while the command is executing, that value becomes the new SY.
+
+**LFMM and LFMC retain the values for drawing consecutive characters.** In both commands, DY and NY are retained at their start values (DY0, NY0), and DX advances to the position of the next character. Therefore, after completion, the following characters can be drawn on the same line simply by rewriting R#46 (and R#44 as well for LFMC).
+
+- In LFMC, DX advances to DX0 ± NX (subtracted when DIX = 1, wrapping at 9 bits). If the command ends in the middle of a character at the X edge of the screen, DX does not advance. As in LMMC, the last pattern the CPU transferred to R#44 remains in CLR. The CLR value at the start (the foreground color) is saved internally, but to reuse the foreground color after completion, set R#44 again. Because one byte covers 8 dots, use NX of 8 or less.
+- In LFMM, DX advances character by character, and at completion DX = DX0 + 8 × NX (wrapping at 9 bits). If the command ends in the middle of a character at the X edge of the screen, DX does not advance for that character. LFMM does not use SX and SY as coordinates (they specify the font address, so SX and SY are "–" in Table 8.1).
+- Neither command changes the background color (R#12).
+
+**The internal font address (F) of LFMM is advanced only by LFMM.** F is an internal storage element set from R#32–R#34, separate from SX and SY. On normal completion, F = F0 + NX0 × H (wrapping at 18 bits; H is NY0, or 2048 lines when NY0 = 0, and 1024 lines in 128KB mode). Even when the top edge of Y is crossed with DIY = 1, the font lines that were not drawn are skipped and F advances to the next character. Writing to R#32–R#34 changes SX, SY, and F at the same time, but the advanced F is never written back to SX or SY. No other command changes F.
+
+**Handling of STOP.** STOP leaves DY, SY, and other registers updated partway as they are, and writes back the remaining line count of the interrupted command to NY. If no command is executing, NY is not changed. If a Geo3D HMMV optimization is interrupted by STOP, the NX and NY of the original LINE are restored. An added command (LRMM, LFMC, or LFMM) issued in compatible mode (V58 = 1) is also treated as STOP.
+
+**Common notes.**
+
+- "Retained" refers to the valid bits. At the start of a command, bits 11–9 of SX (except in LRMM) and bits 10–9 of NX are cleared to 0, and the unused upper bits of SY are also cleared to 0 according to the 128KB/256KB mode.
+- If the CPU writes a byte of NX or NY while a command is executing, that byte is protected from the write-back at completion, and the written value remains.
+- R#28–R#30 (the VRAM banks) are not changed by commands.
+- The Geo3D optimization that internally replaces a horizontal LINE with HMMV is not a new command and is included in LINE in the tables. This optimization retains DY and, at completion, restores the NX and NY of LINE and the internal command type.
 
 ## 8.2 HMMC (High-Speed CPU → VRAM Transfer)
 
@@ -2038,7 +2048,7 @@ As a command executes, the parameter registers such as SX, SY, DX, DY, NX, and N
 | Logical operation | Cannot be specified |
 | Parameters used | DX, DY, NX, NY, CLR, ARG (DIX, DIY) |
 
-![Coordinate relationship of HMMC](images/cmd_hmmc.png)
+![Coordinate relationship of HMMC](figures/cmd_hmmc.png)
 
 Figure 8.1 Coordinate relationship of HMMC
 
@@ -2055,7 +2065,7 @@ The procedure is as follows. First set the parameters, and, **after writing only
 | Logical operation | Cannot be specified |
 | Parameters used | SY, DX, DY, NY, ARG (DIX, DIY) |
 
-![Coordinate relationship of YMMM](images/cmd_ymmm.png)
+![Coordinate relationship of YMMM](figures/cmd_ymmm.png)
 
 Figure 8.2 Coordinate relationship of YMMM
 
@@ -2070,7 +2080,7 @@ Transfers data within VRAM in the Y direction in byte units, keeping the same X 
 | Logical operation | Cannot be specified |
 | Parameters used | SX, SY, DX, DY, NX, NY, ARG |
 
-![Coordinate relationship of HMMM](images/cmd_hmmm.png)
+![Coordinate relationship of HMMM](figures/cmd_hmmm.png)
 
 Figure 8.3 Coordinate relationship of HMMM
 
@@ -2085,7 +2095,7 @@ Transfers the data in a specified area of VRAM to another area of VRAM in byte u
 | Logical operation | Cannot be specified |
 | Parameters used | DX, DY, NX, NY, CLR, ARG |
 
-![Coordinate relationship of HMMV](images/cmd_hmmv.png)
+![Coordinate relationship of HMMV](figures/cmd_hmmv.png)
 
 Figure 8.4 Coordinate relationship of HMMV
 
@@ -2099,7 +2109,7 @@ Fills a specified area of VRAM with the byte data set in R#44 (CLR). CLR is not 
 | Transfer unit | Dot |
 | Parameters used | DX, DY, NX, NY, CLR, ARG |
 
-![Coordinate relationship of LMMC](images/cmd_lmmc.png)
+![Coordinate relationship of LMMC](figures/cmd_lmmc.png)
 
 Figure 8.5 Coordinate relationship of LMMC
 
@@ -2115,7 +2125,7 @@ The procedure is the same as for HMMC: write the first byte to R#44 and then wri
 | Transfer unit | Dot |
 | Parameters used | SX, SY, NX, NY, ARG |
 
-![Coordinate relationship of LMCM](images/cmd_lmcm.png)
+![Coordinate relationship of LMCM](figures/cmd_lmcm.png)
 
 Figure 8.6 Coordinate relationship of LMCM
 
@@ -2131,7 +2141,7 @@ Note that the conventional practice is to read S#7 once before starting the read
 | Transfer unit | Dot |
 | Parameters used | SX, SY, DX, DY, NX, NY, ARG |
 
-![Coordinate relationship of LMMM](images/cmd_lmmm.png)
+![Coordinate relationship of LMMM](figures/cmd_lmmm.png)
 
 Figure 8.7 Coordinate relationship of LMMM
 
@@ -2145,7 +2155,7 @@ Transfers the data in a specified area of VRAM to another area of VRAM in dot un
 | Transfer unit | Dot |
 | Parameters used | DX, DY, NX, NY, CLR, ARG |
 
-![Coordinate relationship of LMMV](images/cmd_lmmv.png)
+![Coordinate relationship of LMMV](figures/cmd_lmmv.png)
 
 Figure 8.8 Coordinate relationship of LMMV
 
@@ -2159,7 +2169,7 @@ Fills a specified area of VRAM with the color code in R#44 (CLR) in dot units. A
 | Transfer unit | Dot |
 | Parameters used | DX, DY, NX (long side), NY (short side), CLR, ARG (MAJ, DIX, DIY) |
 
-![Coordinate relationship of LINE](images/cmd_line.png)
+![Coordinate relationship of LINE](figures/cmd_line.png)
 
 Figure 8.9 Coordinate relationship of LINE
 
@@ -2174,7 +2184,7 @@ Draws a straight line starting at (DX, DY). The straight line is specified by th
 | Parameters used | SX, SY, CLR, ARG (DIX, EQ) |
 | Result | BD bit of S#2, S#8, S#9 |
 
-![Coordinate relationship of SRCH](images/cmd_srch.png)
+![Coordinate relationship of SRCH](figures/cmd_srch.png)
 
 Figure 8.10 Coordinate relationship of SRCH
 
@@ -2190,7 +2200,7 @@ After the command ends, if the BD bit (bit 4) of S#2 is 1, it indicates that a d
 | Transfer unit | Dot |
 | Parameters used | DX, DY, CLR, ARG |
 
-![Coordinate relationship of PSET](images/cmd_pset.png)
+![Coordinate relationship of PSET](figures/cmd_pset.png)
 
 Figure 8.11 Coordinate relationship of PSET
 
@@ -2205,7 +2215,7 @@ Draws the single dot at (DX, DY) in the color of CLR.
 | Parameters used | SX, SY |
 | Result | S#7 |
 
-![Coordinate relationship of POINT](images/cmd_point.png)
+![Coordinate relationship of POINT](figures/cmd_point.png)
 
 Figure 8.12 Coordinate relationship of POINT
 
@@ -2220,7 +2230,7 @@ Reads the color code of the single dot at (SX, SY). After the command ends, the 
 | Parameters used | SX, SY, DX, DY, NX, NY, CLR, ARG, VX (R#47, R#48), VY (R#49, R#50), WSX (R#51, R#52), WSY (R#53, R#54), WEX (R#55, R#56), WEY (R#57, R#58) |
 | Conditions of use | Valid only in extended mode (V58=0) |
 
-![Coordinate relationship of LRMM](images/cmd_lrmm.png)
+![Coordinate relationship of LRMM](figures/cmd_lrmm.png)
 
 Figure 8.13 Coordinate relationship of LRMM
 
@@ -2243,7 +2253,7 @@ When bit 6 of the argument register R#45 (XHR, in extended mode) is set to 1, LR
 | Parameters used | DX, DY, NX, NY, ARG, foreground color (R#44), background color (R#12) |
 | Conditions of use | Valid only in extended mode (V58=0) |
 
-![Coordinate relationship of LFMC](images/cmd_lfmc.png)
+![Coordinate relationship of LFMC](figures/cmd_lfmc.png)
 
 Figure 8.14 Coordinate relationship of LFMC
 
@@ -2267,7 +2277,7 @@ If NX is not a multiple of 8, the fractional dots also consume one byte from the
 | Parameters used | Font address (R#32–R#34), DX, DY, NX (number of characters), NY, ARG, foreground color (R#44), background color (R#12) |
 | Conditions of use | Valid only in extended mode (V58=0) |
 
-![Coordinate relationship of LFMM](images/cmd_lfmm.png)
+![Coordinate relationship of LFMM](figures/cmd_lfmm.png)
 
 Figure 8.15 Coordinate relationship of LFMM
 
@@ -2295,7 +2305,7 @@ In extended mode, the codes 0011, 0010, and 0001, which were conventionally trea
 
 The sample program `cmd_demo.asm` is an example that draws figures using only VDP commands in SCREEN 5 (Graphic 4). The flow of processing is: (1) fill the whole screen and a rectangle with HMMV, (2) draw a frame and diagonals on the rectangle with LINE, and (3) copy the completed rectangle to another location with LMMM. The execution result is shown in Figure 8.16. The rectangle duplicated at the lower right directly shows the operation of LMMM.
 
-![Execution result of cmd_demo.asm](images/sample_cmd_demo.png)
+![Execution result of cmd_demo.asm](figures/sample_cmd_demo.png)
 
 Figure 8.16 Execution result of cmd_demo.asm (HMMV, LINE, LMMM)
 
@@ -2392,7 +2402,7 @@ After each command, the CE bit of S#2 is polled to wait for completion (`vdp_wai
 
 The sample program `lrmm_demo.asm` is an example that draws a 64×64-dot figure in SCREEN 5 (Graphic 4) and copies it to the right, rotated by 30 degrees with LRMM. The execution result is shown in Figure 8.17. On the left is the source figure, at the upper right is the rotated copy, and below is an ordinary LMMM copy for comparison. From the positions of the yellow block at the upper left of the figure and the green block at the lower right, it can be seen that the figure has been rotated 30 degrees clockwise.
 
-![Execution result of lrmm_demo.asm](images/sample_lrmm_demo.png)
+![Execution result of lrmm_demo.asm](figures/sample_lrmm_demo.png)
 
 Figure 8.17 Execution result of lrmm_demo.asm (30-degree rotation with LRMM)
 
@@ -2459,7 +2469,7 @@ The rotation vector and window settings are the parts specific to LRMM. For θ =
 
 The sample program `lfmm_demo.asm` is an example that draws the character string "V9968" with LFMM from 8×16-dot font data placed in VRAM, in SCREEN 5 (Graphic 4). The execution result is shown in Figure 8.18. The lower row is the same character string drawn with DIY = 1, flipped vertically.
 
-![Execution result of lfmm_demo.asm](images/sample_lfmm_demo.png)
+![Execution result of lfmm_demo.asm](figures/sample_lfmm_demo.png)
 
 Figure 8.18 Execution result of lfmm_demo.asm (font drawing and vertical flip with LFMM)
 
@@ -2509,6 +2519,8 @@ The LFMM parameter settings are as follows. **R#32–R#34 are not coordinates bu
 ```
 
 The second time, DIY of ARG is set to 1 and the string is drawn at (28, 144). With DIY = 1, drawing proceeds upward from DY, so DY is the lower end of the flipped character string (the point that the parameters are set again for each command is the same as for the other commands).
+
+
 
 # Chapter 9 Geo3D
 
@@ -2844,7 +2856,7 @@ As a measure of the performance, it is stated that an object of 255 faces can be
 
 A minimal program that uses the phase-2 engine is shown. It is a.COM program for MSX-DOS: the model of a cube is loaded only once at the beginning, and afterwards only a rotation matrix (24 bytes) and RUN are sent for each frame. Clearing the back page (HMMV) and flipping the page (R#2) are done on the Z80 side. The ports assume the DIP switch at the 88h setting (the VDP at 88h–8Bh, Geo3D at 8Dh / 8Fh); at the 98h setting, add 10h to each port. A key press ends the program. The complete source is in samples/v9968/geo3d_cube.asm and can be assembled with zma (it is based on geo3d_demo.asm by Alex Moncks, minimized for this manual).
 
-![Execution result of the sample program](images/sample_geo3d_cube.png)
+![Execution result of the sample program](figures/sample_geo3d_cube.png)
 
 Figure 9.1 Execution result of the sample program (a rotating cube, SCREEN 5)
 
@@ -3136,7 +3148,7 @@ This chapter was written by checking the Geo3D documents by alexmoncks (the READ
 
 The official Geo3D demo ROM is included in the V9968_Cartridge fork by alexmoncks (branch `geo3d-v2.0`), in `geo3d/rom/`. It is a ROM that plays 6 kinds of demos in a loop. A version that places the V9968 at port 98h (GEO3D_98.ROM) was generated with the build script (`build_rom.py --base 0x98`), and Figures 9.2 and 9.3 show the result of executing it on openMSX with Geo3D emulation (machine C-BIOS_V9968_JP, extension geo3d). When "1" (English) is selected in the language menu right after startup, the demos begin, and the space key advances to the next demo.
 
-![Execution result of the official demo ROM (wireframe)](images/sample_geo3d_wire.png)
+![Execution result of the official demo ROM (wireframe)](figures/sample_geo3d_wire.png)
 
 Figure 9.2 Execution result of the official demo ROM (wireframe: a cube and an octahedron)
 
@@ -3161,11 +3173,13 @@ jr c, geo_wait; bit0 = RUN busy
 
 The matrices are prepared as a table for one full turn, and the Z80 performs no coordinate computation at all. The transformation of the vertices, the clipping of the edges, and the generation of the series of LINE commands are all performed by Geo3D. Without Geo3D, the Z80 would have to write about 312 VDP command register values per frame, in addition to the vertex computation (according to the documentation of the demo).
 
-![Execution result of the official demo ROM (filled faces)](images/sample_geo3d_faces.png)
+![Execution result of the official demo ROM (filled faces)](figures/sample_geo3d_faces.png)
 
 Figure 9.3 Execution result of the official demo ROM (filled faces: the three-dimensional letters "GEO3D")
 
 Figure 9.3 is the filled-face demo. Geo3D is in charge of the removal of back faces, the shading by the light direction, the sorting of the drawing order from the far faces, and the filling of the faces with horizontal LINEs, and the amount sent by the host side is unchanged at about 30 bytes per frame, the same as for the wireframe. After this, demos of filled faces with textures, panning / zooming, and flying in follow.
+
+
 
 # Chapter 10 Interrupts
 
@@ -3280,7 +3294,7 @@ A design that does not use interrupts is also possible. Frame synchronization ca
 
 The sample program `line_demo.asm` is an example that polls the line interrupt flag (FH) and switches the palette between the upper and lower parts of the screen. In SCREEN 5 (Graphic 4), the 16 colors of the palette are drawn as vertical bands, and R#19 is set to line 106, at the center of the screen. The execution result is shown in Figure 10.1. It can be seen that the color of each band differs between the upper half and the lower half (because the border color also goes through the palette, its color also differs between the top and bottom).
 
-![Execution result of line_demo.asm](images/sample_line_demo.png)
+![Execution result of line_demo.asm](figures/sample_line_demo.png)
 
 Figure 10.1 Execution result of line_demo.asm (palette switching at line 106)
 
@@ -3335,6 +3349,8 @@ For the 2nd VDP, the base address is 88h. Because 0006h / 0007h of the work area
 > The vertical synchronization of the built-in VDP and the 2nd VDP does not necessarily coincide. The timing at which H.TIMI is called is aligned with the vertical synchronization of the built-in VDP, and there is no guarantee that the 2nd VDP has entered its vertical blanking interval at that point. If screen updates on the 2nd VDP side are to be aligned with the blanking interval, do not use H.TIMI as a guide; instead, handle the 2nd VDP's own frame interrupt in H.KEYI. The interrupt source must be cleared either by using Port#4 or by reading the status registers.
 >
 > The same applies to line interrupts: the built-in VDP and the 2nd VDP do not necessarily display the same line, so even if the line interrupt of the built-in VDP is used to control the 2nd VDP, or the other way around, note that there is no guarantee that the control will take place at the specified line.
+
+
 
 # Chapter 11 VRAM Access and Timing
 
@@ -3422,6 +3438,8 @@ Setting the HS bit (bit0) of R#20 to 1 selects the high-speed mode (see Chapter 
 
 [TBC] The concrete effect of the high-speed mode on command execution times and on the timing of CPU access (which operations become how much faster) has not been established in the current materials.
 
+
+
 # Chapter 12 Compatibility and Migration Notes
 
 The V9968 inherits the lineage of the VDPs that developed from the TMS9918 through the V9938 to the V9958, and it is designed on the basic policy that existing software operates as it is. This chapter summarizes the differences in operation from earlier chips, the scope of the "9958 Compatible mode" (V9958 compatible mode), and the points to note when running existing software on the V9968 and when extending software for the V9968.
@@ -3500,6 +3518,8 @@ When extending or porting existing software for the V9968, check the following p
 6. **If it is used as a second VDP (2nd VDP), note the differences in the base address and the interrupt hook**: the base address is 88h, and the vertical synchronization interrupt must also be handled in the H.KEYI hook. It is not necessarily coincident with the vertical synchronization of the built-in VDP (see Section 10.8).
 
 The [TBC] items that remain in each chapter of this manual (FIL / ILNS / SVNS of R#20, FG4 / XHR of R#45, the scope of application of the window registers, the CPU access timing during the display period, and so on) will be reflected in a future edition as soon as the specifications are established. Do not create software that depends on items that have not yet been established.
+
+
 
 # Appendix
 
@@ -3595,187 +3615,187 @@ The bit layout of each register is shown in numerical order. The diagrams are re
 
 #### R#0 Mode0
 
-![Bit layout diagram of R#0](images/rega_r00.png)
+![Bit layout diagram of R#0](figures/rega_r00.png)
 
 Figure A.1 Bit layout of R#0 Mode0
 
 #### R#1 Mode1
 
-![Bit layout diagram of R#1](images/rega_r01.png)
+![Bit layout diagram of R#1](figures/rega_r01.png)
 
 Figure A.2 Bit layout of R#1 Mode1
 
 #### R#2 Pattern Name Table Address
 
-![Bit layout diagram of R#2](images/rega_r02.png)
+![Bit layout diagram of R#2](figures/rega_r02.png)
 
 Figure A.3 Bit layout of R#2 Pattern Name Table Address
 
 #### R#3 Color Table Address (L)
 
-![Bit layout diagram of R#3](images/rega_r03.png)
+![Bit layout diagram of R#3](figures/rega_r03.png)
 
 Figure A.4 Bit layout of R#3 Color Table Address (L)
 
 #### R#4 Pattern Generator Table Address
 
-![Bit layout diagram of R#4](images/rega_r04.png)
+![Bit layout diagram of R#4](figures/rega_r04.png)
 
 Figure A.5 Bit layout of R#4 Pattern Generator Table Address
 
 #### R#5 Sprite Attribute Table Address (L)
 
-![Bit layout diagram of R#5](images/rega_r05.png)
+![Bit layout diagram of R#5](figures/rega_r05.png)
 
 Figure A.6 Bit layout of R#5 Sprite Attribute Table Address (L)
 
 #### R#6 Sprite Pattern Generator Table Address
 
-![Bit layout diagram of R#6](images/rega_r06.png)
+![Bit layout diagram of R#6](figures/rega_r06.png)
 
 Figure A.7 Bit layout of R#6 Sprite Pattern Generator Table Address
 
 #### R#7 Background Color
 
-![Bit layout diagram of R#7](images/rega_r07.png)
+![Bit layout diagram of R#7](figures/rega_r07.png)
 
 Figure A.8 Bit layout of R#7 Background Color
 
 #### R#8 Mode2
 
-![Bit layout diagram of R#8](images/rega_r08.png)
+![Bit layout diagram of R#8](figures/rega_r08.png)
 
 Figure A.9 Bit layout of R#8 Mode2
 
 #### R#9 Mode3
 
-![Bit layout diagram of R#9](images/rega_r09.png)
+![Bit layout diagram of R#9](figures/rega_r09.png)
 
 Figure A.10 Bit layout of R#9 Mode3
 
 #### R#10 Color Table Address (H)
 
-![Bit layout diagram of R#10](images/rega_r10.png)
+![Bit layout diagram of R#10](figures/rega_r10.png)
 
 Figure A.11 Bit layout of R#10 Color Table Address (H)
 
 #### R#11 Sprite Attribute Table Address (H)
 
-![Bit layout diagram of R#11](images/rega_r11.png)
+![Bit layout diagram of R#11](figures/rega_r11.png)
 
 Figure A.12 Bit layout of R#11 Sprite Attribute Table Address (H)
 
 #### R#12 Text Color / Back Color
 
-![Bit layout diagram of R#12](images/rega_r12.png)
+![Bit layout diagram of R#12](figures/rega_r12.png)
 
 Figure A.13 Bit layout of R#12 Text Color / Back Color
 
 #### R#13 Blinking Period
 
-![Bit layout diagram of R#13](images/rega_r13.png)
+![Bit layout diagram of R#13](figures/rega_r13.png)
 
 Figure A.14 Bit layout of R#13 Blinking Period
 
 #### R#14 VRAM Access Base Address
 
-![Bit layout diagram of R#14](images/rega_r14.png)
+![Bit layout diagram of R#14](figures/rega_r14.png)
 
 Figure A.15 Bit layout of R#14 VRAM Access Base Address
 
 #### R#15 Status Register Pointer
 
-![Bit layout diagram of R#15](images/rega_r15.png)
+![Bit layout diagram of R#15](figures/rega_r15.png)
 
 Figure A.16 Bit layout of R#15 Status Register Pointer
 
 #### R#16 Color Palette Pointer
 
-![Bit layout diagram of R#16](images/rega_r16.png)
+![Bit layout diagram of R#16](figures/rega_r16.png)
 
 Figure A.17 Bit layout of R#16 Color Palette Pointer
 
 #### R#17 Control Register Pointer
 
-![Bit layout diagram of R#17](images/rega_r17.png)
+![Bit layout diagram of R#17](figures/rega_r17.png)
 
 Figure A.18 Bit layout of R#17 Control Register Pointer
 
 #### R#18 Display Adjust
 
-![Bit layout diagram of R#18](images/rega_r18.png)
+![Bit layout diagram of R#18](figures/rega_r18.png)
 
 Figure A.19 Bit layout of R#18 Display Adjust
 
 #### R#19 Interrupt Line
 
-![Bit layout diagram of R#19](images/rega_r19.png)
+![Bit layout diagram of R#19](figures/rega_r19.png)
 
 Figure A.20 Bit layout of R#19 Interrupt Line
 
 #### R#20 Mode5
 
-![Bit layout diagram of R#20](images/rega_r20.png)
+![Bit layout diagram of R#20](figures/rega_r20.png)
 
 Figure A.21 Bit layout of R#20 Mode5
 
 #### R#21 Mode6
 
-![Bit layout diagram of R#21](images/rega_r21.png)
+![Bit layout diagram of R#21](figures/rega_r21.png)
 
 Figure A.22 Bit layout of R#21 Mode6
 
 #### R#22 (Not Implemented)
 
-![Bit layout diagram of R#22](images/rega_r22.png)
+![Bit layout diagram of R#22](figures/rega_r22.png)
 
 Figure A.23 Bit layout of R#22 (Not Implemented)
 
 #### R#23 Display Offset
 
-![Bit layout diagram of R#23](images/rega_r23.png)
+![Bit layout diagram of R#23](figures/rega_r23.png)
 
 Figure A.24 Bit layout of R#23 Display Offset
 
 #### R#24 (Not Implemented)
 
-![Bit layout diagram of R#24](images/rega_r24.png)
+![Bit layout diagram of R#24](figures/rega_r24.png)
 
 Figure A.25 Bit layout of R#24 (Not Implemented)
 
 #### R#25 Mode4
 
-![Bit layout diagram of R#25](images/rega_r25.png)
+![Bit layout diagram of R#25](figures/rega_r25.png)
 
 Figure A.26 Bit layout of R#25 Mode4
 
 #### R#26 Horizontal Offset (By Character)
 
-![Bit layout diagram of R#26](images/rega_r26.png)
+![Bit layout diagram of R#26](figures/rega_r26.png)
 
 Figure A.27 Bit layout of R#26 Horizontal Offset (By Character)
 
 #### R#27 Horizontal Offset (By Dot)
 
-![Bit layout diagram of R#27](images/rega_r27.png)
+![Bit layout diagram of R#27](figures/rega_r27.png)
 
 Figure A.28 Bit layout of R#27 Horizontal Offset (By Dot)
 
 #### R#28 CPU Access Bank
 
-![Bit layout diagram of R#28](images/rega_r28.png)
+![Bit layout diagram of R#28](figures/rega_r28.png)
 
 Figure A.29 Bit layout of R#28 CPU Access Bank
 
 #### R#29 Display Bank
 
-![Bit layout diagram of R#29](images/rega_r29.png)
+![Bit layout diagram of R#29](figures/rega_r29.png)
 
 Figure A.30 Bit layout of R#29 Display Bank
 
 #### R#30 Command Bank
 
-![Bit layout diagram of R#30](images/rega_r30.png)
+![Bit layout diagram of R#30](figures/rega_r30.png)
 
 Figure A.31 Bit layout of R#30 Command Bank
 
@@ -3785,163 +3805,163 @@ The bit layouts of the command-related registers are shown in numerical order. T
 
 #### R#32 Source X (L)
 
-![Bit layout diagram of R#32](images/rega_r32.png)
+![Bit layout diagram of R#32](figures/rega_r32.png)
 
 Figure A.32 Bit layout of R#32 Source X (L)
 
 #### R#33 Source X (H)
 
-![Bit layout diagram of R#33](images/rega_r33.png)
+![Bit layout diagram of R#33](figures/rega_r33.png)
 
 Figure A.33 Bit layout of R#33 Source X (H)
 
 #### R#34 Source Y (L)
 
-![Bit layout diagram of R#34](images/rega_r34.png)
+![Bit layout diagram of R#34](figures/rega_r34.png)
 
 Figure A.34 Bit layout of R#34 Source Y (L)
 
 #### R#35 Source Y (H)
 
-![Bit layout diagram of R#35](images/rega_r35.png)
+![Bit layout diagram of R#35](figures/rega_r35.png)
 
 Figure A.35 Bit layout of R#35 Source Y (H)
 
 #### R#36 Destination X (L)
 
-![Bit layout diagram of R#36](images/rega_r36.png)
+![Bit layout diagram of R#36](figures/rega_r36.png)
 
 Figure A.36 Bit layout of R#36 Destination X (L)
 
 #### R#37 Destination X (H)
 
-![Bit layout diagram of R#37](images/rega_r37.png)
+![Bit layout diagram of R#37](figures/rega_r37.png)
 
 Figure A.37 Bit layout of R#37 Destination X (H)
 
 #### R#38 Destination Y (L)
 
-![Bit layout diagram of R#38](images/rega_r38.png)
+![Bit layout diagram of R#38](figures/rega_r38.png)
 
 Figure A.38 Bit layout of R#38 Destination Y (L)
 
 #### R#39 Destination Y (H)
 
-![Bit layout diagram of R#39](images/rega_r39.png)
+![Bit layout diagram of R#39](figures/rega_r39.png)
 
 Figure A.39 Bit layout of R#39 Destination Y (H)
 
 #### R#40 Number Of Dots X (L)
 
-![Bit layout diagram of R#40](images/rega_r40.png)
+![Bit layout diagram of R#40](figures/rega_r40.png)
 
 Figure A.40 Bit layout of R#40 Number Of Dots X (L)
 
 #### R#41 Number Of Dots X (H)
 
-![Bit layout diagram of R#41](images/rega_r41.png)
+![Bit layout diagram of R#41](figures/rega_r41.png)
 
 Figure A.41 Bit layout of R#41 Number Of Dots X (H)
 
 #### R#42 Number Of Dots Y (L)
 
-![Bit layout diagram of R#42](images/rega_r42.png)
+![Bit layout diagram of R#42](figures/rega_r42.png)
 
 Figure A.42 Bit layout of R#42 Number Of Dots Y (L)
 
 #### R#43 Number Of Dots Y (H)
 
-![Bit layout diagram of R#43](images/rega_r43.png)
+![Bit layout diagram of R#43](figures/rega_r43.png)
 
 Figure A.43 Bit layout of R#43 Number Of Dots Y (H)
 
 #### R#44 Color
 
-![Bit layout diagram of R#44](images/rega_r44.png)
+![Bit layout diagram of R#44](figures/rega_r44.png)
 
 Figure A.44 Bit layout of R#44 Color
 
 #### R#45 Argument
 
-![Bit layout diagram of R#45](images/rega_r45.png)
+![Bit layout diagram of R#45](figures/rega_r45.png)
 
 Figure A.45 Bit layout of R#45 Argument
 
 #### R#46 Command
 
-![Bit layout diagram of R#46](images/rega_r46.png)
+![Bit layout diagram of R#46](figures/rega_r46.png)
 
 Figure A.46 Bit layout of R#46 Command
 
 #### R#47 Rotation Vector X (L)
 
-![Bit layout diagram of R#47](images/rega_r47.png)
+![Bit layout diagram of R#47](figures/rega_r47.png)
 
 Figure A.47 Bit layout of R#47 Rotation Vector X (L)
 
 #### R#48 Rotation Vector X (H)
 
-![Bit layout diagram of R#48](images/rega_r48.png)
+![Bit layout diagram of R#48](figures/rega_r48.png)
 
 Figure A.48 Bit layout of R#48 Rotation Vector X (H)
 
 #### R#49 Rotation Vector Y (L)
 
-![Bit layout diagram of R#49](images/rega_r49.png)
+![Bit layout diagram of R#49](figures/rega_r49.png)
 
 Figure A.49 Bit layout of R#49 Rotation Vector Y (L)
 
 #### R#50 Rotation Vector Y (H)
 
-![Bit layout diagram of R#50](images/rega_r50.png)
+![Bit layout diagram of R#50](figures/rega_r50.png)
 
 Figure A.50 Bit layout of R#50 Rotation Vector Y (H)
 
 #### R#51 Window Start X (L)
 
-![Bit layout diagram of R#51](images/rega_r51.png)
+![Bit layout diagram of R#51](figures/rega_r51.png)
 
 Figure A.51 Bit layout of R#51 Window Start X (L)
 
 #### R#52 Window Start X (H)
 
-![Bit layout diagram of R#52](images/rega_r52.png)
+![Bit layout diagram of R#52](figures/rega_r52.png)
 
 Figure A.52 Bit layout of R#52 Window Start X (H)
 
 #### R#53 Window Start Y (L)
 
-![Bit layout diagram of R#53](images/rega_r53.png)
+![Bit layout diagram of R#53](figures/rega_r53.png)
 
 Figure A.53 Bit layout of R#53 Window Start Y (L)
 
 #### R#54 Window Start Y (H)
 
-![Bit layout diagram of R#54](images/rega_r54.png)
+![Bit layout diagram of R#54](figures/rega_r54.png)
 
 Figure A.54 Bit layout of R#54 Window Start Y (H)
 
 #### R#55 Window End X (L)
 
-![Bit layout diagram of R#55](images/rega_r55.png)
+![Bit layout diagram of R#55](figures/rega_r55.png)
 
 Figure A.55 Bit layout of R#55 Window End X (L)
 
 #### R#56 Window End X (H)
 
-![Bit layout diagram of R#56](images/rega_r56.png)
+![Bit layout diagram of R#56](figures/rega_r56.png)
 
 Figure A.56 Bit layout of R#56 Window End X (H)
 
 #### R#57 Window End Y (L)
 
-![Bit layout diagram of R#57](images/rega_r57.png)
+![Bit layout diagram of R#57](figures/rega_r57.png)
 
 Figure A.57 Bit layout of R#57 Window End Y (L)
 
 #### R#58 Window End Y (H)
 
-![Bit layout diagram of R#58](images/rega_r58.png)
+![Bit layout diagram of R#58](figures/rega_r58.png)
 
 Figure A.58 Bit layout of R#58 Window End Y (H)
 
@@ -4037,61 +4057,61 @@ The bit layout of each status register is shown in numerical order. The diagrams
 
 #### S#0
 
-![Bit layout diagram of S#0](images/rega_s00.png)
+![Bit layout diagram of S#0](figures/rega_s00.png)
 
 Figure B.1 Bit layout of S#0
 
 #### S#1
 
-![Bit layout diagram of S#1](images/rega_s01.png)
+![Bit layout diagram of S#1](figures/rega_s01.png)
 
 Figure B.2 Bit layout of S#1
 
 #### S#2
 
-![Bit layout diagram of S#2](images/rega_s02.png)
+![Bit layout diagram of S#2](figures/rega_s02.png)
 
 Figure B.3 Bit layout of S#2
 
 #### S#3
 
-![Bit layout diagram of S#3](images/rega_s03.png)
+![Bit layout diagram of S#3](figures/rega_s03.png)
 
 Figure B.4 Bit layout of S#3
 
 #### S#4
 
-![Bit layout diagram of S#4](images/rega_s04.png)
+![Bit layout diagram of S#4](figures/rega_s04.png)
 
 Figure B.5 Bit layout of S#4
 
 #### S#5
 
-![Bit layout diagram of S#5](images/rega_s05.png)
+![Bit layout diagram of S#5](figures/rega_s05.png)
 
 Figure B.6 Bit layout of S#5
 
 #### S#6
 
-![Bit layout diagram of S#6](images/rega_s06.png)
+![Bit layout diagram of S#6](figures/rega_s06.png)
 
 Figure B.7 Bit layout of S#6
 
 #### S#7
 
-![Bit layout diagram of S#7](images/rega_s07.png)
+![Bit layout diagram of S#7](figures/rega_s07.png)
 
 Figure B.8 Bit layout of S#7
 
 #### S#8
 
-![Bit layout diagram of S#8](images/rega_s08.png)
+![Bit layout diagram of S#8](figures/rega_s08.png)
 
 Figure B.9 Bit layout of S#8
 
 #### S#9
 
-![Bit layout diagram of S#9](images/rega_s09.png)
+![Bit layout diagram of S#9](figures/rega_s09.png)
 
 Figure B.10 Bit layout of S#9
 
@@ -4131,7 +4151,7 @@ Notes on how to read each table are collected below.
 
 Sprites and the color table are not used. This is the simplest layout, with only the pattern name table and the pattern generator table.
 
-![Standard VRAM map of Text1](images/vrammap_t1.png)
+![Standard VRAM map of Text1](figures/vrammap_t1.png)
 
 Figure C.1 Standard VRAM map of Text1
 
@@ -4147,7 +4167,7 @@ Figure C.1 Standard VRAM map of Text1
 
 A blink table is added. The standard number of rows is 24 (LN = 0 in R#9). If LN = 1 (26.5 rows) is set, the pattern name table expands to 2,160 bytes (00000h–0086Fh) and the blink table to 270 bytes (00800h–0090Dh).
 
-![Standard VRAM map of Text2](images/vrammap_t2.png)
+![Standard VRAM map of Text2](figures/vrammap_t2.png)
 
 Figure C.2 Standard VRAM map of Text2
 
@@ -4166,7 +4186,7 @@ Figure C.2 Standard VRAM map of Text2
 
 The pattern generator table also serves as the color data. There is no color table. Sprites are in Mode 1.
 
-![Standard VRAM map of Multicolor](images/vrammap_mc.png)
+![Standard VRAM map of Multicolor](figures/vrammap_mc.png)
 
 Figure C.3 Standard VRAM map of Multicolor
 
@@ -4185,7 +4205,7 @@ Figure C.3 Standard VRAM map of Multicolor
 
 Sprites are in Mode 1. The color table is small, at 32 bytes, and there is a large unused region immediately after the pattern name table.
 
-![Standard VRAM map of Graphic1](images/vrammap_g1.png)
+![Standard VRAM map of Graphic1](figures/vrammap_g1.png)
 
 Figure C.4 Standard VRAM map of Graphic1
 
@@ -4206,7 +4226,7 @@ Figure C.4 Standard VRAM map of Graphic1
 
 The pattern generator table and the color table have a three-bank configuration, each using 6,144 bytes. Sprites are in Mode 1.
 
-![Standard VRAM map of Graphic2](images/vrammap_g2.png)
+![Standard VRAM map of Graphic2](figures/vrammap_g2.png)
 
 Figure C.5 Standard VRAM map of Graphic2
 
@@ -4227,7 +4247,7 @@ Figure C.5 Standard VRAM map of Graphic2
 
 The VRAM layout is almost the same as Graphic2; the only differences are that the sprites are in Mode 2 and, accordingly, the positions of the sprite attribute table and the sprite color table change (Section 5.8).
 
-![Standard VRAM map of Graphic3](images/vrammap_g3.png)
+![Standard VRAM map of Graphic3](figures/vrammap_g3.png)
 
 Figure C.6 Standard VRAM map of Graphic3
 
@@ -4248,7 +4268,7 @@ Figure C.6 Standard VRAM map of Graphic3
 
 This is a bitmap mode. VRAM is divided into pages of 32KB each, and the sprite-related tables are placed at the rear of page 0. The sprite-related tables are common even when the display page is switched, and only the bitmap is placed in page 1 and beyond. In the 192-line case (LN = 0), the bitmap is 24,576 bytes (00000h–05FFFh within the page). The layout and register values of Graphic4 and Graphic5 are identical except for the mode selection bits.
 
-![Standard VRAM map of Graphic4 / Graphic5](images/vrammap_g45.png)
+![Standard VRAM map of Graphic4 / Graphic5](figures/vrammap_g45.png)
 
 Figure C.7 Standard VRAM map of Graphic4 / Graphic5
 
@@ -4267,7 +4287,7 @@ Figure C.7 Standard VRAM map of Graphic4 / Graphic5
 
 This is a bitmap mode. Pages are in units of 64KB, and the sprite-related tables are placed at the rear of page 0. The layout and register values are common to the four modes; the only differences are the mode selection bits and the YAE / YJK selection (R#25). In the 192-line case (LN = 0), the bitmap is 49,152 bytes (00000h–0BFFFh within the page).
 
-![Standard VRAM map of Graphic6 / Graphic7](images/vrammap_g67.png)
+![Standard VRAM map of Graphic6 / Graphic7](figures/vrammap_g67.png)
 
 Figure C.8 Standard VRAM map of Graphic6 / Graphic7 (SCREEN 10–12 use the same layout)
 
@@ -4318,96 +4338,98 @@ The base address is the value stored at BIOS 0006h / 0007h (normally 98h) (see C
 |---|---|---|
 | 1st edition | ― | First edition |
 
+
+
 # Index
 
-An index of the important terms used in this manual and the sections that mainly describe them. The references are links: selecting one takes you to the corresponding passage.
+An index of the important terms used in this manual and the pages that mainly describe them. The page numbers are links: selecting one takes you to the corresponding passage.
 
-| Term | Reference |
+| Term | Page |
 |---|---|
-| 5S / 5TH | [6.6.2 Display-Limit Notification (5S and 5TH)](#662-display-limit-notification-5s-and-5th) |
-| 9958 Compatible | [12.2 Behavior Formalized as "9958 Compatible"](#122-behavior-formalized-as-9958-compatible) |
-| Background bank | [R#29 Display Bank](#r29-display-bank-new-in-v9968) |
-| Bank registers | [VRAM Banks (R#28–R#30)](#vram-banks-r28r30-new-in-v9968) |
-| CEIE | [10.4 Command Completion Interrupt](#104-command-completion-interrupt), [R#20 Mode5](#r20-mode5-new-in-v9968) |
-| Collision detection | [6.6.1 Sprite-on-Sprite Collision](#661-sprite-on-sprite-collision) |
-| Command completion interrupt | [10.4 Command Completion Interrupt](#104-command-completion-interrupt) |
-| Compatible mode | [12.1 Compatible Mode and Extended Mode](#121-compatible-mode-and-extended-mode) |
-| CPU access bank | [R#28 CPU Access Bank](#r28-cpu-access-bank-new-in-v9968) |
-| Destination bank | [R#30 Command Bank](#r30-command-bank-new-in-v9968) |
-| EPAL | [7.2.2 EPAL = 1 (Extended Format)](#722-epal--1-extended-format), [R#20 Mode5](#r20-mode5-new-in-v9968) |
-| Extended mode | [12.1 Compatible Mode and Extended Mode](#121-compatible-mode-and-extended-mode) |
-| FG4 | [R#45 Argument](#r45-argument) |
-| FIL | [R#20 Mode5](#r20-mode5-new-in-v9968) |
-| Frame interrupt | [10.2 Frame Interrupt](#102-frame-interrupt) |
-| G3BASIC | [9.8 BASIC API (G3BASIC)](#98-basic-api-g3basic) |
-| Geo3D | [9.1 Overview](#91-overview) |
-| Graphic7 | [5.12 Graphic7 Mode](#512-graphic7-mode) |
-| HMMC | [8.2 HMMC (High-Speed CPU → VRAM Transfer)](#82-hmmc-high-speed-cpu--vram-transfer) |
-| HMMM | [8.4 HMMM (High-Speed VRAM → VRAM Transfer)](#84-hmmm-high-speed-vram--vram-transfer) |
-| HMMV | [8.5 HMMV (High-Speed Rectangular Fill)](#85-hmmv-high-speed-rectangular-fill) |
-| HS | [11.6 About High-Speed Mode](#116-about-high-speed-mode), [R#20 Mode5](#r20-mode5-new-in-v9968) |
-| ILNS | [R#20 Mode5](#r20-mode5-new-in-v9968) |
-| Immediate mode | [9.3 Immediate Mode](#93-immediate-mode) |
-| Interrupts | [Chapter 10 Interrupts](#chapter-10-interrupts) |
-| LFMC | [8.15 LFMC (CPU → VRAM Font Drawing)](#815-lfmc-cpu--vram-font-drawing) |
-| LFMM | [8.16 LFMM (VRAM → VRAM Font Drawing)](#816-lfmm-vram--vram-font-drawing) |
-| LINE | [8.10 LINE (Line Drawing)](#810-line-line-drawing) |
-| Line interrupt | [10.3 Line Interrupt](#103-line-interrupt) |
-| LMCM | [8.7 LMCM (Logical VRAM → CPU Transfer)](#87-lmcm-logical-vram--cpu-transfer) |
-| LMMC | [8.6 LMMC (Logical CPU → VRAM Transfer)](#86-lmmc-logical-cpu--vram-transfer) |
-| LMMM | [8.8 LMMM (Logical VRAM → VRAM Transfer)](#88-lmmm-logical-vram--vram-transfer) |
-| LMMV | [8.9 LMMV (Logical Rectangular Fill)](#89-lmmv-logical-rectangular-fill) |
-| LockExtReg | [Locking the Extended Registers (LockExtReg)](#locking-the-extended-registers-lockextreg) |
-| LRMM | [8.14 LRMM (Logical Transfer with Rotation and Scaling)](#814-lrmm-logical-transfer-with-rotation-and-scaling) |
-| MXC | [R#45 Argument](#r45-argument) |
-| MXD | [R#45 Argument](#r45-argument) |
-| MXS | [R#45 Argument](#r45-argument) |
-| Palette | [Chapter 7 Color Palette and Color Representation](#chapter-7-color-palette-and-color-representation) |
-| Palette RAM | [7.1 Structure of the Palette RAM](#71-structure-of-the-palette-ram) |
-| Palette set | [6.4.4 V9968 Extension: Palette Sets with EPAL](#644-v9968-extension-palette-sets-with-epal) |
-| Phase 2 engine | [9.4 Phase 2 Engine](#94-phase-2-engine) |
-| POINT | [8.13 POINT (Read a Color)](#813-point-read-a-color) |
-| Port#4 | [2.7 Interrupt Control Port (Port#4)](#27-interrupt-control-port-port4) |
-| PSET | [8.12 PSET (Plot a Dot)](#812-pset-plot-a-dot) |
-| R#20 | [R#20 Mode5](#r20-mode5-new-in-v9968) |
-| R#21 | [R#21 Mode6](#r21-mode6-new-in-v9968) |
-| R#25 | [R#25 Mode4](#r25-mode4) |
-| R#28 | [R#28 CPU Access Bank](#r28-cpu-access-bank-new-in-v9968) |
-| R#29 | [R#29 Display Bank](#r29-display-bank-new-in-v9968) |
-| R#30 | [R#30 Command Bank](#r30-command-bank-new-in-v9968) |
-| R#45 | [R#45 Argument](#r45-argument) |
-| R#46 | [R#46 Command](#r46-command) |
-| Ring buffer | [9.7.2 Resident Scenes and Partial RUNs](#972-resident-scenes-and-partial-runs) |
-| Rotation vector (R#47–R#50) | [R#47 Rotation Vector X](#r47-rotation-vector-x-l--r48-rotation-vector-x-h-new-in-v9968) |
-| S16 | [R#20 Mode5](#r20-mode5-new-in-v9968), [6.7 Other Extension Bits](#67-other-extension-bits) |
-| Scaling | [6.5.3 How Scaling Looks](#653-how-scaling-looks) |
-| Source bank | [R#30 Command Bank](#r30-command-bank-new-in-v9968) |
-| SP3 | [6.1 Overview of the Sprite Modes](#61-overview-of-the-sprite-modes), [R#20 Mode5](#r20-mode5-new-in-v9968) |
-| Sprite bank | [R#29 Display Bank](#r29-display-bank-new-in-v9968) |
-| Sprite mode 1 | [6.3 Sprite Mode 1](#63-sprite-mode-1) |
-| Sprite mode 2 | [6.4 Sprite Mode 2](#64-sprite-mode-2) |
-| Sprite mode 3 | [6.5 Sprite Mode 3 (New Mode in V9968)](#65-sprite-mode-3-new-mode-in-v9968) |
-| SPS | [R#25 Mode4](#r25-mode4), [6.7 Other Extension Bits](#67-other-extension-bits) |
-| SRCH | [8.11 SRCH (Color Search)](#811-srch-color-search) |
-| Status registers | [Chapter 4 Status Registers in Detail](#chapter-4-status-registers-in-detail) |
-| STOP | [8.17 STOP (Stop Command)](#817-stop-stop-command) |
-| SVNS | [R#20 Mode5](#r20-mode5-new-in-v9968) |
-| Texture | [9.6 Textures](#96-textures) |
-| V58 | [R#21 Mode6](#r21-mode6-new-in-v9968) |
-| VFIRST | [A.5 Geo3D Register Summary](#a5-geo3d-register-summary) |
-| VRAM | [11.1 VRAM Organization](#111-vram-organization) |
-| VRAM banks | [VRAM Banks (R#28–R#30)](#vram-banks-r28r30-new-in-v9968) |
-| Window registers (R#51–R#58) | [R#51 Window Start X](#r51-window-start-x-l--r52-window-start-x-h-new-in-v9968) |
-| XCTRL | [A.5 Geo3D Register Summary](#a5-geo3d-register-summary) |
-| XHR | [R#45 Argument](#r45-argument) |
-| YAE | [5.13 Graphic7-YAE Mode (SCREEN 10/11)](#513-graphic7-yae-mode-screen-1011), [7.4.6 YAE Mode (YAE = 1 in R#25)](#746-yae-mode-yae--1-in-r25) |
-| YJK | [5.14 Graphic7-YJK Mode (SCREEN 12)](#514-graphic7-yjk-mode-screen-12), [7.4.5 YJK Mode (YJK = 1 in R#25)](#745-yjk-mode-yjk--1-in-r25) |
-| YMMM | [8.3 YMMM (High-Speed VRAM → VRAM Transfer in the Y Direction)](#83-ymmm-high-speed-vram--vram-transfer-in-the-y-direction) |
+| 5S / 5TH | [75](#spr5th) |
+| 9958 Compatible | [165](#compat9958) |
+| Background bank | [27](#r29) |
+| Bank registers | [25](#vrambank) |
+| CEIE | [17](#r20), [153](#intceie) |
+| Collision detection | [74](#sprcollision) |
+| Command completion interrupt | [153](#intceie) |
+| Compatible mode | [164](#compat) |
+| CPU access bank | [26](#r28) |
+| Destination bank | [27](#r30) |
+| EPAL | [17](#r20), [78](#palepal) |
+| Extended mode | [164](#compat) |
+| FG4 | [32](#r45) |
+| FIL | [17](#r20) |
+| Frame interrupt | [152](#intframe) |
+| G3BASIC | [138](#geo3dg3) |
+| Geo3D | [122](#geo3d) |
+| Graphic7 | [55](#g7) |
+| HMMC | [96](#cmd-hmmc) |
+| HMMM | [98](#cmd-hmmm) |
+| HMMV | [99](#cmd-hmmv) |
+| HS | [17](#r20), [163](#hs) |
+| ILNS | [17](#r20) |
+| Immediate mode | [124](#geo3dimm) |
+| Interrupts | [2](#ch10) |
+| LFMC | [110](#cmd-lfmc) |
+| LFMM | [111](#cmd-lfmm) |
+| LINE | [104](#cmd-line) |
+| Line interrupt | [152](#intline) |
+| LMCM | [101](#cmd-lmcm) |
+| LMMC | [100](#cmd-lmmc) |
+| LMMM | [102](#cmd-lmmm) |
+| LMMV | [103](#cmd-lmmv) |
+| LockExtReg | [12](#lockextreg) |
+| LRMM | [108](#cmd-lrmm) |
+| MXC | [32](#r45) |
+| MXD | [32](#r45) |
+| MXS | [32](#r45) |
+| Palette | [2](#ch07) |
+| Palette RAM | [77](#palram) |
+| Palette set | [66](#palset) |
+| Phase 2 engine | [127](#geo3dphase2) |
+| POINT | [107](#cmd-point) |
+| Port#4 | [11](#port4) |
+| PSET | [106](#cmd-pset) |
+| R#20 | [17](#r20) |
+| R#21 | [18](#r21) |
+| R#25 | [19](#r25) |
+| R#28 | [26](#r28) |
+| R#29 | [27](#r29) |
+| R#30 | [27](#r30) |
+| R#45 | [32](#r45) |
+| R#46 | [34](#r46) |
+| Register state at command completion | [91](#cmdend) |
+| Ring buffer | [137](#geo3dring) |
+| Rotation vector (R#47–R#50) | [35](#r47) |
+| S16 | [17](#r20), [76](#sprext) |
+| Scaling | [72](#sprscale) |
+| Source bank | [27](#r30) |
+| SP3 | [17](#r20), [61](#sproverview) |
+| Sprite bank | [27](#r29) |
+| Sprite mode 1 | [63](#sm1) |
+| Sprite mode 2 | [64](#sm2) |
+| Sprite mode 3 | [68](#sm3) |
+| SPS | [19](#r25), [76](#sprext) |
+| SRCH | [105](#cmd-srch) |
+| Status registers | [38](#ch04) |
+| STOP | [113](#cmd-stop) |
+| SVNS | [17](#r20) |
+| Texture | [134](#geo3dtex) |
+| V58 | [18](#r21) |
+| VFIRST | [193](#geo3dregs) |
+| VRAM | [159](#vramcfg) |
+| VRAM banks | [25](#vrambank) |
+| Window registers (R#51–R#58) | [36](#r51) |
+| XCTRL | [193](#geo3dregs) |
+| XHR | [32](#r45) |
+| YAE | [58](#yae), [81](#yaepal) |
+| YJK | [59](#yjk), [81](#yjkpal) |
+| YMMM | [97](#cmd-ymmm) |
 
----
 
-V9968 MSX-VIDEO TECHNICAL DATA BOOK
-
-October 31, 2026
-
-Written by Takayuki Hara (HRA!)
+<div class="colophon">
+<p class="colophon-title" style="page-break-before: always; margin-top:636pt; margin-left:60pt; margin-right:110pt;">V9968 MSX-VIDEO TECHNICAL DATA BOOK</p>
+<p class="colophon-date" style="margin-left:60pt; margin-right:110pt;">October 31, 2026</p>
+<p class="colophon-author" style="margin-left:60pt; margin-right:110pt;">Written by&nbsp;&nbsp;Takayuki Hara (HRA!)</p>
+</div>

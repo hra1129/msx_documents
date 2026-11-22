@@ -1,124 +1,33 @@
-# V9968 MSX-VIDEO TECHNICAL DATA BOOK
+<div class="cover">
+<h1 class="cover-chip" style="margin-top:50pt;">V9968</h1>
+<p class="cover-line2">MSX-VIDEO</p>
+<p class="cover-bar" style="background-color:#10164A;">TECHNICAL DATA BOOK</p>
+<p class="cover-catalog" style="margin-left:366pt; margin-top:253pt;">V9968 TECHNICAL DATA BOOK<br/>2026.10</p>
+</div>
 
-2026年10月31日 発行
+<h1>目次</h1>
+<table>
+<tr><th>項目</th><th>ページ</th></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第1章 はじめに</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch01">3</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第2章 I/O ポートとアクセス方法</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch02">6</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第3章 コントロールレジスタ詳説</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch03">12</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第4章 ステータスレジスタ詳説</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch04">37</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第5章 スクリーンモード</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch05">42</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第6章 スプライト</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch06">59</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第7章 カラーパレットと色表現</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch07">75</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第8章 VDPコマンド</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch08">82</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第9章 Geo3D</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch09">117</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第10章 割り込み</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch10">143</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第11章 VRAM アクセスとタイミング</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch11">150</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">第12章 互換性と移行の注意</td><td style="padding:2px 8px; line-height:1.3;"><a href="#ch12">154</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">付録A コントロールレジスタ一覧</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appa">158</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">付録B ステータスレジスタ一覧</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appb">187</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">付録C スクリーンモード一覧</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appc">191</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">付録D VDP コマンドコード一覧</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appd">208</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">付録E I/O ポート一覧</td><td style="padding:2px 8px; line-height:1.3;"><a href="#appe">209</a></td></tr>
+<tr><td style="padding:2px 8px; line-height:1.3;">索引</td><td style="padding:2px 8px; line-height:1.3;"><a href="#index">211</a></td></tr>
+</table>
 
-著作 原 貴幸 (HRA!)
-
-# 目次
-
-- [第1章 はじめに](#第1章-はじめに)
-  - [1.1 本書について](#11-本書について)
-  - [1.2 表記規則](#12-表記規則)
-  - [1.3 V9968 の概要](#13-v9968-の概要)
-  - [1.4 互換性と「9958 Compatible」モード](#14-互換性と9958-compatibleモード)
-  - [1.5 機能概要](#15-機能概要)
-- [第2章 I/O ポートとアクセス方法](#第2章-io-ポートとアクセス方法)
-  - [2.1 ポート割り当て](#21-ポート割り当て)
-  - [2.2 VRAM へのアクセス](#22-vram-へのアクセス)
-  - [2.3 Port#1 の 2 バイト組プロトコル](#23-port1-の-2-バイト組プロトコル)
-  - [2.4 コントロールレジスタへの書き込み](#24-コントロールレジスタへの書き込み)
-  - [2.5 パレットへのアクセス](#25-パレットへのアクセス)
-  - [2.6 ステータスレジスタの読み出し](#26-ステータスレジスタの読み出し)
-  - [2.7 割り込み制御ポート（Port#4）](#27-割り込み制御ポートport4)
-- [第3章 コントロールレジスタ詳説](#第3章-コントロールレジスタ詳説)
-  - [3.1 モード設定レジスタ](#31-モード設定レジスタ)
-  - [3.2 テーブルアドレスレジスタ](#32-テーブルアドレスレジスタ)
-  - [3.3 色・表示制御レジスタ](#33-色表示制御レジスタ)
-  - [3.4 アクセス制御レジスタ](#34-アクセス制御レジスタ)
-  - [3.5 コマンドレジスタ](#35-コマンドレジスタ)
-- [第4章 ステータスレジスタ詳説](#第4章-ステータスレジスタ詳説)
-  - [割り込み出力との関係](#割り込み出力との関係)
-- [第5章 スクリーンモード](#第5章-スクリーンモード)
-  - [5.1 スクリーンモードについて](#51-スクリーンモードについて)
-  - [5.2 モードの選択方法](#52-モードの選択方法)
-  - [5.3 Text1 モード](#53-text1-モード)
-  - [5.4 Text2 モード](#54-text2-モード)
-  - [5.5 Multicolor モード](#55-multicolor-モード)
-  - [5.6 Graphic1 モード](#56-graphic1-モード)
-  - [5.7 Graphic2 モード](#57-graphic2-モード)
-  - [5.8 Graphic3 モード](#58-graphic3-モード)
-  - [5.9 Graphic4 モード](#59-graphic4-モード)
-  - [5.10 Graphic5 モード](#510-graphic5-モード)
-  - [5.11 Graphic6 モード](#511-graphic6-モード)
-  - [5.12 Graphic7 モード](#512-graphic7-モード)
-  - [5.13 Graphic7-YAE モード（SCREEN 10／11）](#513-graphic7-yae-モードscreen-1011)
-  - [5.14 Graphic7-YJK モード（SCREEN 12）](#514-graphic7-yjk-モードscreen-12)
-  - [5.15 V9968 における拡張と相違点](#515-v9968-における拡張と相違点)
-- [第6章 スプライト](#第6章-スプライト)
-  - [6.1 スプライトモードの概要](#61-スプライトモードの概要)
-  - [6.2 共通の約束事](#62-共通の約束事)
-  - [6.3 スプライトモード 1](#63-スプライトモード-1)
-  - [6.4 スプライトモード 2](#64-スプライトモード-2)
-  - [6.5 スプライトモード 3（V9968 新モード）](#65-スプライトモード-3v9968-新モード)
-  - [6.6 衝突検出と表示上限の通知](#66-衝突検出と表示上限の通知)
-  - [6.7 その他の拡張ビットについて](#67-その他の拡張ビットについて)
-- [第7章 カラーパレットと色表現](#第7章-カラーパレットと色表現)
-  - [7.1 パレット RAM の構造](#71-パレット-ram-の構造)
-  - [7.2 パレットへの書き込み](#72-パレットへの書き込み)
-  - [7.3 リセット時のパレット](#73-リセット時のパレット)
-  - [7.4 画面モードごとの色表現](#74-画面モードごとの色表現)
-  - [7.5 サンプルプログラム：パレットの書き換えとカラーバー](#75-サンプルプログラムパレットの書き換えとカラーバー)
-- [第8章 VDPコマンド](#第8章-vdpコマンド)
-  - [8.1 コマンドの実行モデル](#81-コマンドの実行モデル)
-  - [8.2 HMMC（CPU→VRAM高速転送）](#82-hmmccpuvram高速転送)
-  - [8.3 YMMM（Y方向VRAM→VRAM高速転送）](#83-ymmmy方向vramvram高速転送)
-  - [8.4 HMMM（VRAM→VRAM高速転送）](#84-hmmmvramvram高速転送)
-  - [8.5 HMMV（矩形の高速塗りつぶし）](#85-hmmv矩形の高速塗りつぶし)
-  - [8.6 LMMC（CPU→VRAM論理転送）](#86-lmmccpuvram論理転送)
-  - [8.7 LMCM（VRAM→CPU論理転送）](#87-lmcmvramcpu論理転送)
-  - [8.8 LMMM（VRAM→VRAM論理転送）](#88-lmmmvramvram論理転送)
-  - [8.9 LMMV（矩形の論理塗りつぶし）](#89-lmmv矩形の論理塗りつぶし)
-  - [8.10 LINE（直線描画）](#810-line直線描画)
-  - [8.11 SRCH（色サーチ）](#811-srch色サーチ)
-  - [8.12 PSET（点描画）](#812-pset点描画)
-  - [8.13 POINT（色読み出し）](#813-point色読み出し)
-  - [8.14 LRMM（回転・拡大縮小付き論理転送）](#814-lrmm回転拡大縮小付き論理転送)
-  - [8.15 LFMC（CPU→VRAMフォント描画）](#815-lfmccpuvramフォント描画)
-  - [8.16 LFMM（VRAM→VRAMフォント描画）](#816-lfmmvramvramフォント描画)
-  - [8.17 STOP（コマンド停止）](#817-stopコマンド停止)
-  - [8.18 サンプルプログラム：図形の描画とコピー](#818-サンプルプログラム図形の描画とコピー)
-  - [8.19 サンプルプログラム：LRMM による回転コピー](#819-サンプルプログラムlrmm-による回転コピー)
-  - [8.20 サンプルプログラム：LFMM による文字列描画](#820-サンプルプログラムlfmm-による文字列描画)
-- [第9章 Geo3D](#第9章-geo3d)
-  - [9.1 概要](#91-概要)
-  - [9.2 ポートとレジスタアクセス](#92-ポートとレジスタアクセス)
-  - [9.3 即時モード](#93-即時モード)
-  - [9.4 フェーズ2エンジン](#94-フェーズ2エンジン)
-  - [9.5 面塗りと陰影](#95-面塗りと陰影)
-  - [9.6 テクスチャ](#96-テクスチャ)
-  - [9.7 v2.0の拡張](#97-v20の拡張)
-  - [9.8 BASIC API（G3BASIC）](#98-basic-apig3basic)
-  - [9.9 サンプルプログラム：回転するワイヤーフレームの立方体](#99-サンプルプログラム回転するワイヤーフレームの立方体)
-  - [9.10 本章の情報源について](#910-本章の情報源について)
-  - [9.11 サンプルプログラム：公式デモROM](#911-サンプルプログラム公式デモrom)
-- [第10章 割り込み](#第10章-割り込み)
-  - [10.1 割り込み要因の概要](#101-割り込み要因の概要)
-  - [10.2 フレーム割り込み](#102-フレーム割り込み)
-  - [10.3 ライン割り込み](#103-ライン割り込み)
-  - [10.4 コマンド完了割り込み](#104-コマンド完了割り込み)
-  - [10.5 Port#4 による要因確認とクリア](#105-port4-による要因確認とクリア)
-  - [10.6 割り込みの使い方の流れ](#106-割り込みの使い方の流れ)
-  - [10.7 サンプルプログラム：ライン割り込みによる画面分割](#107-サンプルプログラムライン割り込みによる画面分割)
-  - [10.8 2 台の VDP がある環境での注意](#108-2-台の-vdp-がある環境での注意)
-- [第11章 VRAM アクセスとタイミング](#第11章-vram-アクセスとタイミング)
-  - [11.1 VRAM の構成](#111-vram-の構成)
-  - [11.2 アドレスモデルとラップアラウンド](#112-アドレスモデルとラップアラウンド)
-  - [11.3 CPU アクセスの手順上の注意](#113-cpu-アクセスの手順上の注意)
-  - [11.4 VDP コマンド実行中のアクセス](#114-vdp-コマンド実行中のアクセス)
-  - [11.5 表示期間中のアクセス](#115-表示期間中のアクセス)
-  - [11.6 高速モードについて](#116-高速モードについて)
-- [第12章 互換性と移行の注意](#第12章-互換性と移行の注意)
-  - [12.1 互換モードと拡張モード](#121-互換モードと拡張モード)
-  - [12.2 「9958 Compatible」として正式化された動作](#122-9958-compatibleとして正式化された動作)
-  - [12.3 従来チップとの既知の動作差異](#123-従来チップとの既知の動作差異)
-  - [12.4 移行・拡張時の注意まとめ](#124-移行拡張時の注意まとめ)
-- [付録A コントロールレジスタ一覧](#付録a-コントロールレジスタ一覧)
-- [付録B ステータスレジスタ一覧](#付録b-ステータスレジスタ一覧)
-- [付録C スクリーンモード一覧](#付録c-スクリーンモード一覧)
-- [付録D VDP コマンドコード一覧](#付録d-vdp-コマンドコード一覧)
-- [付録E I/O ポート一覧](#付録e-io-ポート一覧)
-  - [改訂履歴](#改訂履歴)
-- [索引](#索引)
 
 # 第1章 はじめに
 
@@ -189,6 +98,8 @@ V9968 には 3D 描画エンジン「Geo3D」が搭載されている。詳細�
 ### VRAM
 
 VRAM の総容量は 4MB で、256KB（アドレス A17〜A0 の 18 ビット）のバンク 16 個で構成される。拡張モードでは、バンクレジスタ（R#28〜R#30）で経路ごとにバンクを選んで 4MB 全体にアクセスできる。互換モードではすべてのバンクが 0 に固定され、従来互換のアドレス範囲で動作する。アクセス方法は第2章、バンクレジスタは第3章、アクセスのタイミングや制約は第11章で説明する。
+
+
 
 # 第2章 I/O ポートとアクセス方法
 
@@ -344,6 +255,8 @@ LockExtReg はリセット時に 1（ロック状態）である。ロック中�
 1. Port#4 に bit7 = 0 の値を書く（LockExtReg が 0 になり、ロックが解除される）。
 2. R#21 の V58 ビットを 0 にして拡張モードに切り替えるなど、R#20 / R#21 を設定する。
 
+
+
 # 第3章 コントロールレジスタ詳説
 
 本章では、V9968 のコントロールレジスタ R#0〜R#30 と、VDP コマンド用のレジスタ R#32〜R#58 について、1 レジスタずつ詳しく説明します。
@@ -361,7 +274,7 @@ LockExtReg はリセット時に 1（ロック状態）である。ロック中�
 
 ### R#0 Mode0
 
-![R#0 のビット配置](images/reg_r00.png)
+![R#0 のビット配置](figures/reg_r00.png)
 
 - アクセス: 書き込み専用
 - リセット値: M5=M4=M3=0、IE1=0
@@ -372,7 +285,7 @@ LockExtReg はリセット時に 1（ロック状態）である。ロック中�
 
 ### R#1 Mode1
 
-![R#1 のビット配置](images/reg_r01.png)
+![R#1 のビット配置](figures/reg_r01.png)
 
 - アクセス: 書き込み専用
 - リセット値: BL=0、IE0=0、SI=0、MAG=0
@@ -394,7 +307,7 @@ LockExtReg はリセット時に 1（ロック状態）である。ロック中�
 
 ### R#8 Mode2
 
-![R#8 のビット配置](images/reg_r08.png)
+![R#8 のビット配置](figures/reg_r08.png)
 
 - アクセス: 書き込み専用
 - リセット値: TP=0、VR=1、SPD=0
@@ -403,14 +316,14 @@ VR は VRAM アクセスに関わります。VR=0 のとき、R#14 で指定す�
 
 ### R#9 Mode3
 
-![R#9 のビット配置](images/reg_r09.png)
+![R#9 のビット配置](figures/reg_r09.png)
 
 - アクセス: 書き込み専用
 - リセット値: すべて 0
 
 ### R#18 Display Adjust
 
-![R#18 のビット配置](images/reg_r18.png)
+![R#18 のビット配置](figures/reg_r18.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -419,7 +332,7 @@ VR は VRAM アクセスに関わります。VR=0 のとき、R#14 で指定す�
 
 ### R#19 Interrupt Line
 
-![R#19 のビット配置](images/reg_r19.png)
+![R#19 のビット配置](figures/reg_r19.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -432,7 +345,7 @@ VR は VRAM アクセスに関わります。VR=0 のとき、R#14 で指定す�
 
 ### R#20 Mode5 【V9968 追加】
 
-![R#20 のビット配置](images/reg_r20.png)
+![R#20 のビット配置](figures/reg_r20.png)
 
 - アクセス: 書き込み専用（ただし LockExtReg=1 の間は書き込みが無視される）
 - リセット値: すべて 0
@@ -451,7 +364,7 @@ SVNS はスプライトの表示位置と垂直スクロール（R#23）の関�
 
 ### R#21 Mode6 【V9968 追加】
 
-![R#21 のビット配置](images/reg_r21.png)
+![R#21 のビット配置](figures/reg_r21.png)
 
 - アクセス: 書き込み専用（ただし LockExtReg=1 の間は書き込みが無視される）
 - リセット値: V58=1
@@ -469,7 +382,7 @@ V58 は V9968 の動作モード全体を切り替えるビットです。
 
 ### R#25 Mode4
 
-![R#25 のビット配置](images/reg_r25.png)
+![R#25 のビット配置](figures/reg_r25.png)
 
 - アクセス: 書き込み専用
 - リセット値: すべて 0
@@ -489,23 +402,23 @@ Graphic7（SCREEN8 相当）で YJK / YAE を使う場合は、画面モード�
 
 ### R#2 Pattern Name Table Address
 
-![R#2 のビット配置](images/reg_r02.png)
+![R#2 のビット配置](figures/reg_r02.png)
 
 ビットマップモード（Graphic4〜Graphic7）では、R#2 の下位ビットはラインアドレスに対するマスクとして働きます。通常はビット4〜0 を、FIL（フラットインターレース）使用時はビット5〜0 を、すべて 1 にしてください。0 にすると、画面が縦方向に繰り返して表示されます。詳細は 5.2 節を参照してください。
 
 ### R#3 Color Table Address (L)
 
-![R#3 のビット配置](images/reg_r03.png)
+![R#3 のビット配置](figures/reg_r03.png)
 
 カラーテーブルのベースアドレスは、本レジスタ（下位）と R#10（上位）で構成されます。
 
 ### R#4 Pattern Generator Table Address
 
-![R#4 のビット配置](images/reg_r04.png)
+![R#4 のビット配置](figures/reg_r04.png)
 
 ### R#5 Sprite Attribute Table Address (L)
 
-![R#5 のビット配置](images/reg_r05.png)
+![R#5 のビット配置](figures/reg_r05.png)
 
 スプライトアトリビュートテーブルのベースアドレスは、本レジスタ（下位）と R#11（上位）で構成されます。
 
@@ -513,21 +426,21 @@ Graphic7（SCREEN8 相当）で YJK / YAE を使う場合は、画面モード�
 
 ### R#6 Sprite Pattern Generator Table Address
 
-![R#6 のビット配置](images/reg_r06.png)
+![R#6 のビット配置](figures/reg_r06.png)
 
 ### R#10 Color Table Address (H)
 
-![R#10 のビット配置](images/reg_r10.png)
+![R#10 のビット配置](figures/reg_r10.png)
 
 ### R#11 Sprite Attribute Table Address (H)
 
-![R#11 のビット配置](images/reg_r11.png)
+![R#11 のビット配置](figures/reg_r11.png)
 
 ## 3.3 色・表示制御レジスタ
 
 ### R#7 Background Color
 
-![R#7 のビット配置](images/reg_r07.png)
+![R#7 のビット配置](figures/reg_r07.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -536,7 +449,7 @@ Graphic7（SCREEN8 相当）で YJK / YAE を使う場合は、画面モード�
 
 ### R#12 Text Color / Back Color
 
-![R#12 のビット配置](images/reg_r12.png)
+![R#12 のビット配置](figures/reg_r12.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -547,7 +460,7 @@ Graphic7（SCREEN8 相当）で YJK / YAE を使う場合は、画面モード�
 
 ### R#13 Blinking Period
 
-![R#13 のビット配置](images/reg_r13.png)
+![R#13 のビット配置](figures/reg_r13.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -556,7 +469,7 @@ R#12 の色を表示する期間（オン）と R#7 の色に戻る期間（オ�
 
 ### R#23 Display Offset
 
-![R#23 のビット配置](images/reg_r23.png)
+![R#23 のビット配置](figures/reg_r23.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -565,7 +478,7 @@ R#12 の色を表示する期間（オン）と R#7 の色に戻る期間（オ�
 
 ### R#26 Horizontal Offset (By Character)
 
-![R#26 のビット配置](images/reg_r26.png)
+![R#26 のビット配置](figures/reg_r26.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -574,7 +487,7 @@ R#12 の色を表示する期間（オン）と R#7 の色に戻る期間（オ�
 
 ### R#27 Horizontal Offset (By Dot)
 
-![R#27 のビット配置](images/reg_r27.png)
+![R#27 のビット配置](figures/reg_r27.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -583,7 +496,7 @@ R#12 の色を表示する期間（オン）と R#7 の色に戻る期間（オ�
 
 ### R#14 VRAM Access Base Address
 
-![R#14 のビット配置](images/reg_r14.png)
+![R#14 のビット配置](figures/reg_r14.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0（VRAM アドレス全体として 0）
@@ -594,7 +507,7 @@ R#8 の VR ビットが 0 のときは、A17〜A14 は 0 に固定されます�
 
 ### R#15 Status Register Pointer
 
-![R#15 のビット配置](images/reg_r15.png)
+![R#15 のビット配置](figures/reg_r15.png)
 
 - アクセス: 書き込み専用
 - リセット値: 0
@@ -603,7 +516,7 @@ Port#1 を読むと、本レジスタで指定したステータスレジスタ�
 
 ### R#16 Color Palette Pointer
 
-![R#16 のビット配置](images/reg_r16.png)
+![R#16 のビット配置](figures/reg_r16.png)
 
 - アクセス: 書き込み専用
 - リセット値: パレットアドレス 0
@@ -614,7 +527,7 @@ Port#2 でパレットデータを書く際の開始番号を指定します。E
 
 ### R#17 Control Register Pointer
 
-![R#17 のビット配置](images/reg_r17.png)
+![R#17 のビット配置](figures/reg_r17.png)
 
 - アクセス: 書き込み専用
 - リセット値: ポインタ 0、AII=0
@@ -641,7 +554,7 @@ V9968 の VRAM は 4MB です。構成は、従来の 256KB のアドレス空�
 
 ### R#28 CPU Access Bank 【V9968 追加】
 
-![R#28 のビット配置](images/reg_r28.png)
+![R#28 のビット配置](figures/reg_r28.png)
 
 - アクセス: 書き込み専用（ただし LockExtReg=1 の間、および互換モード（V58=1）では書き込みが無視される）
 - リセット値: 0
@@ -654,7 +567,7 @@ bit7〜4 は予約です。0 を指定してください。
 
 ### R#29 Display Bank 【V9968 追加】
 
-![R#29 のビット配置](images/reg_r29.png)
+![R#29 のビット配置](figures/reg_r29.png)
 
 - アクセス: 書き込み専用（ただし LockExtReg=1 の間、および互換モード（V58=1）では書き込みが無視される）
 - リセット値: 0
@@ -665,7 +578,7 @@ bit7〜4 は予約です。0 を指定してください。
 
 ### R#30 Command Bank 【V9968 追加】
 
-![R#30 のビット配置](images/reg_r30.png)
+![R#30 のビット配置](figures/reg_r30.png)
 
 - アクセス: 書き込み専用（ただし LockExtReg=1 の間、および互換モード（V58=1）では書き込みが無視される）
 - リセット値: 0
@@ -686,9 +599,9 @@ R#32〜R#58 は VDP コマンドのパラメータと実行指示のためのレ
 
 ### R#32 Source X (L) / R#33 Source X (H)
 
-![R#32 のビット配置](images/reg_r32.png)
+![R#32 のビット配置](figures/reg_r32.png)
 
-![R#33 のビット配置](images/reg_r33.png)
+![R#33 のビット配置](figures/reg_r33.png)
 
 - リセット値: 0
 
@@ -698,9 +611,9 @@ SX は 12 ビットまで保持されますが、LRMM 以外のコマンドで�
 
 ### R#34 Source Y (L) / R#35 Source Y (H)
 
-![R#34 のビット配置](images/reg_r34.png)
+![R#34 のビット配置](figures/reg_r34.png)
 
-![R#35 のビット配置](images/reg_r35.png)
+![R#35 のビット配置](figures/reg_r35.png)
 
 - リセット値: 0
 
@@ -710,17 +623,17 @@ SY は 13 ビット保持されます。コマンド開始時、256KB モード�
 
 ### R#36 Destination X (L) / R#37 Destination X (H)
 
-![R#36 のビット配置](images/reg_r36.png)
+![R#36 のビット配置](figures/reg_r36.png)
 
-![R#37 のビット配置](images/reg_r37.png)
+![R#37 のビット配置](figures/reg_r37.png)
 
 - リセット値: 0
 
 ### R#38 Destination Y (L) / R#39 Destination Y (H)
 
-![R#38 のビット配置](images/reg_r38.png)
+![R#38 のビット配置](figures/reg_r38.png)
 
-![R#39 のビット配置](images/reg_r39.png)
+![R#39 のビット配置](figures/reg_r39.png)
 
 - リセット値: 0
 
@@ -728,9 +641,9 @@ R#39 の有効ビットはモードで異なります。256KB モードでは bi
 
 ### R#40 Number Of Dots X (L) / R#41 Number Of Dots X (H)
 
-![R#40 のビット配置](images/reg_r40.png)
+![R#40 のビット配置](figures/reg_r40.png)
 
-![R#41 のビット配置](images/reg_r41.png)
+![R#41 のビット配置](figures/reg_r41.png)
 
 - リセット値: 0
 
@@ -738,9 +651,9 @@ NX は 11 ビット保持されますが、LRMM 以外のコマンドでは開�
 
 ### R#42 Number Of Dots Y (L) / R#43 Number Of Dots Y (H)
 
-![R#42 のビット配置](images/reg_r42.png)
+![R#42 のビット配置](figures/reg_r42.png)
 
-![R#43 のビット配置](images/reg_r43.png)
+![R#43 のビット配置](figures/reg_r43.png)
 
 - リセット値: 0
 
@@ -748,7 +661,7 @@ R#43 の有効ビットは R#39 と同じくモード依存です（256KB モー
 
 ### R#44 Color
 
-![R#44 のビット配置](images/reg_r44.png)
+![R#44 のビット配置](figures/reg_r44.png)
 
 - リセット値: 0
 
@@ -756,7 +669,7 @@ HMMV / LMMV / PSET などでは描画色として使われます。HMMC / LMMC /
 
 ### R#45 Argument
 
-![R#45 のビット配置](images/reg_r45.png)
+![R#45 のビット配置](figures/reg_r45.png)
 
 - リセット値: すべて 0
 
@@ -783,7 +696,7 @@ FG4 は拡張モードでのみ意味を持ちます。FG4=1 のとき、VDP コ
 
 ### R#46 Command
 
-![R#46 のビット配置](images/reg_r46.png)
+![R#46 のビット配置](figures/reg_r46.png)
 
 - リセット値: コマンドコード 0（STOP）、論理演算 0
 
@@ -806,9 +719,9 @@ FG4 は拡張モードでのみ意味を持ちます。FG4=1 のとき、VDP コ
 
 ### R#47 Rotation Vector X (L) / R#48 Rotation Vector X (H) 【V9968 追加】
 
-![R#47 のビット配置](images/reg_r47.png)
+![R#47 のビット配置](figures/reg_r47.png)
 
-![R#48 のビット配置](images/reg_r48.png)
+![R#48 のビット配置](figures/reg_r48.png)
 
 - リセット値: 0
 
@@ -816,9 +729,9 @@ LRMM コマンドで使う回転ベクトルの X 成分です。VX は符号付
 
 ### R#49 Rotation Vector Y (L) / R#50 Rotation Vector Y (H) 【V9968 追加】
 
-![R#49 のビット配置](images/reg_r49.png)
+![R#49 のビット配置](figures/reg_r49.png)
 
-![R#50 のビット配置](images/reg_r50.png)
+![R#50 のビット配置](figures/reg_r50.png)
 
 - リセット値: 0
 
@@ -826,33 +739,33 @@ LRMM コマンドで使う回転ベクトルの X 成分です。VX は符号付
 
 ### R#51 Window Start X (L) / R#52 Window Start X (H) 【V9968 追加】
 
-![R#51 のビット配置](images/reg_r51.png)
+![R#51 のビット配置](figures/reg_r51.png)
 
-![R#52 のビット配置](images/reg_r52.png)
+![R#52 のビット配置](figures/reg_r52.png)
 
 - リセット値: 0
 
 ### R#53 Window Start Y (L) / R#54 Window Start Y (H) 【V9968 追加】
 
-![R#53 のビット配置](images/reg_r53.png)
+![R#53 のビット配置](figures/reg_r53.png)
 
-![R#54 のビット配置](images/reg_r54.png)
+![R#54 のビット配置](figures/reg_r54.png)
 
 - リセット値: 0
 
 ### R#55 Window End X (L) / R#56 Window End X (H) 【V9968 追加】
 
-![R#55 のビット配置](images/reg_r55.png)
+![R#55 のビット配置](figures/reg_r55.png)
 
-![R#56 のビット配置](images/reg_r56.png)
+![R#56 のビット配置](figures/reg_r56.png)
 
 - リセット値: WEX 全体で 1FFh
 
 ### R#57 Window End Y (L) / R#58 Window End Y (H) 【V9968 追加】
 
-![R#57 のビット配置](images/reg_r57.png)
+![R#57 のビット配置](figures/reg_r57.png)
 
-![R#58 のビット配置](images/reg_r58.png)
+![R#58 のビット配置](figures/reg_r58.png)
 
 - リセット値: WEY 全体で 7FFh
 
@@ -861,6 +774,8 @@ LRMM コマンドで使う回転ベクトルの X 成分です。VX は符号付
 ### 未実装のレジスタ（R#59〜R#63）
 
 R#59〜R#63 は未実装です。これらの番号への書き込みは無視されます。
+
+
 
 # 第4章 ステータスレジスタ詳説
 
@@ -874,7 +789,7 @@ R#59〜R#63 は未実装です。これらの番号への書き込みは無視�
 
 ### S#0
 
-![S#0 のビット配置](images/reg_s00.png)
+![S#0 のビット配置](figures/reg_s00.png)
 
 読み出し時の副作用： **F、C、5S がクリアされます**（5TH の値は保持されます）。
 
@@ -892,7 +807,7 @@ R#59〜R#63 は未実装です。これらの番号への書き込みは無視�
 
 ### S#1
 
-![S#1 のビット配置](images/reg_s01.png)
+![S#1 のビット配置](figures/reg_s01.png)
 
 ID の値は、互換モード（V58=1）では `00010`、拡張モード（V58=0）では `00011` です。ソフトウェアが V9958 相当として動作しているか、V9968 の拡張モードで動作しているかを判別する手がかりになります。
 
@@ -900,7 +815,7 @@ ID の値は、互換モード（V58=1）では `00010`、拡張モード（V58=
 
 ### S#2
 
-![S#2 のビット配置](images/reg_s02.png)
+![S#2 のビット配置](figures/reg_s02.png)
 
 読み出し時の副作用： ありません。
 
@@ -910,17 +825,17 @@ bit3 と bit2 は常に 1 で読み出されます。旧資料にはこの2ビ�
 
 ### S#3
 
-![S#3 のビット配置](images/reg_s03.png)
+![S#3 のビット配置](figures/reg_s03.png)
 
 スプライト同士が衝突した位置の X 座標の下位 8 ビットです。上位ビットは S#4 にあります。座標のクリアについては S#5 の節を参照してください。
 
 ### S#4
 
-![S#4 のビット配置](images/reg_s04.png)
+![S#4 のビット配置](figures/reg_s04.png)
 
 ### S#5
 
-![S#5 のビット配置](images/reg_s05.png)
+![S#5 のビット配置](figures/reg_s05.png)
 
 スプライト同士が衝突した位置の Y 座標の下位 8 ビットです。上位ビットは S#6 にあります。
 
@@ -928,11 +843,11 @@ bit3 と bit2 は常に 1 で読み出されます。旧資料にはこの2ビ�
 
 ### S#6
 
-![S#6 のビット配置](images/reg_s06.png)
+![S#6 のビット配置](figures/reg_s06.png)
 
 ### S#7
 
-![S#7 のビット配置](images/reg_s07.png)
+![S#7 のビット配置](figures/reg_s07.png)
 
 POINT コマンドや LMCM コマンドで読み出された画素値は、R#44 に格納されたうえで、本レジスタ S#7 経由で読み出します。
 
@@ -940,13 +855,13 @@ POINT コマンドや LMCM コマンドで読み出された画素値は、R#44 
 
 ### S#8
 
-![S#8 のビット配置](images/reg_s08.png)
+![S#8 のビット配置](figures/reg_s08.png)
 
 上位ビットは S#9 にあります。BD フラグのクリアについては S#9 の節を参照してください。
 
 ### S#9
 
-![S#9 のビット配置](images/reg_s09.png)
+![S#9 のビット配置](figures/reg_s09.png)
 
 読み出し時の副作用： **BD（S#2 bit4）がクリアされます**。
 
@@ -963,6 +878,8 @@ S#10〜S#15 は実装されていません。R#15 でこれらの番号を指定
 - コマンド完了の要因がある かつ R#20 の CEIE=1
 
 各要因の発生状態は Port#4 の読み出しでも確認できます（第2章参照）。コマンド完了割り込みを使う場合は、CEIE が R#20 にあるため、Port#4 で LockExtReg を解除してから R#20 を設定する必要があります。
+
+
 
 # 第5章 スクリーンモード
 
@@ -1270,7 +1187,7 @@ X が偶数のドットはバイトの上位 4 ビット、奇数のドットは
 
 サンプルプログラム `g7_demo.asm` は、Graphic7 の 256 色すべてを表示する例です。画面を 8×8 のブロックに分け、ブロックの列で緑（G）、ブロックの行で赤（R）、ブロック内の 4 本の帯で青（B）を変えることで、256 色の組み合わせを一覧できます。実行結果を図5.1に示します。
 
-![g7_demo.asm の実行結果](images/sample_g7_demo.png)
+![g7_demo.asm の実行結果](figures/sample_g7_demo.png)
 
 図5.1 g7_demo.asm の実行結果（Graphic7 の 256 色）
 
@@ -1372,6 +1289,8 @@ Graphic7 の変種で、色を YJK 方式で表す自然画モードです。輝
 - RTL 検証ノート（v9968_registers.md）：モード選択ビットと M3 ドントケア、ベースアドレスレジスタのビット割り当て、A17 マスクの動作。
 - MSX2 テクニカルハンドブック（テクハン wiki「3章 MSX2の画面モード」）：従来モード（Text1～Graphic7）の仕様、テーブル配置、座標からアドレスを求める式。
 - YJK の符号化形式については、従来資料（Grauw "The YJK screen modes"、MSX2+ 世代の公開資料）で相互に一致する内容を採用しました。
+
+
 
 # 第6章 スプライト
 
@@ -1518,7 +1437,7 @@ CC=1 のプレーンは、単独では表示の優先順位を持たず、「自
 
 サンプルプログラム `spr_demo.asm` は、SCREEN 5（Graphic 4、スプライトモード 2）で 16×16 ドットのボールを 4 枚表示する例です。実行結果を図6.1に示します。
 
-![spr_demo.asm の実行結果](images/sample_spr_demo.png)
+![spr_demo.asm の実行結果](figures/sample_spr_demo.png)
 
 図6.1 spr_demo.asm の実行結果（スプライトモード 2）
 
@@ -1654,7 +1573,7 @@ MGx = 0 を指定した場合は、横方向に最大の 256 ドットへ拡大�
 
 サンプルプログラム `spr3_demo.asm` は、SCREEN 5（Graphic 4、スプライトモード 3）で、16×16 ドットの矢印とボールの 2 種類のタイルを使い、プレーンごとに異なる表示倍率・反転・透明度を設定する例です。実行結果を図6.2に示します。上段は矢印を等倍、2 倍、3 倍で表示したもの、下段左は左右反転（RVX）、下段中は上下反転（RVY）、右はマゼンタの矩形の上にボールを TP = 2（50% ブレンド）で重ねたものです。
 
-![spr3_demo.asm の実行結果](images/sample_spr3_demo.png)
+![spr3_demo.asm の実行結果](figures/sample_spr3_demo.png)
 
 図6.2 spr3_demo.asm の実行結果（スプライトモード 3）
 
@@ -1724,6 +1643,8 @@ R#20 の S16 ビットは、V9968 で新設されたスプライト拡張ビッ�
 ---
 
 本章の従来モード（モード 1／2）の記述は MSX2 テクニカルハンドブック（テクハン wiki 版）第 5 章と照合した。モード 3 および V9968 拡張部分は RTL（vdp_sprite_select_visible_planes.v、vdp_sprite_info_collect.v、vdp_sprite_makeup_pixel.v、vdp_timing_control_sprite.v、vdp_sprite_divide_table.v）と検証済みレジスタノートに基づく。
+
+
 
 # 第7章 カラーパレットと色表現
 
@@ -1864,7 +1785,7 @@ YAE は YJK モードの一種で、ドットごとに「YJK 変換した色」�
 
 サンプルプログラム `pal_demo.asm` は、パレットの 16 エントリすべてを自作の色の並び（ランプ）に書き換え、画面に 16 本の縦バーを描いて各エントリの色をそのまま表示する例です。実行結果を図7.1に示します。初期パレットとは全く異なる色の流れになっていることから、パレットの書き換えが効いていることが分かります。
 
-![pal_demo.asm の実行結果](images/sample_pal_demo.png)
+![pal_demo.asm の実行結果](figures/sample_pal_demo.png)
 
 図7.1 pal_demo.asm の実行結果（書き換えたパレットによるカラーバー）
 
@@ -1900,6 +1821,8 @@ palette_loop:
 ---
 
 本章のパレット書き込み形式と RAM 構造は検証済みレジスタノートおよび RTL（vdp_cpu_interface.v、vdp_color_palette.v、vdp_color_palette_ram.v）に基づく。初期色の表は MSX2 テクニカルハンドブック（テクハン wiki 版）の初期パレット表と照合した。リセット時の初期化範囲（先頭 16 エントリのみ、16〜255 は不定）は著者確認事項に基づく。
+
+
 
 # 第8章 VDPコマンド
 
@@ -2027,7 +1950,94 @@ HMMC、YMMM、HMMM、HMMVの高速転送コマンドはデータをバイト単�
 
 ### 8.1.6 コマンド終了時のレジスタの状態
 
-コマンドの実行にともない、SX、SY、DX、DY、NX、NYなどのパラメータレジスタは内部の進行に合わせて更新されます。終了時点の値は「どこまで処理したか」を反映したものになり、設定した値がそのまま残るとは限りません（たとえばNYは残り行数、SY/DYは最終行の次の座標を指します）。次のコマンドでは、必要なパラメータを毎回設定し直してください。詳細な更新規則は『MSX2テクニカルハンドブック』第6章の表4.7を参照してください。
+コマンドの実行にともない、パラメータレジスタの値は内部の進行に合わせて更新されます。終了時点の値は「どこまで処理したか」を反映したものになり、設定した値がそのまま残るとは限りません。V9968では、全コマンドについて、コマンド終了時のレジスタの状態が表8.1、表8.2のとおり定義されています。次のコマンドでは必要なパラメータを毎回設定し直すのが原則ですが、LFMMとLFMCについては、連続して文字を描くための値が保持されます（後述）。
+
+表の記号の意味は次のとおりです。
+
+- 「－」：コマンド処理では変更されません（保持されます）
+- 「＊」：終了時の座標、または読み出した色に更新されます
+- 「＃」：NYレジスタで、残り行数を表します。通常完了時は0、画面端で打ち切られた場合は残り行数が残ります
+- 「（T）」：コマンド自体は変更しませんが、CPU転送で最後にR#44へ書いた値が残ります
+- 「F＋」：LFMMの内部フォントアドレスが進みます
+
+SY*、DY*およびNYBの値は、Y方向の実行ドット数（処理した行数）をN、開始時の値をSY0、DY0、NY0として、次のように計算されます。
+
+- SY* = SY0 + N、DY* = DY0 + N …… DIYビットが0のとき
+- SY* = SY0 − N、DY* = DY0 − N …… DIYビットが1のとき
+- NYB = NY0 − N
+
+なお、LINEでは、NはY方向に進んだ量です（MAJビットが0のときはN = N − 1になります）。座標とカウンタは、各レジスタのビット幅で折り返します。
+
+| コマンド | コード | SX | SY | DX | DY | NX | NY | CLR | CMR H | CMR L | ARG |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| HMMC | F0h | － | － | － | ＊ | － | ＃ | －（T） | Fh | － | － |
+| YMMM | E0h | － | ＊ | － | ＊ | － | ＃ | － | Eh | － | － |
+| HMMM | D0h | － | ＊ | － | ＊ | － | ＃ | － | Dh | － | － |
+| HMMV | C0h | － | － | － | ＊ | － | ＃ | － | Ch | － | － |
+| LMMC | B0h＋LOP | － | － | － | ＊ | － | ＃ | －（T） | Bh | － | － |
+| LMCM | A0h | － | ＊ | － | － | － | ＃ | ＊ | Ah | － | － |
+| LMMM | 90h＋LOP | － | ＊ | － | ＊ | － | ＃ | － | 9h | － | － |
+| LMMV | 80h＋LOP | － | － | － | ＊ | － | ＃ | － | 8h | － | － |
+| LINE | 70h＋LOP | － | － | － | ＊ | － | － | － | 7h | － | － |
+| SRCH | 60h | － | － | － | － | － | － | － | 6h | － | － |
+| PSET | 50h＋LOP | － | － | － | － | － | － | － | 5h | － | － |
+| POINT | 40h | － | － | － | － | － | － | ＊ | 4h | － | － |
+| LRMM | 30h＋LOP | － | － | － | ＊ | － | ＃ | － | 3h | － | － |
+| LFMC | 20h＋LOP | － | － | ＊ | － | － | － | －（T） | 2h | － | － |
+| LFMM | 10h＋LOP | － | － | ＊ | － | － | － | － | 1h | － | － |
+| STOP | 00h | － | － | － | － | － | － | － | 0 | － | － |
+
+表8.1 コマンド終了時のレジスタの状態（パラメータレジスタ）
+
+| コマンド | F | VX/VY | WSX〜WEY |
+|---|---|---|---|
+| HMMC | － | － | － |
+| YMMM | － | － | － |
+| HMMM | － | － | － |
+| HMMV | － | － | － |
+| LMMC | － | － | － |
+| LMCM | － | － | － |
+| LMMM | － | － | － |
+| LMMV | － | － | － |
+| LINE | － | － | － |
+| SRCH | － | － | － |
+| PSET | － | － | － |
+| POINT | － | － | － |
+| LRMM | － | － | － |
+| LFMC | － | － | － |
+| LFMM | F＋ | － | － |
+| STOP | － | － | － |
+
+表8.2 コマンド終了時のレジスタの状態（内部フォントアドレス、回転ベクトル、ウィンドウ座標）
+
+CMR H（R#46の上位ニブル）には、終了後も実行したコマンドコードの上位ニブルが残ります（STOPは0）。CMR L（ロジカルオペレーション）とARGは、コマンド処理では変更されません。各項目の詳細は次のとおりです。
+
+**NYは残り行数です。** 矩形コマンドのNYは、開始時にNY0を読み込み、最後の行を含めて行末ごとに1ずつ減らした残り行数が書き戻されます。指定行数を処理し終えた場合は0になります。NY0 = 0の場合は1024行（256KBモードでは2048行）を処理し、0になります。画面端で打ち切られた場合は NYB = NY0 − N が残ります（例：HMMVでDY0 = 1、NY0 = 4、DIY = 1の場合、2行描いたところで終わり、NY = 2、DY = 1023（256KBモードでは2047）となります）。128KBモードでDIY = 0の場合は、DYが1023から0へ折り返して描画を続けるため、Y下端では打ち切られません。POINT、PSET、SRCH、LINEではNYは変更されません。
+
+**LMCMでは、最終行もSYが進みます。** 最後の行を転送した後も行カウンタとSYが進むため、SY = SY0 ± N、NY = 0となります。CLRとS#7には、最後に読み出した色が残ります。
+
+**POINTでは、CLRにも読み出した色が残ります。** 終了時に、CLR（R#44）にもS#7と同じ読み出し色が入ります。画面外から開始して読み出しをせずに終わった場合は、S#7とCLRの両方が保持されます。なお、SRCHの探索結果のX座標はS#8、S#9に得られます。
+
+**CMR Hは0に戻りません。** 終了時、内部のコマンドコードは0に戻らず、実行したコマンドの上位ニブルがCMR Hに残ります。これは、Geo3Dの水平LINE最適化（終了時に内部コードをLINEへ戻す処理）を壊さないため、意図的に残した動作です。コマンド実行中を示すCEは必ず0に戻るため、コマンドが再実行されることはありません。また、R#46はCPUから読み戻せないため、この値は外部から観測できません。
+
+**LRMMでは、SYは保持されます。** SX、SYは参照の開始点を表し、各行の参照位置はSX、SYからVX、VYで計算されるため、終了後も設定値のまま保持されます。DYとNYはLMMMと同様に、終了座標と残り行数に更新されます。内部では参照Yを固定小数点値として進めますが、終了時には開始時のSYへ戻ります（XHR = 1で内部スケールが2倍の場合も同じです）。VX、VYとウィンドウ座標（WSX〜WEY）は、CPUからの書き込みでだけ変更されます。なお、STOPで中断した場合はSYは開始値へ戻らないため、LRMMを再実行する場合はSYを再設定してください。また、コマンド実行中にCPUがR#34、R#35を書いた場合は、その値が新しいSYになります。
+
+**LFMMとLFMCは、連続文字描画のための値を保持します。** 両コマンドとも、DYとNYは開始時の値（DY0、NY0）のまま保持され、DXは次の文字の位置へ進みます。このため、終了後にR#46（LFMCではR#44も）を書き直すだけで、続きの文字を同じ行に描けます。
+
+- LFMCでは、DXは DX0 ± NX へ進みます（DIX = 1で減算、9ビットで折り返し）。画面X端で文字の途中に終わった場合は進みません。CLRにはLMMCと同様に、CPU転送で最後にR#44へ書いたパターンが残ります。開始時のCLR（前景色）は内部に保存されますが、終了後に前景色を再利用するにはR#44を再設定してください。1バイトは8ドット分なので、NXは8以下で使います。
+- LFMMでは、DXは文字ごとに進み、終了時は DX = DX0 + 8 × NX となります（9ビットで折り返し）。画面X端で文字の途中に終わった場合は、その文字の分は進みません。LFMMはSX、SYを座標として使いません（フォントアドレスの指定に使うため、表8.1のSX、SYは「－」です）。
+- 背景色（R#12）は、両コマンドとも変更されません。
+
+**LFMMの内部フォントアドレス（F）は、LFMMだけが進めます。** FはR#32〜R#34から設定される内部の記憶で、SX、SYとは別のものです。通常完了時は F = F0 + NX0 × H となります（18ビットで折り返し。HはNY0で、NY0 = 0の場合は2048行、128KBモードでは1024行）。DIY = 1でY上端を越える場合も、描かなかったフォント行を飛ばして次の文字へ進みます。R#32〜R#34への書き込みはSX、SYとFを同時に変更しますが、進んだ後のFがSX、SYへ書き戻されることはありません。他のコマンドはFを変更しません。
+
+**STOPの扱い。** STOPは、途中まで更新したDY、SYなどをそのまま残し、NYには中断したコマンドの残り行数を書き戻します。コマンド実行中でなければ、NYは変更されません。Geo3DのHMMV最適化をSTOPで中断した場合は、元のLINEのNX、NYに戻ります。互換モード（V58 = 1）で追加コマンド（LRMM、LFMC、LFMM）を発行した場合も、STOPとして扱われます。
+
+**共通の注意。**
+
+- 「保持」は有効なビットについての記載です。開始時に、SXのbit11〜9（LRMM以外）とNXのbit10〜9は0にされ、SYの未使用上位ビットも128KB／256KBモードに応じて0にされます。
+- コマンド実行中にCPUがNX、NYの各バイトを書いた場合、そのバイトは終了時の書き戻しから保護され、書いた値が残ります。
+- R#28〜R#30（VRAMバンク）は、コマンドでは変更されません。
+- Geo3Dの水平LINEを内部でHMMVに置き換える最適化は新しいコマンドではなく、表ではLINEに含まれます。この最適化はDYを保持し、終了時にLINEのNX、NYと内部コマンド種別へ戻します。
 
 ## 8.2 HMMC（CPU→VRAM高速転送）
 
@@ -2038,7 +2048,7 @@ HMMC、YMMM、HMMM、HMMVの高速転送コマンドはデータをバイト単�
 | ロジカルオペレーション | 指定不可 |
 | 使用パラメータ | DX、DY、NX、NY、CLR、ARG（DIX、DIY） |
 
-![HMMC の座標関係](images/cmd_hmmc.png)
+![HMMC の座標関係](figures/cmd_hmmc.png)
 
 図8.1 HMMC の座標関係
 
@@ -2055,7 +2065,7 @@ CPUからVRAMの指定領域へ、データをバイト単位で転送します�
 | ロジカルオペレーション | 指定不可 |
 | 使用パラメータ | SY、DX、DY、NY、ARG（DIX、DIY） |
 
-![YMMM の座標関係](images/cmd_ymmm.png)
+![YMMM の座標関係](figures/cmd_ymmm.png)
 
 図8.2 YMMM の座標関係
 
@@ -2070,7 +2080,7 @@ VRAM内のデータを、同じX座標のままY方向へバイト単位で転�
 | ロジカルオペレーション | 指定不可 |
 | 使用パラメータ | SX、SY、DX、DY、NX、NY、ARG |
 
-![HMMM の座標関係](images/cmd_hmmm.png)
+![HMMM の座標関係](figures/cmd_hmmm.png)
 
 図8.3 HMMM の座標関係
 
@@ -2085,7 +2095,7 @@ VRAMの指定領域のデータを、VRAMの他の領域へバイト単位で転
 | ロジカルオペレーション | 指定不可 |
 | 使用パラメータ | DX、DY、NX、NY、CLR、ARG |
 
-![HMMV の座標関係](images/cmd_hmmv.png)
+![HMMV の座標関係](figures/cmd_hmmv.png)
 
 図8.4 HMMV の座標関係
 
@@ -2099,7 +2109,7 @@ VRAMの指定領域を、R#44（CLR）に設定したバイトデータで塗り
 | 転送単位 | ドット |
 | 使用パラメータ | DX、DY、NX、NY、CLR、ARG |
 
-![LMMC の座標関係](images/cmd_lmmc.png)
+![LMMC の座標関係](figures/cmd_lmmc.png)
 
 図8.5 LMMC の座標関係
 
@@ -2115,7 +2125,7 @@ CPUからVRAMの指定領域へ、データをドット単位で転送します�
 | 転送単位 | ドット |
 | 使用パラメータ | SX、SY、NX、NY、ARG |
 
-![LMCM の座標関係](images/cmd_lmcm.png)
+![LMCM の座標関係](figures/cmd_lmcm.png)
 
 図8.6 LMCM の座標関係
 
@@ -2131,7 +2141,7 @@ VRAMの指定領域のデータを、ドット単位でCPUへ転送します。�
 | 転送単位 | ドット |
 | 使用パラメータ | SX、SY、DX、DY、NX、NY、ARG |
 
-![LMMM の座標関係](images/cmd_lmmm.png)
+![LMMM の座標関係](figures/cmd_lmmm.png)
 
 図8.7 LMMM の座標関係
 
@@ -2145,7 +2155,7 @@ VRAMの指定領域のデータを、VRAMの他の領域へドット単位で転
 | 転送単位 | ドット |
 | 使用パラメータ | DX、DY、NX、NY、CLR、ARG |
 
-![LMMV の座標関係](images/cmd_lmmv.png)
+![LMMV の座標関係](figures/cmd_lmmv.png)
 
 図8.8 LMMV の座標関係
 
@@ -2159,7 +2169,7 @@ VRAMの指定領域を、R#44（CLR）の色コードでドット単位に塗り
 | 転送単位 | ドット |
 | 使用パラメータ | DX、DY、NX（長辺）、NY（短辺）、CLR、ARG（MAJ、DIX、DIY） |
 
-![LINE の座標関係](images/cmd_line.png)
+![LINE の座標関係](figures/cmd_line.png)
 
 図8.9 LINE の座標関係
 
@@ -2174,7 +2184,7 @@ VRAMの指定領域を、R#44（CLR）の色コードでドット単位に塗り
 | 使用パラメータ | SX、SY、CLR、ARG（DIX、EQ） |
 | 結果 | S#2のBDビット、S#8、S#9 |
 
-![SRCH の座標関係](images/cmd_srch.png)
+![SRCH の座標関係](figures/cmd_srch.png)
 
 図8.10 SRCH の座標関係
 
@@ -2190,7 +2200,7 @@ VRAMの指定領域を、R#44（CLR）の色コードでドット単位に塗り
 | 転送単位 | ドット |
 | 使用パラメータ | DX、DY、CLR、ARG |
 
-![PSET の座標関係](images/cmd_pset.png)
+![PSET の座標関係](figures/cmd_pset.png)
 
 図8.11 PSET の座標関係
 
@@ -2205,7 +2215,7 @@ VRAMの指定領域を、R#44（CLR）の色コードでドット単位に塗り
 | 使用パラメータ | SX、SY |
 | 結果 | S#7 |
 
-![POINT の座標関係](images/cmd_point.png)
+![POINT の座標関係](figures/cmd_point.png)
 
 図8.12 POINT の座標関係
 
@@ -2220,7 +2230,7 @@ VRAMの指定領域を、R#44（CLR）の色コードでドット単位に塗り
 | 使用パラメータ | SX、SY、DX、DY、NX、NY、CLR、ARG、VX（R#47、R#48）、VY（R#49、R#50）、WSX（R#51、R#52）、WSY（R#53、R#54）、WEX（R#55、R#56）、WEY（R#57、R#58） |
 | 使用条件 | 拡張モード（V58=0）のときのみ有効 |
 
-![LRMM の座標関係](images/cmd_lrmm.png)
+![LRMM の座標関係](figures/cmd_lrmm.png)
 
 図8.13 LRMM の座標関係
 
@@ -2243,7 +2253,7 @@ VRAMからVRAMへ、回転と拡大縮小をかけながらドット単位で転
 | 使用パラメータ | DX、DY、NX、NY、ARG、前景色（R#44）、背景色（R#12） |
 | 使用条件 | 拡張モード（V58=0）のときのみ有効 |
 
-![LFMC の座標関係](images/cmd_lfmc.png)
+![LFMC の座標関係](figures/cmd_lfmc.png)
 
 図8.14 LFMC の座標関係
 
@@ -2267,7 +2277,7 @@ NXが8の倍数でない場合、端数のドットも1バイトをMSB側から�
 | 使用パラメータ | フォントアドレス（R#32〜R#34）、DX、DY、NX（文字数）、NY、ARG、前景色（R#44）、背景色（R#12） |
 | 使用条件 | 拡張モード（V58=0）のときのみ有効 |
 
-![LFMM の座標関係](images/cmd_lfmm.png)
+![LFMM の座標関係](figures/cmd_lfmm.png)
 
 図8.15 LFMM の座標関係
 
@@ -2295,7 +2305,7 @@ LFMMでは、SX、SYは座標ではなくフォントデータのアドレス指
 
 サンプルプログラム `cmd_demo.asm` は、SCREEN 5（Graphic 4）で VDP コマンドだけを使って図形を描く例です。処理の流れは、(1) HMMV で画面全体と矩形を塗りつぶし、(2) LINE で矩形に枠と対角線を引き、(3) LMMM で完成した矩形を別の場所へコピーする、というものです。実行結果を図8.16に示します。右下に矩形が複製されていることが、LMMM の動作をそのまま表しています。
 
-![cmd_demo.asm の実行結果](images/sample_cmd_demo.png)
+![cmd_demo.asm の実行結果](figures/sample_cmd_demo.png)
 
 図8.16 cmd_demo.asm の実行結果（HMMV、LINE、LMMM）
 
@@ -2392,7 +2402,7 @@ LFMMでは、SX、SYは座標ではなくフォントデータのアドレス指
 
 サンプルプログラム `lrmm_demo.asm` は、SCREEN 5（Graphic 4）で 64×64 ドットの図形を描き、LRMM で 30 度回転させて右側へコピーする例です。実行結果を図8.17に示します。左が転送元の図形、右上が回転コピー、下が比較用の通常の LMMM コピーです。図形の左上の黄色いブロックと右下の緑のブロックの位置から、時計回りに 30 度回転していることが分かります。
 
-![lrmm_demo.asm の実行結果](images/sample_lrmm_demo.png)
+![lrmm_demo.asm の実行結果](figures/sample_lrmm_demo.png)
 
 図8.17 lrmm_demo.asm の実行結果（LRMM による 30 度回転）
 
@@ -2459,7 +2469,7 @@ LRMM は拡張コマンドなので、実行前に拡張モード（V58 = 0）�
 
 サンプルプログラム `lfmm_demo.asm` は、SCREEN 5（Graphic 4）で、VRAM に置いた 8×16 ドットのフォントデータから文字列 "V9968" を LFMM で描く例です。実行結果を図8.18に示します。下段は同じ文字列を DIY = 1 で描いたもので、上下が反転しています。
 
-![lfmm_demo.asm の実行結果](images/sample_lfmm_demo.png)
+![lfmm_demo.asm の実行結果](figures/sample_lfmm_demo.png)
 
 図8.18 lfmm_demo.asm の実行結果（LFMM によるフォント描画と上下反転）
 
@@ -2509,6 +2519,8 @@ LFMM のパラメータ設定は次のとおりです。**R#32〜R#34 は座標�
 ```
 
 2 回目は ARG の DIY を 1 にして (28, 144) へ描きます。DIY = 1 では描画が DY から上方向へ進むため、DY は反転した文字列の下端になります（パラメータはコマンドごとに設定し直す点は他のコマンドと同じです）。
+
+
 
 # 第9章 Geo3D
 
@@ -2844,7 +2856,7 @@ Geo3Dには、BASICから使うための拡張ライブラリ「G3BASIC」が用
 
 フェーズ2エンジンを使う最小のプログラムを示します。MSX-DOS用の.COMプログラムで、立方体のモデルを最初に1回だけ投入し、あとはフレームごとに回転行列（24バイト）とRUNを送るだけです。裏ページの消去（HMMV）とページ切り替え（R#2）はZ80側が行います。ポートはDIPスイッチ88h設定（VDPは88h〜8Bh、Geo3Dは8Dh／8Fh）を前提とし、98h設定では各ポートに10hを加えてください。キー入力で終了します。完全なソースは samples/v9968/geo3d_cube.asm にあり、zmaでアセンブルできます（Alex Moncks氏の geo3d_demo.asm を下敷きに、説明書用に最小化したものです）。
 
-![サンプルプログラムの実行結果](images/sample_geo3d_cube.png)
+![サンプルプログラムの実行結果](figures/sample_geo3d_cube.png)
 
 図9.1 サンプルプログラムの実行結果（回転する立方体、SCREEN 5）
 
@@ -3136,7 +3148,7 @@ dw 0x0000,0x0000,0x4000,0x15e4,0x3c24,0x0000,0xc3dc,0x15e4,0x0000,0x0000,0x0000,
 
 Geo3Dの公式デモROMが、alexmoncks氏のV9968_Cartridgeフォーク（ブランチ `geo3d-v2.0`）の `geo3d/rom/` に収められています。6種類のデモをループ再生するROMで、ビルドスクリプト（`build_rom.py --base 0x98`）でV9968をポート98hに置いた版（GEO3D_98.ROM）を生成し、Geo3Dエミュレーション付きopenMSX（マシン C-BIOS_V9968_JP、拡張 geo3d）で実行した結果を図9.2と図9.3に示します。起動直後の言語メニューで「1」（英語）を選ぶとデモが始まり、スペースキーで次のデモへ進みます。
 
-![公式デモROMの実行結果（ワイヤーフレーム）](images/sample_geo3d_wire.png)
+![公式デモROMの実行結果（ワイヤーフレーム）](figures/sample_geo3d_wire.png)
 
 図9.2 公式デモROMの実行結果（ワイヤーフレーム：立方体と八面体）
 
@@ -3161,11 +3173,13 @@ jr c, geo_wait; bit0 = RUN busy
 
 行列は1回転分のテーブルとして用意されており、Z80は座標計算を一切しません。頂点の変換、辺のクリッピング、LINEコマンド列の生成はすべてGeo3Dが行います。Geo3Dがなければ、Z80は頂点計算に加えて1フレームあたり約312個のVDPコマンドレジスタ値を書き込む必要があります（デモのドキュメントによる）。
 
-![公式デモROMの実行結果（面塗り）](images/sample_geo3d_faces.png)
+![公式デモROMの実行結果（面塗り）](figures/sample_geo3d_faces.png)
 
 図9.3 公式デモROMの実行結果（面塗り：「GEO3D」の立体文字）
 
 図9.3は面塗りデモです。背面の除去、光源方向による陰影、遠い面からの描画順ソート、水平LINEによる面の塗りつぶしをGeo3Dが担当し、ホスト側の送信量はワイヤーフレームと同じく1フレームあたり約30バイトで変わりません。このあとテクスチャ付き面塗り、パン／ズーム、フライインのデモが続きます。
+
+
 
 # 第10章 割り込み
 
@@ -3280,7 +3294,7 @@ R#20 / R#21 を設定するには、LockExtReg を解除する必要がありま
 
 サンプルプログラム `line_demo.asm` は、ライン割り込みのフラグ（FH）をポーリングして、画面の上下でパレットを切り替える例です。SCREEN 5（Graphic 4）でパレットの 16 色を縦帯として描き、R#19 には画面中央の 106 ライン目を設定します。実行結果を図10.1に示します。上半分と下半分で各帯の色が変わっていることが分かります（周辺色もパレット経由のため、上下で色が変わります）。
 
-![line_demo.asm の実行結果](images/sample_line_demo.png)
+![line_demo.asm の実行結果](figures/sample_line_demo.png)
 
 図10.1 line_demo.asm の実行結果（ライン 106 でのパレット切り替え）
 
@@ -3335,6 +3349,8 @@ V9968 が本体に内蔵されている場合と、カートリッジなどで 2
 > 内蔵 VDP と 2nd VDP の垂直同期は、一致しているとは限りません。H.TIMI が呼ばれるタイミングは内蔵 VDP の垂直同期に合わせたものであり、その時点で 2nd VDP が垂直ブランキング期間に入っている保証はありません。2nd VDP 側の画面更新を帰線期間に合わせたい場合は、H.TIMI を目安にせず、H.KEYI で 2nd VDP 自身のフレーム割り込みを処理してください。割り込み要因は、Port#4 を使ってクリアするか、ステータスレジスタを読んでクリアする必要があります。
 >
 > ライン割り込みについても、内蔵 VDP と 2nd VDP では同じラインを表示しているとは限りません。内蔵 VDP のライン割り込みを使って 2nd VDP を制御したり、その逆をしても、指定したラインで制御が行われるとは限らないことに注意してください。
+
+
 
 # 第11章 VRAM アクセスとタイミング
 
@@ -3422,6 +3438,8 @@ R#20 の HS ビット（bit0）を 1 にすると高速モードになります�
 
 【要確認】高速モードがコマンド実行時間や CPU アクセスのタイミングに与える具体的な影響（どの処理がどの程度速くなるか）は、現時点の資料では確定していません。
 
+
+
 # 第12章 互換性と移行の注意
 
 V9968 は、TMS9918 から V9938、V9958 へと発展してきた VDP の系譜を引き継ぎ、従来のソフトウェアがそのまま動作することを基本方針として設計されています。本章では、従来チップとの動作の違いと、「9958 Compatible モード」（V9958 互換モード）の範囲、そして既存ソフトウェアを V9968 で動かす場合・V9968 向けに拡張する場合の注意点をまとめます。
@@ -3500,6 +3518,8 @@ V9968 の動作モードは、R#21 の V58 ビット（bit0）で切り替わり
 6. **2 台目の VDP（2nd VDP）として使う場合は、ベースアドレスと割り込みフックの違いに注意すること**: ベースアドレスは 88h で、垂直同期割り込みは H.KEYI フックでも処理する必要があります。内蔵 VDP の垂直同期と一致しているとは限りません（10.8 節参照）。
 
 なお、本書の各章に残されている【要確認】の項目（R#20 の FIL / ILNS / SVNS、R#45 の FG4 / XHR、ウィンドウレジスタの適用範囲、表示期間中の CPU アクセスタイミングなど）は、仕様が確定次第、将来の版で反映されます。未確定の項目に依存したソフトウェアは、現時点では作成しないでください。
+
+
 
 # 付録
 
@@ -3595,187 +3615,187 @@ V9968 の動作モードは、R#21 の V58 ビット（bit0）で切り替わり
 
 #### R#0 Mode0
 
-![R#0 のビット配置図](images/rega_r00.png)
+![R#0 のビット配置図](figures/rega_r00.png)
 
 図A.1 R#0 Mode0 のビット配置
 
 #### R#1 Mode1
 
-![R#1 のビット配置図](images/rega_r01.png)
+![R#1 のビット配置図](figures/rega_r01.png)
 
 図A.2 R#1 Mode1 のビット配置
 
 #### R#2 Pattern Name Table Address
 
-![R#2 のビット配置図](images/rega_r02.png)
+![R#2 のビット配置図](figures/rega_r02.png)
 
 図A.3 R#2 Pattern Name Table Address のビット配置
 
 #### R#3 Color Table Address (L)
 
-![R#3 のビット配置図](images/rega_r03.png)
+![R#3 のビット配置図](figures/rega_r03.png)
 
 図A.4 R#3 Color Table Address (L) のビット配置
 
 #### R#4 Pattern Generator Table Address
 
-![R#4 のビット配置図](images/rega_r04.png)
+![R#4 のビット配置図](figures/rega_r04.png)
 
 図A.5 R#4 Pattern Generator Table Address のビット配置
 
 #### R#5 Sprite Attribute Table Address (L)
 
-![R#5 のビット配置図](images/rega_r05.png)
+![R#5 のビット配置図](figures/rega_r05.png)
 
 図A.6 R#5 Sprite Attribute Table Address (L) のビット配置
 
 #### R#6 Sprite Pattern Generator Table Address
 
-![R#6 のビット配置図](images/rega_r06.png)
+![R#6 のビット配置図](figures/rega_r06.png)
 
 図A.7 R#6 Sprite Pattern Generator Table Address のビット配置
 
 #### R#7 Background Color
 
-![R#7 のビット配置図](images/rega_r07.png)
+![R#7 のビット配置図](figures/rega_r07.png)
 
 図A.8 R#7 Background Color のビット配置
 
 #### R#8 Mode2
 
-![R#8 のビット配置図](images/rega_r08.png)
+![R#8 のビット配置図](figures/rega_r08.png)
 
 図A.9 R#8 Mode2 のビット配置
 
 #### R#9 Mode3
 
-![R#9 のビット配置図](images/rega_r09.png)
+![R#9 のビット配置図](figures/rega_r09.png)
 
 図A.10 R#9 Mode3 のビット配置
 
 #### R#10 Color Table Address (H)
 
-![R#10 のビット配置図](images/rega_r10.png)
+![R#10 のビット配置図](figures/rega_r10.png)
 
 図A.11 R#10 Color Table Address (H) のビット配置
 
 #### R#11 Sprite Attribute Table Address (H)
 
-![R#11 のビット配置図](images/rega_r11.png)
+![R#11 のビット配置図](figures/rega_r11.png)
 
 図A.12 R#11 Sprite Attribute Table Address (H) のビット配置
 
 #### R#12 Text Color / Back Color
 
-![R#12 のビット配置図](images/rega_r12.png)
+![R#12 のビット配置図](figures/rega_r12.png)
 
 図A.13 R#12 Text Color / Back Color のビット配置
 
 #### R#13 Blinking Period
 
-![R#13 のビット配置図](images/rega_r13.png)
+![R#13 のビット配置図](figures/rega_r13.png)
 
 図A.14 R#13 Blinking Period のビット配置
 
 #### R#14 VRAM Access Base Address
 
-![R#14 のビット配置図](images/rega_r14.png)
+![R#14 のビット配置図](figures/rega_r14.png)
 
 図A.15 R#14 VRAM Access Base Address のビット配置
 
 #### R#15 Status Register Pointer
 
-![R#15 のビット配置図](images/rega_r15.png)
+![R#15 のビット配置図](figures/rega_r15.png)
 
 図A.16 R#15 Status Register Pointer のビット配置
 
 #### R#16 Color Palette Pointer
 
-![R#16 のビット配置図](images/rega_r16.png)
+![R#16 のビット配置図](figures/rega_r16.png)
 
 図A.17 R#16 Color Palette Pointer のビット配置
 
 #### R#17 Control Register Pointer
 
-![R#17 のビット配置図](images/rega_r17.png)
+![R#17 のビット配置図](figures/rega_r17.png)
 
 図A.18 R#17 Control Register Pointer のビット配置
 
 #### R#18 Display Adjust
 
-![R#18 のビット配置図](images/rega_r18.png)
+![R#18 のビット配置図](figures/rega_r18.png)
 
 図A.19 R#18 Display Adjust のビット配置
 
 #### R#19 Interrupt Line
 
-![R#19 のビット配置図](images/rega_r19.png)
+![R#19 のビット配置図](figures/rega_r19.png)
 
 図A.20 R#19 Interrupt Line のビット配置
 
 #### R#20 Mode5
 
-![R#20 のビット配置図](images/rega_r20.png)
+![R#20 のビット配置図](figures/rega_r20.png)
 
 図A.21 R#20 Mode5 のビット配置
 
 #### R#21 Mode6
 
-![R#21 のビット配置図](images/rega_r21.png)
+![R#21 のビット配置図](figures/rega_r21.png)
 
 図A.22 R#21 Mode6 のビット配置
 
 #### R#22 （未実装）
 
-![R#22 のビット配置図](images/rega_r22.png)
+![R#22 のビット配置図](figures/rega_r22.png)
 
 図A.23 R#22 （未実装） のビット配置
 
 #### R#23 Display Offset
 
-![R#23 のビット配置図](images/rega_r23.png)
+![R#23 のビット配置図](figures/rega_r23.png)
 
 図A.24 R#23 Display Offset のビット配置
 
 #### R#24 （未実装）
 
-![R#24 のビット配置図](images/rega_r24.png)
+![R#24 のビット配置図](figures/rega_r24.png)
 
 図A.25 R#24 （未実装） のビット配置
 
 #### R#25 Mode4
 
-![R#25 のビット配置図](images/rega_r25.png)
+![R#25 のビット配置図](figures/rega_r25.png)
 
 図A.26 R#25 Mode4 のビット配置
 
 #### R#26 Horizontal Offset (By Character)
 
-![R#26 のビット配置図](images/rega_r26.png)
+![R#26 のビット配置図](figures/rega_r26.png)
 
 図A.27 R#26 Horizontal Offset (By Character) のビット配置
 
 #### R#27 Horizontal Offset (By Dot)
 
-![R#27 のビット配置図](images/rega_r27.png)
+![R#27 のビット配置図](figures/rega_r27.png)
 
 図A.28 R#27 Horizontal Offset (By Dot) のビット配置
 
 #### R#28 CPU Access Bank
 
-![R#28 のビット配置図](images/rega_r28.png)
+![R#28 のビット配置図](figures/rega_r28.png)
 
 図A.29 R#28 CPU Access Bank のビット配置
 
 #### R#29 Display Bank
 
-![R#29 のビット配置図](images/rega_r29.png)
+![R#29 のビット配置図](figures/rega_r29.png)
 
 図A.30 R#29 Display Bank のビット配置
 
 #### R#30 Command Bank
 
-![R#30 のビット配置図](images/rega_r30.png)
+![R#30 のビット配置図](figures/rega_r30.png)
 
 図A.31 R#30 Command Bank のビット配置
 
@@ -3785,163 +3805,163 @@ V9968 の動作モードは、R#21 の V58 ビット（bit0）で切り替わり
 
 #### R#32 Source X (L)
 
-![R#32 のビット配置図](images/rega_r32.png)
+![R#32 のビット配置図](figures/rega_r32.png)
 
 図A.32 R#32 Source X (L) のビット配置
 
 #### R#33 Source X (H)
 
-![R#33 のビット配置図](images/rega_r33.png)
+![R#33 のビット配置図](figures/rega_r33.png)
 
 図A.33 R#33 Source X (H) のビット配置
 
 #### R#34 Source Y (L)
 
-![R#34 のビット配置図](images/rega_r34.png)
+![R#34 のビット配置図](figures/rega_r34.png)
 
 図A.34 R#34 Source Y (L) のビット配置
 
 #### R#35 Source Y (H)
 
-![R#35 のビット配置図](images/rega_r35.png)
+![R#35 のビット配置図](figures/rega_r35.png)
 
 図A.35 R#35 Source Y (H) のビット配置
 
 #### R#36 Destination X (L)
 
-![R#36 のビット配置図](images/rega_r36.png)
+![R#36 のビット配置図](figures/rega_r36.png)
 
 図A.36 R#36 Destination X (L) のビット配置
 
 #### R#37 Destination X (H)
 
-![R#37 のビット配置図](images/rega_r37.png)
+![R#37 のビット配置図](figures/rega_r37.png)
 
 図A.37 R#37 Destination X (H) のビット配置
 
 #### R#38 Destination Y (L)
 
-![R#38 のビット配置図](images/rega_r38.png)
+![R#38 のビット配置図](figures/rega_r38.png)
 
 図A.38 R#38 Destination Y (L) のビット配置
 
 #### R#39 Destination Y (H)
 
-![R#39 のビット配置図](images/rega_r39.png)
+![R#39 のビット配置図](figures/rega_r39.png)
 
 図A.39 R#39 Destination Y (H) のビット配置
 
 #### R#40 Number Of Dots X (L)
 
-![R#40 のビット配置図](images/rega_r40.png)
+![R#40 のビット配置図](figures/rega_r40.png)
 
 図A.40 R#40 Number Of Dots X (L) のビット配置
 
 #### R#41 Number Of Dots X (H)
 
-![R#41 のビット配置図](images/rega_r41.png)
+![R#41 のビット配置図](figures/rega_r41.png)
 
 図A.41 R#41 Number Of Dots X (H) のビット配置
 
 #### R#42 Number Of Dots Y (L)
 
-![R#42 のビット配置図](images/rega_r42.png)
+![R#42 のビット配置図](figures/rega_r42.png)
 
 図A.42 R#42 Number Of Dots Y (L) のビット配置
 
 #### R#43 Number Of Dots Y (H)
 
-![R#43 のビット配置図](images/rega_r43.png)
+![R#43 のビット配置図](figures/rega_r43.png)
 
 図A.43 R#43 Number Of Dots Y (H) のビット配置
 
 #### R#44 Color
 
-![R#44 のビット配置図](images/rega_r44.png)
+![R#44 のビット配置図](figures/rega_r44.png)
 
 図A.44 R#44 Color のビット配置
 
 #### R#45 Argument
 
-![R#45 のビット配置図](images/rega_r45.png)
+![R#45 のビット配置図](figures/rega_r45.png)
 
 図A.45 R#45 Argument のビット配置
 
 #### R#46 Command
 
-![R#46 のビット配置図](images/rega_r46.png)
+![R#46 のビット配置図](figures/rega_r46.png)
 
 図A.46 R#46 Command のビット配置
 
 #### R#47 Rotation Vector X (L)
 
-![R#47 のビット配置図](images/rega_r47.png)
+![R#47 のビット配置図](figures/rega_r47.png)
 
 図A.47 R#47 Rotation Vector X (L) のビット配置
 
 #### R#48 Rotation Vector X (H)
 
-![R#48 のビット配置図](images/rega_r48.png)
+![R#48 のビット配置図](figures/rega_r48.png)
 
 図A.48 R#48 Rotation Vector X (H) のビット配置
 
 #### R#49 Rotation Vector Y (L)
 
-![R#49 のビット配置図](images/rega_r49.png)
+![R#49 のビット配置図](figures/rega_r49.png)
 
 図A.49 R#49 Rotation Vector Y (L) のビット配置
 
 #### R#50 Rotation Vector Y (H)
 
-![R#50 のビット配置図](images/rega_r50.png)
+![R#50 のビット配置図](figures/rega_r50.png)
 
 図A.50 R#50 Rotation Vector Y (H) のビット配置
 
 #### R#51 Window Start X (L)
 
-![R#51 のビット配置図](images/rega_r51.png)
+![R#51 のビット配置図](figures/rega_r51.png)
 
 図A.51 R#51 Window Start X (L) のビット配置
 
 #### R#52 Window Start X (H)
 
-![R#52 のビット配置図](images/rega_r52.png)
+![R#52 のビット配置図](figures/rega_r52.png)
 
 図A.52 R#52 Window Start X (H) のビット配置
 
 #### R#53 Window Start Y (L)
 
-![R#53 のビット配置図](images/rega_r53.png)
+![R#53 のビット配置図](figures/rega_r53.png)
 
 図A.53 R#53 Window Start Y (L) のビット配置
 
 #### R#54 Window Start Y (H)
 
-![R#54 のビット配置図](images/rega_r54.png)
+![R#54 のビット配置図](figures/rega_r54.png)
 
 図A.54 R#54 Window Start Y (H) のビット配置
 
 #### R#55 Window End X (L)
 
-![R#55 のビット配置図](images/rega_r55.png)
+![R#55 のビット配置図](figures/rega_r55.png)
 
 図A.55 R#55 Window End X (L) のビット配置
 
 #### R#56 Window End X (H)
 
-![R#56 のビット配置図](images/rega_r56.png)
+![R#56 のビット配置図](figures/rega_r56.png)
 
 図A.56 R#56 Window End X (H) のビット配置
 
 #### R#57 Window End Y (L)
 
-![R#57 のビット配置図](images/rega_r57.png)
+![R#57 のビット配置図](figures/rega_r57.png)
 
 図A.57 R#57 Window End Y (L) のビット配置
 
 #### R#58 Window End Y (H)
 
-![R#58 のビット配置図](images/rega_r58.png)
+![R#58 のビット配置図](figures/rega_r58.png)
 
 図A.58 R#58 Window End Y (H) のビット配置
 
@@ -4037,61 +4057,61 @@ Geo3Dのレジスタは、VDPのR#とは別のインデックス空間にあり�
 
 #### S#0
 
-![S#0 のビット配置図](images/rega_s00.png)
+![S#0 のビット配置図](figures/rega_s00.png)
 
 図B.1 S#0 のビット配置
 
 #### S#1
 
-![S#1 のビット配置図](images/rega_s01.png)
+![S#1 のビット配置図](figures/rega_s01.png)
 
 図B.2 S#1 のビット配置
 
 #### S#2
 
-![S#2 のビット配置図](images/rega_s02.png)
+![S#2 のビット配置図](figures/rega_s02.png)
 
 図B.3 S#2 のビット配置
 
 #### S#3
 
-![S#3 のビット配置図](images/rega_s03.png)
+![S#3 のビット配置図](figures/rega_s03.png)
 
 図B.4 S#3 のビット配置
 
 #### S#4
 
-![S#4 のビット配置図](images/rega_s04.png)
+![S#4 のビット配置図](figures/rega_s04.png)
 
 図B.5 S#4 のビット配置
 
 #### S#5
 
-![S#5 のビット配置図](images/rega_s05.png)
+![S#5 のビット配置図](figures/rega_s05.png)
 
 図B.6 S#5 のビット配置
 
 #### S#6
 
-![S#6 のビット配置図](images/rega_s06.png)
+![S#6 のビット配置図](figures/rega_s06.png)
 
 図B.7 S#6 のビット配置
 
 #### S#7
 
-![S#7 のビット配置図](images/rega_s07.png)
+![S#7 のビット配置図](figures/rega_s07.png)
 
 図B.8 S#7 のビット配置
 
 #### S#8
 
-![S#8 のビット配置図](images/rega_s08.png)
+![S#8 のビット配置図](figures/rega_s08.png)
 
 図B.9 S#8 のビット配置
 
 #### S#9
 
-![S#9 のビット配置図](images/rega_s09.png)
+![S#9 のビット配置図](figures/rega_s09.png)
 
 図B.10 S#9 のビット配置
 
@@ -4130,7 +4150,7 @@ Geo3Dのレジスタは、VDPのR#とは別のインデックス空間にあり�
 
 スプライトとカラーテーブルは使いません。パターンネームテーブルとパターンジェネレータテーブルだけの、最も単純な配置です。
 
-![Text1 の標準 VRAM マップ](images/vrammap_t1.png)
+![Text1 の標準 VRAM マップ](figures/vrammap_t1.png)
 
 図C.1 Text1 の標準 VRAM マップ
 
@@ -4146,7 +4166,7 @@ Geo3Dのレジスタは、VDPのR#とは別のインデックス空間にあり�
 
 ブリンクテーブルが加わります。行数は 24 行（R#9 の LN = 0）が標準です。LN = 1（26.5 行）にすると、パターンネームテーブルは 2,160 バイト（00000h〜0086Fh）、ブリンクテーブルは 270 バイト（00800h〜0090Dh）まで広がります。
 
-![Text2 の標準 VRAM マップ](images/vrammap_t2.png)
+![Text2 の標準 VRAM マップ](figures/vrammap_t2.png)
 
 図C.2 Text2 の標準 VRAM マップ
 
@@ -4165,7 +4185,7 @@ Geo3Dのレジスタは、VDPのR#とは別のインデックス空間にあり�
 
 パターンジェネレータテーブルが色データを兼ねます。カラーテーブルはありません。スプライトはモード 1 です。
 
-![Multicolor の標準 VRAM マップ](images/vrammap_mc.png)
+![Multicolor の標準 VRAM マップ](figures/vrammap_mc.png)
 
 図C.3 Multicolor の標準 VRAM マップ
 
@@ -4184,7 +4204,7 @@ Geo3Dのレジスタは、VDPのR#とは別のインデックス空間にあり�
 
 スプライトはモード 1 です。カラーテーブルは 32 バイトと小さく、パターンネームテーブルの直後には大きな未使用領域があります。
 
-![Graphic1 の標準 VRAM マップ](images/vrammap_g1.png)
+![Graphic1 の標準 VRAM マップ](figures/vrammap_g1.png)
 
 図C.4 Graphic1 の標準 VRAM マップ
 
@@ -4205,7 +4225,7 @@ Geo3Dのレジスタは、VDPのR#とは別のインデックス空間にあり�
 
 パターンジェネレータテーブルとカラーテーブルは 3 バンク構成で、それぞれ 6,144 バイトを使います。スプライトはモード 1 です。
 
-![Graphic2 の標準 VRAM マップ](images/vrammap_g2.png)
+![Graphic2 の標準 VRAM マップ](figures/vrammap_g2.png)
 
 図C.5 Graphic2 の標準 VRAM マップ
 
@@ -4226,7 +4246,7 @@ Geo3Dのレジスタは、VDPのR#とは別のインデックス空間にあり�
 
 VRAM の配置は Graphic2 とほぼ同じで、違いはスプライトがモード 2 になる点と、それに伴ってスプライトアトリビュートテーブルとスプライトカラーテーブルの位置が変わる点だけです（5.8 節）。
 
-![Graphic3 の標準 VRAM マップ](images/vrammap_g3.png)
+![Graphic3 の標準 VRAM マップ](figures/vrammap_g3.png)
 
 図C.6 Graphic3 の標準 VRAM マップ
 
@@ -4247,7 +4267,7 @@ VRAM の配置は Graphic2 とほぼ同じで、違いはスプライトがモ�
 
 ビットマップモードです。VRAM は 32KB 単位のページに分かれ、ページ 0 の後方にスプライト関係のテーブルが置かれます。スプライト関係のテーブルは表示ページを切り替えても共通で、ページ 1 以降はビットマップだけが置かれます。192 ライン時（LN = 0）はビットマップが 24,576 バイト（ページ内では 00000h〜05FFFh）になります。Graphic4 と Graphic5 の配置とレジスタ値は、モード選択ビットを除いて同一です。
 
-![Graphic4／Graphic5 の標準 VRAM マップ](images/vrammap_g45.png)
+![Graphic4／Graphic5 の標準 VRAM マップ](figures/vrammap_g45.png)
 
 図C.7 Graphic4／Graphic5 の標準 VRAM マップ
 
@@ -4266,7 +4286,7 @@ VRAM の配置は Graphic2 とほぼ同じで、違いはスプライトがモ�
 
 ビットマップモードです。ページは 64KB 単位で、ページ 0 の後方にスプライト関係のテーブルが置かれます。配置とレジスタ値は 4 つのモードで共通し、違いはモード選択ビットと、YAE／YJK の選択（R#25）だけです。192 ライン時（LN = 0）はビットマップが 49,152 バイト（ページ内では 00000h〜0BFFFh）になります。
 
-![Graphic6／Graphic7 の標準 VRAM マップ](images/vrammap_g67.png)
+![Graphic6／Graphic7 の標準 VRAM マップ](figures/vrammap_g67.png)
 
 図C.8 Graphic6／Graphic7 の標準 VRAM マップ（SCREEN 10〜12 も同じ配置）
 
@@ -4317,96 +4337,98 @@ VRAM の配置は Graphic2 とほぼ同じで、違いはスプライトがモ�
 |---|---|---|
 | 第1版 | ― | 初版 |
 
+
+
 # 索引
 
-本書の重要な用語と、その用語を主に説明している箇所の一覧である。参照はリンクになっており、クリックすると該当箇所へ移動する。
+本書の重要な用語と、その用語を主に説明しているページの一覧である。ページ番号はリンクになっており、クリックすると該当箇所へ移動する。
 
-| 用語 | 参照 |
+| 用語 | ページ |
 |---|---|
-| 5S / 5TH | [6.6.2 表示上限の通知（5S と 5TH）](#662-表示上限の通知5s-と-5th) |
-| 9958 Compatible | [12.2 「9958 Compatible」として正式化された動作](#122-9958-compatibleとして正式化された動作) |
-| CEIE | [10.4 コマンド完了割り込み](#104-コマンド完了割り込み), [R#20 Mode5](#r20-mode5-v9968-追加) |
-| EPAL | [7.2.2 EPAL = 1（拡張形式）](#722-epal--1拡張形式), [R#20 Mode5](#r20-mode5-v9968-追加) |
-| FG4 | [R#45 Argument](#r45-argument) |
-| FIL | [R#20 Mode5](#r20-mode5-v9968-追加) |
-| G3BASIC | [9.8 BASIC API（G3BASIC）](#98-basic-apig3basic) |
-| Geo3D | [9.1 概要](#91-概要) |
-| Graphic7 | [5.12 Graphic7 モード](#512-graphic7-モード) |
-| HMMC | [8.2 HMMC（CPU→VRAM高速転送）](#82-hmmccpuvram高速転送) |
-| HMMM | [8.4 HMMM（VRAM→VRAM高速転送）](#84-hmmmvramvram高速転送) |
-| HMMV | [8.5 HMMV（矩形の高速塗りつぶし）](#85-hmmv矩形の高速塗りつぶし) |
-| HS | [11.6 高速モードについて](#116-高速モードについて), [R#20 Mode5](#r20-mode5-v9968-追加) |
-| ILNS | [R#20 Mode5](#r20-mode5-v9968-追加) |
-| LFMC | [8.15 LFMC（CPU→VRAMフォント描画）](#815-lfmccpuvramフォント描画) |
-| LFMM | [8.16 LFMM（VRAM→VRAMフォント描画）](#816-lfmmvramvramフォント描画) |
-| LINE | [8.10 LINE（直線描画）](#810-line直線描画) |
-| LMCM | [8.7 LMCM（VRAM→CPU論理転送）](#87-lmcmvramcpu論理転送) |
-| LMMC | [8.6 LMMC（CPU→VRAM論理転送）](#86-lmmccpuvram論理転送) |
-| LMMM | [8.8 LMMM（VRAM→VRAM論理転送）](#88-lmmmvramvram論理転送) |
-| LMMV | [8.9 LMMV（矩形の論理塗りつぶし）](#89-lmmv矩形の論理塗りつぶし) |
-| LockExtReg | [拡張レジスタのロック（LockExtReg）](#拡張レジスタのロックlockextreg) |
-| LRMM | [8.14 LRMM（回転・拡大縮小付き論理転送）](#814-lrmm回転拡大縮小付き論理転送) |
-| MXC | [R#45 Argument](#r45-argument) |
-| MXD | [R#45 Argument](#r45-argument) |
-| MXS | [R#45 Argument](#r45-argument) |
-| POINT | [8.13 POINT（色読み出し）](#813-point色読み出し) |
-| Port#4 | [2.7 割り込み制御ポート（Port#4）](#27-割り込み制御ポートport4) |
-| PSET | [8.12 PSET（点描画）](#812-pset点描画) |
-| R#20 | [R#20 Mode5](#r20-mode5-v9968-追加) |
-| R#21 | [R#21 Mode6](#r21-mode6-v9968-追加) |
-| R#25 | [R#25 Mode4](#r25-mode4) |
-| R#28 | [R#28 CPU Access Bank](#r28-cpu-access-bank-v9968-追加) |
-| R#29 | [R#29 Display Bank](#r29-display-bank-v9968-追加) |
-| R#30 | [R#30 Command Bank](#r30-command-bank-v9968-追加) |
-| R#45 | [R#45 Argument](#r45-argument) |
-| R#46 | [R#46 Command](#r46-command) |
-| S16 | [R#20 Mode5](#r20-mode5-v9968-追加), [6.7 その他の拡張ビットについて](#67-その他の拡張ビットについて) |
-| SP3 | [6.1 スプライトモードの概要](#61-スプライトモードの概要), [R#20 Mode5](#r20-mode5-v9968-追加) |
-| SPS | [R#25 Mode4](#r25-mode4), [6.7 その他の拡張ビットについて](#67-その他の拡張ビットについて) |
-| SRCH | [8.11 SRCH（色サーチ）](#811-srch色サーチ) |
-| STOP | [8.17 STOP（コマンド停止）](#817-stopコマンド停止) |
-| SVNS | [R#20 Mode5](#r20-mode5-v9968-追加) |
-| V58 | [R#21 Mode6](#r21-mode6-v9968-追加) |
-| VFIRST | [A.5 Geo3D レジスタ一覧](#a5-geo3d-レジスタ一覧) |
-| VRAM | [11.1 VRAM の構成](#111-vram-の構成) |
-| XCTRL | [A.5 Geo3D レジスタ一覧](#a5-geo3d-レジスタ一覧) |
-| XHR | [R#45 Argument](#r45-argument) |
-| YAE | [5.13 Graphic7-YAE モード（SCREEN 10／11）](#513-graphic7-yae-モードscreen-1011), [7.4.6 YAE モード（R#25 の YAE = 1）](#746-yae-モードr25-の-yae--1) |
-| YJK | [5.14 Graphic7-YJK モード（SCREEN 12）](#514-graphic7-yjk-モードscreen-12), [7.4.5 YJK モード（R#25 の YJK = 1）](#745-yjk-モードr25-の-yjk--1) |
-| YMMM | [8.3 YMMM（Y方向VRAM→VRAM高速転送）](#83-ymmmy方向vramvram高速転送) |
-| ウィンドウレジスタ（R#51〜R#58） | [R#51 Window Start X](#r51-window-start-x-l--r52-window-start-x-h-v9968-追加) |
-| 回転ベクトル（R#47〜R#50） | [R#47 Rotation Vector X](#r47-rotation-vector-x-l--r48-rotation-vector-x-h-v9968-追加) |
-| 拡大・縮小 | [6.5.3 拡大・縮小の見え方](#653-拡大縮小の見え方) |
-| 拡張モード | [12.1 互換モードと拡張モード](#121-互換モードと拡張モード) |
-| コマンド完了割り込み | [10.4 コマンド完了割り込み](#104-コマンド完了割り込み) |
-| 互換モード | [12.1 互換モードと拡張モード](#121-互換モードと拡張モード) |
-| 衝突検出 | [6.6.1 スプライト同士の衝突](#661-スプライト同士の衝突) |
-| CPU アクセスバンク | [R#28 CPU Access Bank](#r28-cpu-access-bank-v9968-追加) |
-| ステータスレジスタ | [第4章 ステータスレジスタ詳説](#第4章-ステータスレジスタ詳説) |
-| スプライトバンク | [R#29 Display Bank](#r29-display-bank-v9968-追加) |
-| スプライトモード1 | [6.3 スプライトモード 1](#63-スプライトモード-1) |
-| スプライトモード2 | [6.4 スプライトモード 2](#64-スプライトモード-2) |
-| スプライトモード3 | [6.5 スプライトモード 3（V9968 新モード）](#65-スプライトモード-3v9968-新モード) |
-| 即時モード | [9.3 即時モード](#93-即時モード) |
-| テクスチャ | [9.6 テクスチャ](#96-テクスチャ) |
-| 転送先バンク | [R#30 Command Bank](#r30-command-bank-v9968-追加) |
-| 転送元バンク | [R#30 Command Bank](#r30-command-bank-v9968-追加) |
-| 背景バンク | [R#29 Display Bank](#r29-display-bank-v9968-追加) |
-| バンクレジスタ | [VRAM バンク（R#28〜R#30）](#vram-バンクr28r30v9968-追加) |
-| パレット | [第7章 カラーパレットと色表現](#第7章-カラーパレットと色表現) |
-| パレットセット | [6.4.4 V9968 での拡張：EPAL 時のパレットセット](#644-v9968-での拡張epal-時のパレットセット) |
-| パレット RAM | [7.1 パレット RAM の構造](#71-パレット-ram-の構造) |
-| フェーズ2エンジン | [9.4 フェーズ2エンジン](#94-フェーズ2エンジン) |
-| フレーム割り込み | [10.2 フレーム割り込み](#102-フレーム割り込み) |
-| VRAM バンク | [VRAM バンク（R#28〜R#30）](#vram-バンクr28r30v9968-追加) |
-| ライン割り込み | [10.3 ライン割り込み](#103-ライン割り込み) |
-| リングバッファ | [9.7.2 常駐シーンと部分RUN](#972-常駐シーンと部分run) |
-| 割り込み | [第10章 割り込み](#第10章-割り込み) |
+| 5S / 5TH | [73](#spr5th) |
+| 9958 Compatible | [154](#compat9958) |
+| CEIE | [16](#r20), [144](#intceie) |
+| EPAL | [16](#r20), [76](#palepal) |
+| FG4 | [31](#r45) |
+| FIL | [16](#r20) |
+| G3BASIC | [130](#geo3dg3) |
+| Geo3D | [117](#geo3d) |
+| Graphic7 | [53](#g7) |
+| HMMC | [92](#cmd-hmmc) |
+| HMMM | [94](#cmd-hmmm) |
+| HMMV | [95](#cmd-hmmv) |
+| HS | [16](#r20), [153](#hs) |
+| ILNS | [16](#r20) |
+| LFMC | [106](#cmd-lfmc) |
+| LFMM | [107](#cmd-lfmm) |
+| LINE | [100](#cmd-line) |
+| LMCM | [97](#cmd-lmcm) |
+| LMMC | [96](#cmd-lmmc) |
+| LMMM | [98](#cmd-lmmm) |
+| LMMV | [99](#cmd-lmmv) |
+| LockExtReg | [10](#lockextreg) |
+| LRMM | [104](#cmd-lrmm) |
+| MXC | [31](#r45) |
+| MXD | [31](#r45) |
+| MXS | [31](#r45) |
+| POINT | [103](#cmd-point) |
+| Port#4 | [10](#port4) |
+| PSET | [102](#cmd-pset) |
+| R#20 | [16](#r20) |
+| R#21 | [17](#r21) |
+| R#25 | [18](#r25) |
+| R#28 | [25](#r28) |
+| R#29 | [26](#r29) |
+| R#30 | [26](#r30) |
+| R#45 | [31](#r45) |
+| R#46 | [32](#r46) |
+| S16 | [16](#r20), [73](#sprext) |
+| SP3 | [16](#r20), [59](#sproverview) |
+| SPS | [18](#r25), [73](#sprext) |
+| SRCH | [101](#cmd-srch) |
+| STOP | [108](#cmd-stop) |
+| SVNS | [16](#r20) |
+| V58 | [17](#r21) |
+| VFIRST | [181](#geo3dregs) |
+| VRAM | [150](#vramcfg) |
+| XCTRL | [181](#geo3dregs) |
+| XHR | [31](#r45) |
+| YAE | [55](#yae), [79](#yaepal) |
+| YJK | [56](#yjk), [79](#yjkpal) |
+| YMMM | [93](#cmd-ymmm) |
+| ウィンドウレジスタ（R#51〜R#58） | [34](#r51) |
+| 回転ベクトル（R#47〜R#50） | [33](#r47) |
+| 拡大・縮小 | [70](#sprscale) |
+| 拡張モード | [154](#compat) |
+| コマンド完了割り込み | [144](#intceie) |
+| コマンド終了時のレジスタ | [88](#cmdend) |
+| 互換モード | [154](#compat) |
+| 衝突検出 | [72](#sprcollision) |
+| CPU アクセスバンク | [25](#r28) |
+| ステータスレジスタ | [2](#ch04) |
+| スプライトバンク | [26](#r29) |
+| スプライトモード1 | [61](#sm1) |
+| スプライトモード2 | [62](#sm2) |
+| スプライトモード3 | [66](#sm3) |
+| 即時モード | [118](#geo3dimm) |
+| テクスチャ | [127](#geo3dtex) |
+| 転送先バンク | [26](#r30) |
+| 転送元バンク | [26](#r30) |
+| 背景バンク | [26](#r29) |
+| バンクレジスタ | [24](#vrambank) |
+| パレット | [2](#ch07) |
+| パレットセット | [64](#palset) |
+| パレット RAM | [75](#palram) |
+| フェーズ2エンジン | [122](#geo3dphase2) |
+| フレーム割り込み | [143](#intframe) |
+| VRAM バンク | [24](#vrambank) |
+| ライン割り込み | [144](#intline) |
+| リングバッファ | [130](#geo3dring) |
+| 割り込み | [2](#ch10) |
 
----
 
-V9968 MSX-VIDEO TECHNICAL DATA BOOK
-
-2026年10月31日 発行
-
-著作 原 貴幸 (HRA!)
+<div class="colophon">
+<p class="colophon-title" style="page-break-before: always; margin-top:636pt; margin-left:60pt; margin-right:110pt;">V9968 MSX-VIDEO TECHNICAL DATA BOOK</p>
+<p class="colophon-date" style="margin-left:60pt; margin-right:110pt;">2026年10月31日 発行</p>
+<p class="colophon-author" style="margin-left:60pt; margin-right:110pt;">著作&nbsp;&nbsp;原 貴幸 (HRA!)</p>
+</div>
